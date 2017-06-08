@@ -15,27 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale.http.jetty;
+package io.github.tjheslin1.patterdale.database;
 
-import io.github.tjheslin1.patterdale.http.WebServer;
-import org.eclipse.jetty.server.Server;
+import java.sql.Connection;
+import java.sql.SQLException;
 
-public class JettyWebServer implements WebServer {
-
-    private final Server server;
-
-    public JettyWebServer(Server server) {
-        this.server = server;
-    }
-
-
-    @Override
-    public void start() throws Exception {
-        server.start();
-    }
-
-    @Override
-    public void stop() throws Exception {
-        server.stop();
-    }
+public interface DBConnection {
+    Connection connection() throws SQLException;
 }

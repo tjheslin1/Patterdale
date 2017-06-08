@@ -17,17 +17,33 @@
  */
 package io.github.tjheslin1.patterdale.metrics;
 
-import io.github.tjheslin1.patterdale.database.PooledDataSource;
+import io.github.tjheslin1.patterdale.database.DBConnectionPool;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class MetricsUseCase {
 
-    private final PooledDataSource pooledDataSource;
+    private final DBConnectionPool dbConnectionPool;
 
-    public MetricsUseCase(PooledDataSource pooledDataSource) {
-        this.pooledDataSource = pooledDataSource;
+    public MetricsUseCase(DBConnectionPool dbConnectionPool) {
+        this.dbConnectionPool = dbConnectionPool;
     }
 
-    public void scrapeMetrics() {
-//        try(pooledDataSource.pool())
+    @SuppressWarnings("SimplifiableIfStatement")
+    public boolean scrapeMetrics() {
+        try (Connection connection = dbConnectionPool.pool().connection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT 1 FROM DUAL")) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (!resultSet.next()) {
+                return false;
+            }
+            return resultSet.getInt(1) == 1;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
     }
 }

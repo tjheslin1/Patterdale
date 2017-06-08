@@ -18,24 +18,41 @@
 package io.github.tjheslin1.patterdale.http.jetty;
 
 import io.github.tjheslin1.patterdale.http.MetricsServlet;
+import io.github.tjheslin1.patterdale.http.NotFoundServlet;
 import io.github.tjheslin1.patterdale.http.WebServer;
 import io.github.tjheslin1.patterdale.http.WebServerBuilder;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 public class JettyWebServerBuilder implements WebServerBuilder {
 
     private final ServletContextHandler servletContextHandler = new ServletContextHandler();
+    private Server server;
 
     @Override
     public WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase) {
         servletContextHandler.addServlet(new ServletHolder(new MetricsServlet(metricsUseCase)), path);
-        return null;
+        return this;
+    }
+
+    public WebServerBuilder withServer(Server server) {
+        this.server = server;
+        return this;
     }
 
     @Override
     public WebServer build() {
-        return null;
+        System.out.println("About to build");
+        if (server == null) {
+            throw new IllegalStateException("Server was not set!");
+        }
+
+        servletContextHandler.addServlet(new ServletHolder(new NotFoundServlet()), "/");
+        servletContextHandler.setContextPath("/");
+        server.setHandler(servletContextHandler);
+        server.addBean(new UncaughtErrorHandler());
+        return new JettyWebServer(server);
     }
 }

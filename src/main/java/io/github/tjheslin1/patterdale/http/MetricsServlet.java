@@ -35,6 +35,13 @@ public class MetricsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        metricsUseCase.scrapeMetrics();
+        boolean success = metricsUseCase.scrapeMetrics();
+
+        if (success) {
+            resp.getWriter().print("success");
+        } else{
+            resp.getWriter().print("failure");
+            resp.setStatus(500);
+        }
     }
 }

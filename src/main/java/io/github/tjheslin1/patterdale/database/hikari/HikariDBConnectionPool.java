@@ -15,27 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale.http.jetty;
+package io.github.tjheslin1.patterdale.database.hikari;
 
-import io.github.tjheslin1.patterdale.http.WebServer;
-import org.eclipse.jetty.server.Server;
+import io.github.tjheslin1.patterdale.database.DBConnectionPool;
+import io.github.tjheslin1.patterdale.database.DBConnection;
 
-public class JettyWebServer implements WebServer {
+public class HikariDBConnectionPool implements DBConnectionPool {
 
-    private final Server server;
+    private final HikariDBConnection hikariDBConnection;
 
-    public JettyWebServer(Server server) {
-        this.server = server;
-    }
-
-
-    @Override
-    public void start() throws Exception {
-        server.start();
+    public HikariDBConnectionPool(HikariDBConnection hikariDBConnection) {
+        this.hikariDBConnection = hikariDBConnection;
     }
 
     @Override
-    public void stop() throws Exception {
-        server.stop();
+    public DBConnection pool() {
+        return hikariDBConnection;
     }
 }

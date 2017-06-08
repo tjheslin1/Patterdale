@@ -4,7 +4,6 @@ import io.github.tjheslin1.patterdale.WithMockito;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,13 +22,24 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         when(response.getWriter()).thenReturn(printerWriter);
     }
 
-    @Ignore
     @Test
-    public void respondWithDatabaseMetrics() throws Exception {
+    public void respondWithDatabaseMetricsOnSuccess() throws Exception {
+        when(metricsUseCase.scrapeMetrics()).thenReturn(true);
+
         metricsServlet.doGet(null, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(response).setStatus(200);
-        verify(printerWriter).print("scrapeMetrics....");
+        verify(printerWriter).print("success");
+    }
+
+    @Test
+    public void respondWithDatabaseMetricsErrorOnFailure() throws Exception {
+        when(metricsUseCase.scrapeMetrics()).thenReturn(false);
+
+        metricsServlet.doGet(null, response);
+
+        verify(metricsUseCase).scrapeMetrics();
+        verify(response).setStatus(500);
+        verify(printerWriter).print("failure");
     }
 }

@@ -17,9 +17,78 @@
  */
 package io.github.tjheslin1.patterdale;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import io.github.tjheslin1.patterdale.database.DBConnectionPool;
+import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
+import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
+import io.github.tjheslin1.patterdale.http.WebServer;
+import io.github.tjheslin1.patterdale.http.jetty.JettyWebServerBuilder;
+import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
+import oracle.jdbc.pool.OracleDataSource;
+import org.eclipse.jetty.server.Server;
+
+import java.sql.SQLException;
+
 public class Patterdale {
 
     public static void main(String[] args) {
         System.out.println("Patterdale!");
+        start();
+    }
+
+    public static void start() {
+        HikariDataSource hikariDataSource = dataSource();
+        DBConnectionPool connectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));
+
+        Server server = new Server(7000);
+        WebServer webServer = new JettyWebServerBuilder()
+                .withServer(server)
+                .registerMetricsEndpoint("/metrics", new MetricsUseCase(connectionPool))
+                .build();
+
+        try {
+            webServer.start();
+        } catch (Exception e) {
+            System.out.println("Error occurred starting Jetty Web Server.");
+            e.printStackTrace();
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    webServer.stop();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private static HikariDataSource dataSource() {
+        try {
+            OracleDataSource oracleDataSource = new OracleDataSource();
+            oracleDataSource.setServerName("primary");
+            oracleDataSource.setDatabaseName("dual");
+            oracleDataSource.setNetworkProtocol("tcp");
+            oracleDataSource.setPortNumber(1521);
+            oracleDataSource.setDriverType("thin");
+
+            HikariDataSource hikariDataSource = new HikariDataSource(jdbcConfig());
+            hikariDataSource.setDataSource(oracleDataSource);
+            return hikariDataSource;
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static HikariConfig jdbcConfig() {
+        HikariConfig jdbcConfig = new HikariConfig();
+        jdbcConfig.setPoolName("patterdale-pool");
+        jdbcConfig.setMaximumPoolSize(5);
+        jdbcConfig.setMinimumIdle(2);
+        jdbcConfig.setJdbcUrl("jdbc:oracle:thin:system/oracle@localhost:1521:xe");
+        return jdbcConfig;
     }
 }

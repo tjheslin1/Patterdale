@@ -15,8 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale.database;
+package io.github.tjheslin1.patterdale.database.hikari;
 
-public interface PooledDataSource<DataSource> {
-    DataSource pool();
+import com.zaxxer.hikari.HikariDataSource;
+import io.github.tjheslin1.patterdale.database.DBConnection;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class HikariDBConnection implements DBConnection {
+
+    private final HikariDataSource hikariDataSource;
+
+    public HikariDBConnection(HikariDataSource hikariDataSource) {
+        this.hikariDataSource = hikariDataSource;
+    }
+
+
+    @Override
+    public Connection connection() throws SQLException {
+        return hikariDataSource.getConnection();
+    }
 }
