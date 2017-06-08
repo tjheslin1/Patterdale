@@ -24,15 +24,14 @@ public class PatterdaleTest implements WithAssertions {
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
         assertThat(responseBody(response)).isEqualTo("success");
-        fail("DELIBERATE");
     }
 
     private String responseBody(HttpResponse response) throws IOException {
         BufferedReader rd = new BufferedReader(
                 new InputStreamReader(response.getEntity().getContent()));
 
-        StringBuffer result = new StringBuffer();
-        String line = "";
+        StringBuilder result = new StringBuilder();
+        String line;
         while ((line = rd.readLine()) != null) {
             result.append(line);
         }
