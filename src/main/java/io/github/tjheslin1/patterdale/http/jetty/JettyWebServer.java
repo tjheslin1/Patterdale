@@ -38,4 +38,9 @@ public class JettyWebServer implements WebServer {
     public void stop() throws Exception {
         server.stop();
     }
+
+    @Override
+    public String baseUrl() {
+        return server.getURI().toString();
+    }
 }

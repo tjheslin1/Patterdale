@@ -20,4 +20,5 @@ package io.github.tjheslin1.patterdale.http;
 public interface WebServer {
     void start() throws Exception;
     void stop() throws Exception;
+    String baseUrl();
 }

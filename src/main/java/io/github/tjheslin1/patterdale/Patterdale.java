@@ -27,18 +27,25 @@ import io.github.tjheslin1.patterdale.http.jetty.JettyWebServerBuilder;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import oracle.jdbc.pool.OracleDataSource;
 import org.eclipse.jetty.server.Server;
-
-import java.sql.SQLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Patterdale {
 
     public static void main(String[] args) {
-        System.out.println("Patterdale!");
-        start();
+        Logger logger = initialiseLogger();
+        logger.debug("starting Patterdale!");
+
+        start(logger);
     }
 
-    public static void start() {
-        HikariDataSource hikariDataSource = dataSource();
+    private static Logger initialiseLogger() {
+        System.setProperty("logback.configurationFile", "src/main/resources/logback.xml");
+        return LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
+    }
+
+    public static void start(Logger logger) {
+        HikariDataSource hikariDataSource = dataSource(logger);
         DBConnectionPool connectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));
 
         Server server = new Server(7000);
@@ -49,9 +56,9 @@ public class Patterdale {
 
         try {
             webServer.start();
+            logger.info("Web server started successfully at " + webServer.baseUrl());
         } catch (Exception e) {
-            System.out.println("Error occurred starting Jetty Web Server.");
-            e.printStackTrace();
+            logger.error("Error occurred starting Jetty Web Server.", e);
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -66,7 +73,7 @@ public class Patterdale {
         });
     }
 
-    private static HikariDataSource dataSource() {
+    private static HikariDataSource dataSource(Logger logger) {
         try {
             OracleDataSource oracleDataSource = new OracleDataSource();
             oracleDataSource.setServerName("primary");
@@ -78,7 +85,8 @@ public class Patterdale {
             HikariDataSource hikariDataSource = new HikariDataSource(jdbcConfig());
             hikariDataSource.setDataSource(oracleDataSource);
             return hikariDataSource;
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            logger.error("Error occurred initialising Oracle and Hikari data sources.", e);
             throw new IllegalStateException(e);
         }
     }

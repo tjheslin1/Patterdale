@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     compile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.25'
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'

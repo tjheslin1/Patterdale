@@ -6,7 +6,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.assertj.core.api.WithAssertions;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,9 +17,17 @@ import java.io.InputStreamReader;
 
 public class PatterdaleTest implements WithAssertions {
 
+    private Logger logger;
+
+    @Before
+    public void setUp() {
+        System.setProperty("logback.configurationFile", "src/main/resources/logback.xml");
+        logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
+    }
+
     @Test
     public void scrapesOracleDatabaseMetricsOnRequest() throws Exception {
-        Patterdale.start();
+        Patterdale.start(logger);
 
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpResponse response = httpClient.execute(new HttpGet("http://localhost:7000/metrics"));
