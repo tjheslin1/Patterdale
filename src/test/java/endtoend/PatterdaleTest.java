@@ -1,6 +1,8 @@
 package endtoend;
 
+import io.github.tjheslin1.patterdale.ConfigUnmarshaller;
 import io.github.tjheslin1.patterdale.Patterdale;
+import io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -21,13 +24,18 @@ public class PatterdaleTest implements WithAssertions {
 
     @Before
     public void setUp() {
+        System.setProperty("config.file", "src/test/resources/local.yml");
         System.setProperty("logback.configurationFile", "src/main/resources/logback.xml");
         logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
     }
 
     @Test
     public void scrapesOracleDatabaseMetricsOnRequest() throws Exception {
-        Patterdale.start(logger);
+        PatterdaleRuntimeParameters patterdaleRuntimeParameters = new ConfigUnmarshaller(logger)
+                .parseConfig(new File(System.getProperty("config.file")));
+
+        new Patterdale(patterdaleRuntimeParameters, logger)
+                .start();
 
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpResponse response = httpClient.execute(new HttpGet("http://localhost:7000/metrics"));

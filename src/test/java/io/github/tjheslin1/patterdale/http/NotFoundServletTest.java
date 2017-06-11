@@ -1,6 +1,6 @@
 package io.github.tjheslin1.patterdale.http;
 
-import io.github.tjheslin1.patterdale.WithMockito;
+import testutil.WithMockito;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Before;
 import org.junit.Test;

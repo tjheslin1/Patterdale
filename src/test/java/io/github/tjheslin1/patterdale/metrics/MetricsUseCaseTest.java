@@ -1,6 +1,6 @@
 package io.github.tjheslin1.patterdale.metrics;
 
-import io.github.tjheslin1.patterdale.WithMockito;
+import testutil.WithMockito;
 import io.github.tjheslin1.patterdale.database.DBConnection;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import org.assertj.core.api.WithAssertions;

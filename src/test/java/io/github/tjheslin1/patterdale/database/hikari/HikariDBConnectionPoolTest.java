@@ -1,6 +1,6 @@
 package io.github.tjheslin1.patterdale.database.hikari;
 
-import io.github.tjheslin1.patterdale.WithMockito;
+import testutil.WithMockito;
 import io.github.tjheslin1.patterdale.database.DBConnection;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Test;

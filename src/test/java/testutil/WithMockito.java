@@ -1,4 +1,4 @@
-package io.github.tjheslin1.patterdale;
+package testutil;
 
 import org.mockito.Mockito;
 import org.mockito.stubbing.OngoingStubbing;

@@ -30,25 +30,37 @@ import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 public class Patterdale {
 
+    private final PatterdaleRuntimeParameters runtimeParameters;
+    private final Logger logger;
+
+    public Patterdale(PatterdaleRuntimeParameters runtimeParameters, Logger logger) {
+        this.runtimeParameters = runtimeParameters;
+        this.logger = logger;
+    }
+
     public static void main(String[] args) {
-        Logger logger = initialiseLogger();
+        Logger logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
+
+        PatterdaleRuntimeParameters patterdaleRuntimeParameters = new ConfigUnmarshaller(logger)
+                .parseConfig(new File(System.getProperty("config.file")));
+
+        Patterdale patterdale = new Patterdale(patterdaleRuntimeParameters, logger);
         logger.debug("starting Patterdale!");
 
-        start(logger);
+        patterdale.start();
     }
 
-    private static Logger initialiseLogger() {
-        System.setProperty("logback.configurationFile", "src/main/resources/logback.xml");
-        return LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
-    }
+    public void start() {
+        System.setProperty("logback.configurationFile", runtimeParameters.logbackConfiguration);
 
-    public static void start(Logger logger) {
-        HikariDataSource hikariDataSource = dataSource(logger);
+        HikariDataSource hikariDataSource = dataSource();
         DBConnectionPool connectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));
 
-        Server server = new Server(7000);
+        Server server = new Server(runtimeParameters.httpPort);
         WebServer webServer = new JettyWebServerBuilder()
                 .withServer(server)
                 .registerMetricsEndpoint("/metrics", new MetricsUseCase(connectionPool))
@@ -73,7 +85,7 @@ public class Patterdale {
         });
     }
 
-    private static HikariDataSource dataSource(Logger logger) {
+    private HikariDataSource dataSource() {
         try {
             OracleDataSource oracleDataSource = new OracleDataSource();
             oracleDataSource.setServerName("primary");
@@ -91,7 +103,7 @@ public class Patterdale {
         }
     }
 
-    private static HikariConfig jdbcConfig() {
+    private HikariConfig jdbcConfig() {
         HikariConfig jdbcConfig = new HikariConfig();
         jdbcConfig.setPoolName("patterdale-pool");
         jdbcConfig.setMaximumPoolSize(5);
