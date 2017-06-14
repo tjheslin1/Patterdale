@@ -2,7 +2,7 @@ package endtoend;
 
 import io.github.tjheslin1.patterdale.ConfigUnmarshaller;
 import io.github.tjheslin1.patterdale.Patterdale;
-import io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters;
+import io.github.tjheslin1.patterdale.PatterdaleConfig;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
+
 public class PatterdaleTest implements WithAssertions {
 
     private Logger logger;
@@ -25,16 +27,15 @@ public class PatterdaleTest implements WithAssertions {
     @Before
     public void setUp() {
         System.setProperty("config.file", "src/test/resources/local.yml");
-        System.setProperty("logback.configurationFile", "src/main/resources/logback.xml");
         logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
     }
 
     @Test
     public void scrapesOracleDatabaseMetricsOnRequest() throws Exception {
-        PatterdaleRuntimeParameters patterdaleRuntimeParameters = new ConfigUnmarshaller(logger)
+        PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
                 .parseConfig(new File(System.getProperty("config.file")));
 
-        new Patterdale(patterdaleRuntimeParameters, logger)
+        new Patterdale(patterdaleRuntimeParameters(patterdaleConfig), logger)
                 .start();
 
         HttpClient httpClient = HttpClientBuilder.create().build();

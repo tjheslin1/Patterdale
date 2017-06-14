@@ -32,13 +32,12 @@ public class ConfigUnmarshaller {
         this.logger = logger;
     }
 
-    public PatterdaleRuntimeParameters parseConfig(File configFile) {
-        PatterdaleRuntimeParameters runtimeParameters;
+    public PatterdaleConfig parseConfig(File configFile) {
+        PatterdaleConfig config;
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        File file = configFile;
         try {
-            runtimeParameters = mapper.readValue(file, PatterdaleRuntimeParameters.class);
-            return runtimeParameters;
+            config = mapper.readValue(configFile, PatterdaleConfig.class);
+            return config;
         } catch (IOException e) {
             logger.error("Failed to parse provided 'config.file'.", e);
             throw new IllegalStateException(e);

@@ -19,27 +19,29 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
     public void unmarshallConfigFileToRuntimeParameters() throws Exception {
         URL url = this.getClass().getClassLoader().getResource("local.yml");
         File file = new File(url.getPath());
-        PatterdaleRuntimeParameters runtimeParameters = configUnmarshaller.parseConfig(file);
+        PatterdaleConfig patterdaleConfig = configUnmarshaller.parseConfig(file);
 
-        PatterdaleRuntimeParameters expectedParameters = new PatterdaleRuntimeParameters();
-        expectedParameters.httpPort = 7000;
-        expectedParameters.logbackConfiguration = "src/main/resources/logback.xml";
+        assertThat(patterdaleConfig).isEqualTo(expectedConfig());
+    }
+
+    private PatterdaleConfig expectedConfig() {
+        PatterdaleConfig expectedConfig = new PatterdaleConfig();
+
+        expectedConfig.httpPort = 7000;
+        expectedConfig.logbackConfiguration = "src/main/resources/logback.xml";
 
         HashMap<String, String> databaseProperties = new HashMap<>();
         databaseProperties.put("serverName", "primary");
         databaseProperties.put("name", "dual");
         databaseProperties.put("networkProtocol", "tcp");
-        databaseProperties.put("port", "1521");
         databaseProperties.put("driverType", "thin");
         databaseProperties.put("jdbcUrl", "jdbc:oracle:thin:system/oracle@localhost:1521:xe");
-        expectedParameters.database = databaseProperties;
+        expectedConfig.database = databaseProperties;
 
         HashMap<String, String> connectionPoolProperties = new HashMap<>();
         connectionPoolProperties.put("maxSize", "5");
         connectionPoolProperties.put("minIdle", "1");
-        expectedParameters.connectionPool = connectionPoolProperties;
-
-        assertThat(runtimeParameters).isEqualTo(expectedParameters);
+        expectedConfig.connectionPool = connectionPoolProperties;
+        return expectedConfig;
     }
-
 }

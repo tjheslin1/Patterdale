@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
+import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
+
 public class Patterdale {
 
     private final PatterdaleRuntimeParameters runtimeParameters;
@@ -45,22 +47,22 @@ public class Patterdale {
     public static void main(String[] args) {
         Logger logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
 
-        PatterdaleRuntimeParameters patterdaleRuntimeParameters = new ConfigUnmarshaller(logger)
+        PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
                 .parseConfig(new File(System.getProperty("config.file")));
 
-        Patterdale patterdale = new Patterdale(patterdaleRuntimeParameters, logger);
+        Patterdale patterdale = new Patterdale(patterdaleRuntimeParameters(patterdaleConfig), logger);
         logger.debug("starting Patterdale!");
 
         patterdale.start();
     }
 
     public void start() {
-        System.setProperty("logback.configurationFile", runtimeParameters.logbackConfiguration);
+        System.setProperty("logback.configurationFile", runtimeParameters.logbackConfiguration());
 
         HikariDataSource hikariDataSource = dataSource();
         DBConnectionPool connectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));
 
-        Server server = new Server(runtimeParameters.httpPort);
+        Server server = new Server(runtimeParameters.httpPort());
         WebServer webServer = new JettyWebServerBuilder()
                 .withServer(server)
                 .registerMetricsEndpoint("/metrics", new MetricsUseCase(connectionPool))
@@ -73,26 +75,23 @@ public class Patterdale {
             logger.error("Error occurred starting Jetty Web Server.", e);
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try {
-                    webServer.stop();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                webServer.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
+        }));
     }
 
     private HikariDataSource dataSource() {
         try {
             OracleDataSource oracleDataSource = new OracleDataSource();
-            oracleDataSource.setServerName("primary");
-            oracleDataSource.setDatabaseName("dual");
-            oracleDataSource.setNetworkProtocol("tcp");
-            oracleDataSource.setPortNumber(1521);
-            oracleDataSource.setDriverType("thin");
+            oracleDataSource.setServerName(runtimeParameters.databaseServerName());
+            oracleDataSource.setDatabaseName(runtimeParameters.databaseName());
+            oracleDataSource.setNetworkProtocol(runtimeParameters.databaseNetworkProtocol());
+            oracleDataSource.setPortNumber(runtimeParameters.httpPort());
+            oracleDataSource.setDriverType(runtimeParameters.driverType());
 
             HikariDataSource hikariDataSource = new HikariDataSource(jdbcConfig());
             hikariDataSource.setDataSource(oracleDataSource);
@@ -106,9 +105,9 @@ public class Patterdale {
     private HikariConfig jdbcConfig() {
         HikariConfig jdbcConfig = new HikariConfig();
         jdbcConfig.setPoolName("patterdale-pool");
-        jdbcConfig.setMaximumPoolSize(5);
-        jdbcConfig.setMinimumIdle(2);
-        jdbcConfig.setJdbcUrl("jdbc:oracle:thin:system/oracle@localhost:1521:xe");
+        jdbcConfig.setMaximumPoolSize(runtimeParameters.connectionPoolMaxSize());
+        jdbcConfig.setMinimumIdle(runtimeParameters.connectionPoolMinIdle());
+        jdbcConfig.setJdbcUrl(runtimeParameters.databaseJdbcUrl());
         return jdbcConfig;
     }
 }

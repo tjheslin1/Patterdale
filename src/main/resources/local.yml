@@ -4,7 +4,6 @@ database:
   serverName: primary
   name: dual
   networkProtocol: tcp
-  port: 1521
   driverType: thin
   jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
 connectionPool:
