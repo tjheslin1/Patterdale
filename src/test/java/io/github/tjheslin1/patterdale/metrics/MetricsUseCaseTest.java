@@ -1,36 +1,59 @@
 package io.github.tjheslin1.patterdale.metrics;
 
-import testutil.WithMockito;
-import io.github.tjheslin1.patterdale.database.DBConnection;
-import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Test;
+import testutil.WithMockito;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.List;
+
+import static io.github.tjheslin1.patterdale.metrics.ProbeResult.failure;
+import static io.github.tjheslin1.patterdale.metrics.ProbeResult.success;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 public class MetricsUseCaseTest implements WithAssertions, WithMockito {
 
-    private final ResultSet resultSet = mock(ResultSet.class);
-    private final PreparedStatement preparedStatement = mock(PreparedStatement.class);
-    private final Connection connection = mock(Connection.class);
-    private final DBConnection dbConnection = mock(DBConnection.class);
-    private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
-
-    private final MetricsUseCase metricsUseCase = new MetricsUseCase(dbConnectionPool);
-
     @Test
     public void scrapeMetricsReturnsSuccess() throws Exception {
-        when(resultSet.next()).thenReturn(true);
-        when(resultSet.getInt(1)).thenReturn(1);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(dbConnection.connection()).thenReturn(connection);
-        when(dbConnectionPool.pool()).thenReturn(dbConnection);
 
+        List<SQLProbe> probes = singletonList(() -> success(""));
+
+        MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
         boolean result = metricsUseCase.scrapeMetrics();
 
         assertThat(result).isTrue();
+    }
+
+    @Test
+    public void scrapeMetricsReturnsSuccessForMultipleProbes() throws Exception {
+
+        List<SQLProbe> probes = asList(() -> success(""), () -> success(""));
+
+        MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
+        boolean result = metricsUseCase.scrapeMetrics();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void scrapeMetricsReturnsFailureIfAnyProbeFails() throws Exception {
+
+        List<SQLProbe> probes = asList(() -> success(""), () -> failure(""));
+
+        MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
+        boolean result = metricsUseCase.scrapeMetrics();
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void scrapeMetricsReturnsFailureIfAllProbeFails() throws Exception {
+
+        List<SQLProbe> probes = asList(() -> failure(""), () -> failure(""));
+
+        MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
+        boolean result = metricsUseCase.scrapeMetrics();
+
+        assertThat(result).isFalse();
     }
 }

@@ -17,23 +17,23 @@
  */
 package io.github.tjheslin1.patterdale.metrics;
 
-import java.util.List;
+import io.github.tjheslin1.patterdale.ValueType;
 
-public class MetricsUseCase {
+public class ProbeResult extends ValueType {
 
-    private final List<SQLProbe> sqlProbes;
+    public final boolean result;
+    public final String message;
 
-    public MetricsUseCase(List<SQLProbe> sqlProbes) {
-        this.sqlProbes = sqlProbes;
+    private ProbeResult(boolean result, String message) {
+        this.result = result;
+        this.message = message;
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
-    public boolean scrapeMetrics() {
-        boolean overallResult = true;
-        for (SQLProbe sqlProbe : sqlProbes) {
-            ProbeResult probe = sqlProbe.probe();
-            overallResult &= probe.result;
-        }
-        return overallResult;
+    public static ProbeResult success(String message) {
+        return new ProbeResult(true, message);
+    }
+
+    public static ProbeResult failure(String message) {
+        return new ProbeResult(false, message);
     }
 }

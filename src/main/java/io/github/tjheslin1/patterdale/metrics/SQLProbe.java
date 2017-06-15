@@ -17,23 +17,6 @@
  */
 package io.github.tjheslin1.patterdale.metrics;
 
-import java.util.List;
-
-public class MetricsUseCase {
-
-    private final List<SQLProbe> sqlProbes;
-
-    public MetricsUseCase(List<SQLProbe> sqlProbes) {
-        this.sqlProbes = sqlProbes;
-    }
-
-    @SuppressWarnings("SimplifiableIfStatement")
-    public boolean scrapeMetrics() {
-        boolean overallResult = true;
-        for (SQLProbe sqlProbe : sqlProbes) {
-            ProbeResult probe = sqlProbe.probe();
-            overallResult &= probe.result;
-        }
-        return overallResult;
-    }
+public interface SQLProbe {
+    ProbeResult probe();
 }
