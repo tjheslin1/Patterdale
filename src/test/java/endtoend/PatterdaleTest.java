@@ -26,7 +26,7 @@ public class PatterdaleTest implements WithAssertions {
 
     @Before
     public void setUp() {
-        System.setProperty("config.file", "src/test/resources/local.yml");
+        System.setProperty("config.file", "src/test/resources/patterdale.yml");
         logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
     }
 

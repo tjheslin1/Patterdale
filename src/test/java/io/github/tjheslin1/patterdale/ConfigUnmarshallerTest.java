@@ -17,7 +17,7 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
 
     @Test
     public void unmarshallConfigFileToRuntimeParameters() throws Exception {
-        URL url = this.getClass().getClassLoader().getResource("local.yml");
+        URL url = this.getClass().getClassLoader().getResource("patterdale.yml");
         File file = new File(url.getPath());
         PatterdaleConfig patterdaleConfig = configUnmarshaller.parseConfig(file);
 
