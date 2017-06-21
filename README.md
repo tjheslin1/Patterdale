@@ -3,3 +3,19 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/tjheslin1/patterdale-jvm.svg?maxAge=604800)](https://hub.docker.com/r/tjheslin1/patterdale-jvm/)
 
 `docker run -d -p 7000:7000 -v /your/config/directory:/config tjheslin1/patterdale-jvm:0.3`
+
+`/your/config/directory` is expected to contain a file `patterdale.yml` with the following content:
+
+Example:
+```yml
+httpPort: 7000
+database:
+  serverName: primary
+  name: dual
+  networkProtocol: tcp
+  driverType: thin
+  jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
+connectionPool:
+  maxSize: 5
+  minIdle: 1
+```
