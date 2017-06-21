@@ -21,7 +21,6 @@ import java.util.Map;
 
 public class PatterdaleConfig extends ValueType {
     public int httpPort;
-    public String logbackConfiguration;
     public Map<String, String> database;
     public Map<String, String> connectionPool;
 }

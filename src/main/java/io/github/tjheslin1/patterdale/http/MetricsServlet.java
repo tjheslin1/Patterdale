@@ -38,9 +38,9 @@ public class MetricsServlet extends HttpServlet {
         boolean success = metricsUseCase.scrapeMetrics();
 
         if (success) {
-            resp.getWriter().print("success");
+            resp.getWriter().print("oracle_health_check 1");
         } else{
-            resp.getWriter().print("failure");
+            resp.getWriter().print("oracle_health_check 0");
             resp.setStatus(500);
         }
     }

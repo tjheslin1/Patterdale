@@ -1,5 +1,5 @@
 group 'io.github.tjheslin1'
-version '0.1'
+version '0.3'
 
 buildscript {
     repositories {
@@ -51,27 +51,16 @@ jar {
     }
 }
 
+shadowJar {
+    baseName = 'patterdale-jvm-all'
+    classifier = null
+    version = null
+}
+
 task unitTest(type: Test) {
     exclude '**/endtoend/**'
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '3.5'
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from tasks.javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-artifacts {
-    archives jar
-
-    archives javadocJar
-    archives sourcesJar
 }

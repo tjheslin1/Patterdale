@@ -13,7 +13,6 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     public void extractsRuntimeParametersFromUnmarshalledConfigurationFile() throws Exception {
         PatterdaleRuntimeParameters expectedParameters = new PatterdaleRuntimeParameters(
                 HTTP_PORT,
-                LOGBACK_CONFIG,
                 SERVER_NAME,
                 DATABASE_NAME,
                 PROTOCOL,
@@ -31,7 +30,6 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
         PatterdaleConfig config = new PatterdaleConfig();
 
         config.httpPort = HTTP_PORT;
-        config.logbackConfiguration = LOGBACK_CONFIG;
 
         HashMap<String, String> databaseProperties = new HashMap<>();
         databaseProperties.put("serverName", SERVER_NAME);
@@ -50,7 +48,6 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     }
 
     private static final int HTTP_PORT = 7000;
-    private static final String LOGBACK_CONFIG = "src/main/resources/logback.xml";
     private static final String SERVER_NAME = "primary";
     private static final String DATABASE_NAME = "dual";
     private static final String PROTOCOL = "tcp";

@@ -28,7 +28,6 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         PatterdaleConfig expectedConfig = new PatterdaleConfig();
 
         expectedConfig.httpPort = 7000;
-        expectedConfig.logbackConfiguration = "src/main/resources/logback.xml";
 
         HashMap<String, String> databaseProperties = new HashMap<>();
         databaseProperties.put("serverName", "primary");

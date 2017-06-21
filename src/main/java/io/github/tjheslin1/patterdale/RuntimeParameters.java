@@ -19,7 +19,6 @@ package io.github.tjheslin1.patterdale;
 
 public interface RuntimeParameters {
     int httpPort();
-    String logbackConfiguration();
     String databaseServerName();
     String databaseName();
     String databaseNetworkProtocol();

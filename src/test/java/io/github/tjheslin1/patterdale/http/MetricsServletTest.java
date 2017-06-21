@@ -29,7 +29,7 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         metricsServlet.doGet(null, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).print("success");
+        verify(printerWriter).print("oracle_health_check 1");
     }
 
     @Test
@@ -40,6 +40,6 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
 
         verify(metricsUseCase).scrapeMetrics();
         verify(response).setStatus(500);
-        verify(printerWriter).print("failure");
+        verify(printerWriter).print("oracle_health_check 0");
     }
 }

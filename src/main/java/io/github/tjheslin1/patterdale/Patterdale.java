@@ -70,7 +70,7 @@ public class Patterdale {
     }
 
     public void start() {
-        System.setProperty("logback.configurationFile", runtimeParameters.logbackConfiguration());
+        System.setProperty("logback.configurationFile", "src/main/resources/logback.xml");
 
         HikariDataSource hikariDataSource = dataSource();
         DBConnectionPool connectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));

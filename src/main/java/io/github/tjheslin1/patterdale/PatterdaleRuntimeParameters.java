@@ -24,7 +24,6 @@ import static java.lang.String.format;
 public class PatterdaleRuntimeParameters extends ValueType implements RuntimeParameters {
 
     private final int httpPort;
-    private final String logbackConfiguration;
     private final String databaseServerName;
     private final String databaseName;
     private final String databaseNetworkProtocol;
@@ -33,9 +32,8 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     private final int connectionPoolMaxSize;
     private final int connectionPoolMinIdle;
 
-    PatterdaleRuntimeParameters(int httpPort, String logbackConfiguration, String serverName, String databaseName, String protocol, String driverType, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle) {
+    PatterdaleRuntimeParameters(int httpPort, String serverName, String databaseName, String protocol, String driverType, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle) {
         this.httpPort = httpPort;
-        this.logbackConfiguration = logbackConfiguration;
         this.databaseServerName = serverName;
         this.databaseName = databaseName;
         this.databaseNetworkProtocol = protocol;
@@ -48,7 +46,6 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
         return new PatterdaleRuntimeParameters(
                 config.httpPort,
-                config.logbackConfiguration,
                 parameterOrBlowUp(config.database, "serverName"),
                 parameterOrBlowUp(config.database, "name"),
                 parameterOrBlowUp(config.database, "networkProtocol"),
@@ -61,11 +58,6 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     @Override
     public int httpPort() {
         return httpPort;
-    }
-
-    @Override
-    public String logbackConfiguration() {
-        return logbackConfiguration;
     }
 
     @Override
