@@ -1,0 +1,3 @@
+cluster:
+  location: local
+  environment: laptop

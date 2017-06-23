@@ -1,0 +1,31 @@
+namespace: utils
+team: deployment-and-operations-support
+role: live
+
+patterdale:
+  name: patterdale
+  targetPort: 7000
+
+  config:
+      name: prometheus-config
+
+  replicas: 1
+
+  database:
+    serverName: primary
+    name: dual
+    networkProtocol: tcp
+    driverType: thin
+    jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
+
+  pool:
+    maxSize: 5
+    minIdle: 1
+
+  image:
+    repository: tjheslin1
+    name: patterdale
+    tag: 0.3
+    pullPolicy: IfNotPresent
+
+  terminationGracePeriodSeconds: 30

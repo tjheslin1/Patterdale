@@ -1,0 +1,52 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ .Values.patterdale.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app_name: {{ .Values.patterdale.name }}
+    app_version: {{ .Values.patterdale.image.tag | quote }}
+    environment: {{ .Values.cluster.environment }}
+    location: {{ .Values.cluster.location }}
+    live_or_stub: {{ .Values.role }}
+    dev_team_responsible: {{ .Values.team }}
+    helm_chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  revisionHistoryLimit: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  replicas: {{ .Values.patterdale.replicas }}
+  selector:
+    matchLabels:
+      app_name: {{ .Values.patterdale.name }}
+  template:
+    metadata:
+      labels:
+        app_name: {{ .Values.patterdale.name }}
+        prometheus_server_version: {{ .Values.patterdale.image.tag | quote }}
+        environment: {{ .Values.cluster.environment }}
+        location: {{ .Values.cluster.location }}
+        role: {{ .Values.role }}
+        dev_team_responsible: {{ .Values.team }}
+        helm_chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    spec:
+      containers:
+      - name: {{ .Values.patterdale.name }}
+        image: "{{ .Values.patterdale.image.repository }}/{{ .Values.patterdale.image.name }}:{{ .Values.patterdale.image.tag }}"
+        imagePullPolicy: "{{ .Values.patterdale.image.pullPolicy }}"
+        ports:
+          - containerPort: {{ .Values.patterdale.targetPort}}
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: {{ .Values.patterdale.targetPort}}
+          initialDelaySeconds: 30
+          timeoutSeconds: 30
+      terminationGracePeriodSeconds: {{ .Values.patterdale.terminationGracePeriodSeconds }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.patterdale.config.name }}
