@@ -11,20 +11,13 @@ patterdale:
 
   replicas: 1
 
-  database:
-    serverName: primary
-    name: dual
-    networkProtocol: tcp
-    driverType: thin
-    jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
-
   pool:
     maxSize: 5
     minIdle: 1
 
   image:
-    repository: tjheslin1
-    name: patterdale
+    repository: docker.io
+    name: tjheslin1/patterdale-jvm
     tag: 0.3
     pullPolicy: IfNotPresent
 

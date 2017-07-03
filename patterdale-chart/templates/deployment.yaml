@@ -39,6 +39,10 @@ spec:
         imagePullPolicy: "{{ .Values.patterdale.image.pullPolicy }}"
         ports:
           - containerPort: {{ .Values.patterdale.targetPort}}
+        volumeMounts:
+          - name: config-volume
+            mountPath: /config
+            readOnly: true
         readinessProbe:
           httpGet:
             path: /metrics

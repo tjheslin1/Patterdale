@@ -1,11 +1,11 @@
 {{ define "patterdale.yml" }}
 httpPort: {{ .Values.patterdale.targetPort }}
 database:
-  serverName: {{ .Values.patterdale.database.serverName}}
-  name: {{ .Values.patterdale.database.name }}
-  networkProtocol: {{ .Values.patterdale.database.networkProtocol }}
-  driverType: {{ .Values.patterdale.database.driverType }}
-  jdbcUrl: {{ .Values.patterdale.database.jdbcUrl }}
+  serverName: {{ .Values.database.serverName}}
+  name: {{ .Values.database.name }}
+  networkProtocol: {{ .Values.database.networkProtocol }}
+  driverType: {{ .Values.database.driverType }}
+  jdbcUrl: {{ .Values.database.jdbcUrl }}
 connectionPool:
   maxSize: {{ .Values.patterdale.pool.maxSize }}
   minIdle: {{ .Values.patterdale.pool.minIdle }}

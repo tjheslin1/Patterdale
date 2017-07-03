@@ -1,0 +1,10 @@
+cluster:
+  location: local
+  environment: laptop
+
+database:
+  serverName: primary
+  name: dual
+  networkProtocol: tcp
+  driverType: thin
+  jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
