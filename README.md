@@ -14,6 +14,8 @@ database:
   name: dual
   networkProtocol: tcp
   driverType: thin
+  user: system
+  password: oracle
   jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
 connectionPool:
   maxSize: 5
