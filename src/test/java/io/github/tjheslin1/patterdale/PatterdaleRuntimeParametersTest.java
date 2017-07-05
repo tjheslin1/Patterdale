@@ -17,6 +17,8 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
                 DATABASE_NAME,
                 PROTOCOL,
                 DRIVER_TYPE,
+                USER,
+                PASSWORD,
                 JDBC_URL,
                 MAX_SIZE,
                 MIN_IDLE
@@ -37,6 +39,8 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
         databaseProperties.put("networkProtocol", PROTOCOL);
         databaseProperties.put("port", Integer.toString(PORT));
         databaseProperties.put("driverType", DRIVER_TYPE);
+        databaseProperties.put("user", USER);
+        databaseProperties.put("password", PASSWORD);
         databaseProperties.put("jdbcUrl", JDBC_URL);
         config.database = databaseProperties;
 
@@ -53,7 +57,9 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     private static final String PROTOCOL = "tcp";
     private static final int PORT = 1521;
     private static final String DRIVER_TYPE = "thin";
-    private static final String JDBC_URL = "jdbc:oracle:thin:system/oracle@localhost:1521:xe";
+    private static final String USER = "user";
+    private static final String PASSWORD = "password";
+    private static final String JDBC_URL = "jdbc:oracle:thin:@localhost:1521:xe";
     private static final int MAX_SIZE = 5;
     private static final int MIN_IDLE = 1;
 }

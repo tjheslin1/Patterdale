@@ -28,16 +28,20 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     private final String databaseName;
     private final String databaseNetworkProtocol;
     private final String driverType;
+    private final String databaseUser;
+    private final String databasePassword;
     private final String jdbcUrl;
     private final int connectionPoolMaxSize;
     private final int connectionPoolMinIdle;
 
-    PatterdaleRuntimeParameters(int httpPort, String serverName, String databaseName, String protocol, String driverType, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle) {
+    PatterdaleRuntimeParameters(int httpPort, String serverName, String databaseName, String protocol, String driverType, String databaseUser, String databasePassword, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle) {
         this.httpPort = httpPort;
         this.databaseServerName = serverName;
         this.databaseName = databaseName;
         this.databaseNetworkProtocol = protocol;
         this.driverType = driverType;
+        this.databaseUser = databaseUser;
+        this.databasePassword = databasePassword;
         this.jdbcUrl = jdbcUrl;
         this.connectionPoolMaxSize = connectionPoolMaxSize;
         this.connectionPoolMinIdle = connectionPoolMinIdle;
@@ -50,6 +54,8 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
                 parameterOrBlowUp(config.database, "name"),
                 parameterOrBlowUp(config.database, "networkProtocol"),
                 parameterOrBlowUp(config.database, "driverType"),
+                parameterOrBlowUp(config.database, "user"),
+                parameterOrBlowUp(config.database, "password"),
                 parameterOrBlowUp(config.database, "jdbcUrl"),
                 integerParameterOrBlowUp(config.connectionPool, "maxSize"),
                 integerParameterOrBlowUp(config.connectionPool, "minIdle"));
@@ -78,6 +84,16 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     @Override
     public String driverType() {
         return driverType;
+    }
+
+    @Override
+    public String databaseUser() {
+        return databaseUser;
+    }
+
+    @Override
+    public String databasePassword() {
+        return databasePassword;
     }
 
     @Override

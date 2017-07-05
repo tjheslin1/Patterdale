@@ -7,4 +7,6 @@ database:
   name: dual
   networkProtocol: tcp
   driverType: thin
-  jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
+  user: system
+  password: oracle
+  jdbcUrl: jdbc:oracle:thin:@localhost:1521:xe

@@ -5,6 +5,8 @@ database:
   name: {{ .Values.database.name }}
   networkProtocol: {{ .Values.database.networkProtocol }}
   driverType: {{ .Values.database.driverType }}
+  user: {{ .Values.database.user }}
+  password: {{ .Values.database.password }}
   jdbcUrl: {{ .Values.database.jdbcUrl }}
 connectionPool:
   maxSize: {{ .Values.patterdale.pool.maxSize }}

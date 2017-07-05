@@ -123,6 +123,8 @@ public class Patterdale {
             oracleDataSource.setNetworkProtocol(runtimeParameters.databaseNetworkProtocol());
             oracleDataSource.setPortNumber(runtimeParameters.httpPort());
             oracleDataSource.setDriverType(runtimeParameters.driverType());
+            oracleDataSource.setUser(runtimeParameters.databaseUser());
+            oracleDataSource.setPassword(runtimeParameters.databasePassword());
 
             HikariDataSource hikariDataSource = new HikariDataSource(jdbcConfig());
             hikariDataSource.setDataSource(oracleDataSource);

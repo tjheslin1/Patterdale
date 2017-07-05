@@ -34,6 +34,8 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         databaseProperties.put("name", "dual");
         databaseProperties.put("networkProtocol", "tcp");
         databaseProperties.put("driverType", "thin");
+        databaseProperties.put("user", "system");
+        databaseProperties.put("password", "oracle");
         databaseProperties.put("jdbcUrl", "jdbc:oracle:thin:system/oracle@localhost:1521:xe");
         expectedConfig.database = databaseProperties;
 

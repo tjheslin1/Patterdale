@@ -23,6 +23,8 @@ public interface RuntimeParameters {
     String databaseName();
     String databaseNetworkProtocol();
     String driverType();
+    String databaseUser();
+    String databasePassword();
     String databaseJdbcUrl();
     int connectionPoolMaxSize();
     int connectionPoolMinIdle();
