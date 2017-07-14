@@ -2,7 +2,10 @@ httpPort: 7000
 database:
   user: system
   password: oracle
-  jdbcUrl: jdbc:oracle:thin:@localhost:1521:xe
+  jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
 connectionPool:
   maxSize: 5
   minIdle: 1
+metrics:
+  name: database_up
+  labels: database=myDB

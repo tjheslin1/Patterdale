@@ -43,7 +43,7 @@ public class PatterdaleTest implements WithAssertions {
 
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
-        assertThat(responseBody(response)).isEqualTo("oracle_health_check 1");
+        assertThat(responseBody(response)).isEqualTo("database_up{database=myDB} 1");
     }
 
     private String responseBody(HttpResponse response) throws IOException {

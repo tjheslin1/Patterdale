@@ -29,14 +29,18 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     private final String jdbcUrl;
     private final int connectionPoolMaxSize;
     private final int connectionPoolMinIdle;
+    private final String metricsName;
+    private final String metricsLabels;
 
-    PatterdaleRuntimeParameters(int httpPort, String databaseUser, String databasePassword, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle) {
+    PatterdaleRuntimeParameters(int httpPort, String databaseUser, String databasePassword, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle, String metricsName, String metricsLabels) {
         this.httpPort = httpPort;
         this.databaseUser = databaseUser;
         this.databasePassword = databasePassword;
         this.jdbcUrl = jdbcUrl;
         this.connectionPoolMaxSize = connectionPoolMaxSize;
         this.connectionPoolMinIdle = connectionPoolMinIdle;
+        this.metricsName = metricsName;
+        this.metricsLabels = metricsLabels;
     }
 
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
@@ -46,7 +50,10 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
                 parameterOrBlowUp(config.database, "password"),
                 parameterOrBlowUp(config.database, "jdbcUrl"),
                 integerParameterOrBlowUp(config.connectionPool, "maxSize"),
-                integerParameterOrBlowUp(config.connectionPool, "minIdle"));
+                integerParameterOrBlowUp(config.connectionPool, "minIdle"),
+                parameterOrBlowUp(config.metrics, "name"),
+                parameterOrBlowUp(config.metrics, "labels")
+        );
     }
 
     @Override
@@ -79,7 +86,20 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
         return connectionPoolMinIdle;
     }
 
+    @Override
+    public String metricsName() {
+        return metricsName;
+    }
+
+    @Override
+    public String metricsLabels() {
+        return metricsLabels;
+    }
+
     private static String parameterOrBlowUp(Map<String, String> config, String parameter) {
+        if (config == null) {
+            throw new IllegalStateException(format("Parent value of field '%s' not present in config.file provided.", parameter));
+        }
         String param = config.get(parameter);
         if (param == null) {
             throw new IllegalStateException(format("Expected a value for database field '%s' based on config.file provided.", parameter));
@@ -88,6 +108,9 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     }
 
     private static int integerParameterOrBlowUp(Map<String, String> config, String parameter) {
+        if (config == null) {
+            throw new IllegalStateException(format("Parent value of field '%s' not present in config.file provided.", parameter));
+        }
         String paramValue = config.get(parameter);
         if (paramValue == null) {
             throw new IllegalStateException(format("Expected a value for field '%s' based on config.file provided.", parameter));

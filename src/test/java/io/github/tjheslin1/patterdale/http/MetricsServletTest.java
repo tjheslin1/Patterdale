@@ -1,5 +1,6 @@
 package io.github.tjheslin1.patterdale.http;
 
+import io.github.tjheslin1.patterdale.RuntimeParameters;
 import testutil.WithMockito;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import org.assertj.core.api.WithAssertions;
@@ -14,12 +15,15 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
     private final PrintWriter printerWriter = mock(PrintWriter.class);
     private final HttpServletResponse response = mock(HttpServletResponse.class);
     private final MetricsUseCase metricsUseCase = mock(MetricsUseCase.class);
+    private final RuntimeParameters runtimeParameters = mock(RuntimeParameters.class);
 
-    private final MetricsServlet metricsServlet = new MetricsServlet(metricsUseCase);
+    private final MetricsServlet metricsServlet = new MetricsServlet(metricsUseCase, runtimeParameters);
 
     @Before
     public void setup() throws Exception {
         when(response.getWriter()).thenReturn(printerWriter);
+        when(runtimeParameters.metricsName()).thenReturn("database_up");
+        when(runtimeParameters.metricsLabels()).thenReturn("key=value");
     }
 
     @Test
@@ -29,7 +33,7 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         metricsServlet.doGet(null, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).print("oracle_health_check 1");
+        verify(printerWriter).print("database_up{key=value} 1");
     }
 
     @Test
@@ -40,6 +44,6 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
 
         verify(metricsUseCase).scrapeMetrics();
         verify(response).setStatus(500);
-        verify(printerWriter).print("oracle_health_check 0");
+        verify(printerWriter).print("database_up{key=value} 0");
     }
 }

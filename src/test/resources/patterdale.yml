@@ -6,3 +6,6 @@ database:
 connectionPool:
   maxSize: 5
   minIdle: 1
+metrics:
+  name: database_up
+  labels: database=myDB

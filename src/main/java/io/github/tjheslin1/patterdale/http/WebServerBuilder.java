@@ -17,10 +17,11 @@
  */
 package io.github.tjheslin1.patterdale.http;
 
+import io.github.tjheslin1.patterdale.RuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 
 public interface WebServerBuilder {
 
-    WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase);
+    WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters);
     WebServer build();
 }

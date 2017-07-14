@@ -17,6 +17,7 @@
  */
 package io.github.tjheslin1.patterdale.http.jetty;
 
+import io.github.tjheslin1.patterdale.RuntimeParameters;
 import io.github.tjheslin1.patterdale.http.MetricsServlet;
 import io.github.tjheslin1.patterdale.http.NotFoundServlet;
 import io.github.tjheslin1.patterdale.http.WebServer;
@@ -32,8 +33,8 @@ public class JettyWebServerBuilder implements WebServerBuilder {
     private Server server;
 
     @Override
-    public WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase) {
-        servletContextHandler.addServlet(new ServletHolder(new MetricsServlet(metricsUseCase)), path);
+    public WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters) {
+        servletContextHandler.addServlet(new ServletHolder(new MetricsServlet(metricsUseCase, runtimeParameters)), path);
         return this;
     }
 
@@ -44,7 +45,6 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 
     @Override
     public WebServer build() {
-        System.out.println("About to build");
         if (server == null) {
             throw new IllegalStateException("Server was not set!");
         }

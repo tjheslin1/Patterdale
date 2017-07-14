@@ -17,7 +17,9 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
                 PASSWORD,
                 JDBC_URL,
                 MAX_SIZE,
-                MIN_IDLE
+                MIN_IDLE,
+                METRIC_NAME,
+                METRIC_LABELS
         );
 
         PatterdaleRuntimeParameters actualParameters = patterdaleRuntimeParameters(exampleConfig());
@@ -39,13 +41,22 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
         connectionPoolProperties.put("maxSize", Integer.toString(MAX_SIZE));
         connectionPoolProperties.put("minIdle", Integer.toString(MIN_IDLE));
         config.connectionPool = connectionPoolProperties;
+
+        HashMap<String, String> metricsProperties = new HashMap<>();
+        metricsProperties.put("name", METRIC_NAME);
+        metricsProperties.put("labels", METRIC_LABELS);
+        config.metrics = metricsProperties;
+
         return config;
     }
 
     private static final int HTTP_PORT = 7000;
+
     private static final String USER = "user";
     private static final String PASSWORD = "password";
     private static final String JDBC_URL = "jdbc:oracle:thin:@localhost:1521:xe";
     private static final int MAX_SIZE = 5;
     private static final int MIN_IDLE = 1;
+    private static final String METRIC_NAME = "test_metric";
+    private static final String METRIC_LABELS = "key=value";
 }

@@ -79,7 +79,7 @@ public class Patterdale {
         List<SQLProbe> probes = singletonList(new OracleSQLProbe(HEALTH_CHECK_SQL, healthCheck(), connectionPool, logger));
         WebServer webServer = new JettyWebServerBuilder()
                 .withServer(server)
-                .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes))
+                .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes), runtimeParameters)
                 .build();
 
         try {

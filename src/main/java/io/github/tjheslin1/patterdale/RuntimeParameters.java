@@ -24,4 +24,6 @@ public interface RuntimeParameters {
     String databaseJdbcUrl();
     int connectionPoolMaxSize();
     int connectionPoolMinIdle();
+    String metricsName();
+    String metricsLabels();
 }

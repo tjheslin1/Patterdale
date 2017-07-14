@@ -6,3 +6,7 @@ database:
   user: system
   password: oracle
   jdbcUrl: jdbc:oracle:thin:@localhost:1521:xe
+
+metrics:
+  name: database_up
+  labels: database=myDB

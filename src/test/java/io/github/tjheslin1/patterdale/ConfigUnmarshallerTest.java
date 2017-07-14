@@ -39,6 +39,12 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         connectionPoolProperties.put("maxSize", "5");
         connectionPoolProperties.put("minIdle", "1");
         expectedConfig.connectionPool = connectionPoolProperties;
+
+        HashMap<String, String> metrics = new HashMap<>();
+        metrics.put("name", "database_up");
+        metrics.put("labels", "database=myDB");
+        expectedConfig.metrics = metrics;
+
         return expectedConfig;
     }
 }

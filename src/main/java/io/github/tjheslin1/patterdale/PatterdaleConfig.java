@@ -23,4 +23,5 @@ public class PatterdaleConfig extends ValueType {
     public int httpPort;
     public Map<String, String> database;
     public Map<String, String> connectionPool;
+    public Map<String, String> metrics;
 }

@@ -17,6 +17,7 @@
  */
 package io.github.tjheslin1.patterdale.http;
 
+import io.github.tjheslin1.patterdale.RuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 
 import javax.servlet.ServletException;
@@ -25,12 +26,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static java.lang.String.format;
+
 public class MetricsServlet extends HttpServlet {
 
     private final MetricsUseCase metricsUseCase;
+    private final RuntimeParameters runtimeParameters;
 
-    public MetricsServlet(MetricsUseCase metricsUseCase) {
+    public MetricsServlet(MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters) {
         this.metricsUseCase = metricsUseCase;
+        this.runtimeParameters = runtimeParameters;
     }
 
     @Override
@@ -38,9 +43,10 @@ public class MetricsServlet extends HttpServlet {
         boolean success = metricsUseCase.scrapeMetrics();
 
         if (success) {
-            resp.getWriter().print("oracle_health_check 1");
-        } else{
-            resp.getWriter().print("oracle_health_check 0");
+            resp.getWriter().print(format("%s{%s} 1", runtimeParameters.metricsName(), runtimeParameters.metricsLabels()));
+
+        } else {
+            resp.getWriter().print(format("%s{%s} 0", runtimeParameters.metricsName(), runtimeParameters.metricsLabels()));
             resp.setStatus(500);
         }
     }
