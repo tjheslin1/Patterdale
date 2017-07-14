@@ -19,10 +19,6 @@ package io.github.tjheslin1.patterdale;
 
 public interface RuntimeParameters {
     int httpPort();
-    String databaseServerName();
-    String databaseName();
-    String databaseNetworkProtocol();
-    String driverType();
     String databaseUser();
     String databasePassword();
     String databaseJdbcUrl();

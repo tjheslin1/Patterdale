@@ -13,10 +13,6 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     public void extractsRuntimeParametersFromUnmarshalledConfigurationFile() throws Exception {
         PatterdaleRuntimeParameters expectedParameters = new PatterdaleRuntimeParameters(
                 HTTP_PORT,
-                SERVER_NAME,
-                DATABASE_NAME,
-                PROTOCOL,
-                DRIVER_TYPE,
                 USER,
                 PASSWORD,
                 JDBC_URL,
@@ -34,11 +30,6 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
         config.httpPort = HTTP_PORT;
 
         HashMap<String, String> databaseProperties = new HashMap<>();
-        databaseProperties.put("serverName", SERVER_NAME);
-        databaseProperties.put("name", DATABASE_NAME);
-        databaseProperties.put("networkProtocol", PROTOCOL);
-        databaseProperties.put("port", Integer.toString(PORT));
-        databaseProperties.put("driverType", DRIVER_TYPE);
         databaseProperties.put("user", USER);
         databaseProperties.put("password", PASSWORD);
         databaseProperties.put("jdbcUrl", JDBC_URL);
@@ -52,11 +43,6 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     }
 
     private static final int HTTP_PORT = 7000;
-    private static final String SERVER_NAME = "primary";
-    private static final String DATABASE_NAME = "dual";
-    private static final String PROTOCOL = "tcp";
-    private static final int PORT = 1521;
-    private static final String DRIVER_TYPE = "thin";
     private static final String USER = "user";
     private static final String PASSWORD = "password";
     private static final String JDBC_URL = "jdbc:oracle:thin:@localhost:1521:xe";

@@ -24,22 +24,14 @@ import static java.lang.String.format;
 public class PatterdaleRuntimeParameters extends ValueType implements RuntimeParameters {
 
     private final int httpPort;
-    private final String databaseServerName;
-    private final String databaseName;
-    private final String databaseNetworkProtocol;
-    private final String driverType;
     private final String databaseUser;
     private final String databasePassword;
     private final String jdbcUrl;
     private final int connectionPoolMaxSize;
     private final int connectionPoolMinIdle;
 
-    PatterdaleRuntimeParameters(int httpPort, String serverName, String databaseName, String protocol, String driverType, String databaseUser, String databasePassword, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle) {
+    PatterdaleRuntimeParameters(int httpPort, String databaseUser, String databasePassword, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle) {
         this.httpPort = httpPort;
-        this.databaseServerName = serverName;
-        this.databaseName = databaseName;
-        this.databaseNetworkProtocol = protocol;
-        this.driverType = driverType;
         this.databaseUser = databaseUser;
         this.databasePassword = databasePassword;
         this.jdbcUrl = jdbcUrl;
@@ -50,10 +42,6 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
         return new PatterdaleRuntimeParameters(
                 config.httpPort,
-                parameterOrBlowUp(config.database, "serverName"),
-                parameterOrBlowUp(config.database, "name"),
-                parameterOrBlowUp(config.database, "networkProtocol"),
-                parameterOrBlowUp(config.database, "driverType"),
                 parameterOrBlowUp(config.database, "user"),
                 parameterOrBlowUp(config.database, "password"),
                 parameterOrBlowUp(config.database, "jdbcUrl"),
@@ -64,26 +52,6 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     @Override
     public int httpPort() {
         return httpPort;
-    }
-
-    @Override
-    public String databaseServerName() {
-        return databaseServerName;
-    }
-
-    @Override
-    public String databaseName() {
-        return databaseName;
-    }
-
-    @Override
-    public String databaseNetworkProtocol() {
-        return databaseNetworkProtocol;
-    }
-
-    @Override
-    public String driverType() {
-        return driverType;
     }
 
     @Override

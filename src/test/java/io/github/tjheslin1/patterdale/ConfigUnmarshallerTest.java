@@ -30,10 +30,6 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         expectedConfig.httpPort = 7000;
 
         HashMap<String, String> databaseProperties = new HashMap<>();
-        databaseProperties.put("serverName", "primary");
-        databaseProperties.put("name", "dual");
-        databaseProperties.put("networkProtocol", "tcp");
-        databaseProperties.put("driverType", "thin");
         databaseProperties.put("user", "system");
         databaseProperties.put("password", "oracle");
         databaseProperties.put("jdbcUrl", "jdbc:oracle:thin:system/oracle@localhost:1521:xe");
