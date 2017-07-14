@@ -10,10 +10,6 @@ Example:
 ```yml
 httpPort: 7000
 database:
-  serverName: primary
-  name: dual
-  networkProtocol: tcp
-  driverType: thin
   user: system
   password: oracle
   jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe

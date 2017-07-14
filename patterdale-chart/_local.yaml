@@ -3,10 +3,6 @@ cluster:
   environment: laptop
 
 database:
-  serverName: primary
-  name: dual
-  networkProtocol: tcp
-  driverType: thin
   user: system
   password: oracle
   jdbcUrl: jdbc:oracle:thin:@localhost:1521:xe
