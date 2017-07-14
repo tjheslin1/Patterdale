@@ -1,5 +1,5 @@
 group 'io.github.tjheslin1'
-version '0.5'
+version '0.6'
 
 buildscript {
     repositories {
