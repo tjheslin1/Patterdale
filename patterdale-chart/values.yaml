@@ -18,7 +18,7 @@ patterdale:
   image:
     repository: docker.io
     name: tjheslin1/patterdale-jvm
-    tag: 0.4
+    tag: 0.5
     pullPolicy: IfNotPresent
 
   terminationGracePeriodSeconds: 30
