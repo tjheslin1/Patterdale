@@ -32,13 +32,11 @@ import static java.lang.String.format;
 
 public class IntResultOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
-    private final String sql;
     private final ProbeDefinition probeDefinition;
     private final DBConnectionPool connectionPool;
     private final Logger logger;
 
-    public IntResultOracleSQLProbe(String sql, ProbeDefinition probeDefinition, DBConnectionPool connectionPool, Logger logger) {
-        this.sql = sql;
+    public IntResultOracleSQLProbe(ProbeDefinition probeDefinition, DBConnectionPool connectionPool, Logger logger) {
         this.probeDefinition = probeDefinition;
         this.connectionPool = connectionPool;
         this.logger = logger;
@@ -52,28 +50,24 @@ public class IntResultOracleSQLProbe extends ValueType implements OracleSQLProbe
     @Override
     public ProbeResult probe() {
         try (Connection connection = connectionPool.pool().connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(probeDefinition.sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (!resultSet.next()) {
-                return failure(format("Did not receive a result from query '%s'", sql));
+                return failure(format("Did not receive a result from query '%s'", probeDefinition.sql), probeDefinition);
             }
-            try {
-                int result = resultSet.getInt(1);
-                if (result != 1) {
-                    return failure(format("Expected a result of '1' from SQL query '%s' but got '%s'",
-                            sql, result));
-                }
-                return success("Successful health check.");
-            } catch (SQLException e) {
-                String message = format("Error occurred executing sql: '%s'", sql);
-                logger.error(message);
-                return failure(message);
+
+            int result = resultSet.getInt(1);
+            if (result != 1) {
+
+                return failure(format("Expected a result of '1' from SQL query '%s' but got '%d'", probeDefinition.sql, result),
+                        probeDefinition);
             }
+            return success("Successful health check.", probeDefinition);
         } catch (Exception e) {
-            String message = format("Error occurred executing sql: '%s'", sql);
+            String message = format("Error occurred executing sql: '%s'", probeDefinition.sql);
             logger.error(message, e);
-            return failure(message);
+            return failure(message, probeDefinition);
         }
     }
 }

@@ -70,7 +70,7 @@ public class Patterdale {
 
         // TODO Ignoring probe definition class
         List<OracleSQLProbe> probes = runtimeParameters.probes().stream()
-                .map(probeDefinition -> new IntResultOracleSQLProbe(probeDefinition.sql, probeDefinition, connectionPool, logger))
+                .map(probeDefinition -> new IntResultOracleSQLProbe(probeDefinition, connectionPool, logger))
                 .collect(toList());
 
         WebServer webServer = new JettyWebServerBuilder()
