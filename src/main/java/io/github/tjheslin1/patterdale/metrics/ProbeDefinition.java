@@ -24,12 +24,10 @@ public class ProbeDefinition extends ValueType {
     public final String sql;
     public final String metricName;
     public final String metricLabel;
-    private final Class probeClass;
 
-    public ProbeDefinition(String sql, String metricName, String metricLabel, Class probeClass) {
+    public ProbeDefinition(String sql, String metricName, String metricLabel) {
         this.sql = sql;
         this.metricName = metricName;
         this.metricLabel = metricLabel;
-        this.probeClass = probeClass;
     }
 }

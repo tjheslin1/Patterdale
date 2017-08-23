@@ -10,8 +10,7 @@ import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-
-@Ignore // TODO
+@Ignore
 public class MetricsServletTest implements WithAssertions, WithMockito {
 
     private final PrintWriter printerWriter = mock(PrintWriter.class);

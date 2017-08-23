@@ -1,9 +1,7 @@
 package io.github.tjheslin1.patterdale;
 
-import io.github.tjheslin1.patterdale.metrics.IntResultOracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.ProbeDefinition;
 import org.assertj.core.api.WithAssertions;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -14,7 +12,6 @@ import static java.util.Collections.singletonList;
 
 public class PatterdaleRuntimeParametersTest implements WithAssertions {
 
-    @Ignore // TODO
     @Test
     public void extractsRuntimeParametersFromUnmarshalledConfigurationFile() throws Exception {
         PatterdaleRuntimeParameters expectedParameters = new PatterdaleRuntimeParameters(
@@ -67,7 +64,6 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     private static final String METRIC_NAME = "test_metric";
     private static final String METRIC_LABELS = "key=value";
     private static final String QUERY_SQL = "SELECT 1 FROM DUAL";
-    private static final List<ProbeDefinition> PROBES = singletonList(new ProbeDefinition(QUERY_SQL, null, null, IntResultOracleSQLProbe.class));
-//    private static final List<ProbeDefinition> PROBES = singletonList(new ProbeDefinition(QUERY_SQL, parameterOrBlowUp(probe, "metricName"), parameterOrBlowUp(probe, "metricLabel"), IntResultOracleSQLProbe.class));
+    private static final List<ProbeDefinition> PROBES = singletonList(new ProbeDefinition(QUERY_SQL, METRIC_NAME, METRIC_LABELS));
 
 }

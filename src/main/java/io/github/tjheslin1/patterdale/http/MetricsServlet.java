@@ -46,17 +46,6 @@ public class MetricsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Map<ProbeDefinition, ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
-//        boolean success = probeResults.stream().allMatch(probeResult -> probeResult.result);
-
-//        resp.getWriter().print(format("%s{%s} 1", "TODO", "TODO"));
-//        resp.getWriter().print(format("%s{%s} 0", "TODO", "TODO"));
-
-//        for (ProbeResult probeResult : probeResults) {
 //            resp.getWriter().print(format("%s{%s} %s", "TODO", "TODO", probeResult.result ? 1 : 0));
-//        }
-//
-//        if (!success) {
-//            resp.setStatus(500);
-//        }
     }
 }

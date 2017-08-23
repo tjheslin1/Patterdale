@@ -17,10 +17,8 @@
  */
 package io.github.tjheslin1.patterdale;
 
-import io.github.tjheslin1.patterdale.metrics.IntResultOracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.ProbeDefinition;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -100,8 +98,8 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
                 .map(probe -> new ProbeDefinition(
                         parameterOrBlowUp(probe, "query"),
                         parameterOrBlowUp(probe, "metricName"),
-                        parameterOrBlowUp(probe, "metricLabel"),
-                        IntResultOracleSQLProbe.class))
+                        parameterOrBlowUp(probe, "metricLabel")
+                ))
                 .collect(Collectors.toList());
     }
 
