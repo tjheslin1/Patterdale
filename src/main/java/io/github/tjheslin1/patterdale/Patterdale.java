@@ -24,30 +24,21 @@ import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
 import io.github.tjheslin1.patterdale.http.WebServer;
 import io.github.tjheslin1.patterdale.http.jetty.JettyWebServerBuilder;
+import io.github.tjheslin1.patterdale.metrics.IntResultOracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.github.tjheslin1.patterdale.metrics.OracleSQLProbe;
-import io.github.tjheslin1.patterdale.metrics.ProbeResult;
-import io.github.tjheslin1.patterdale.metrics.SQLProbe;
 import oracle.jdbc.pool.OracleDataSource;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.function.Function;
 
 import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
-import static io.github.tjheslin1.patterdale.metrics.ProbeResult.failure;
-import static io.github.tjheslin1.patterdale.metrics.ProbeResult.success;
-import static java.lang.String.format;
-import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 public class Patterdale {
-
-    private static final String HEALTH_CHECK_SQL = "SELECT 1 FROM DUAL";
 
     private final PatterdaleRuntimeParameters runtimeParameters;
     private final Logger logger;
@@ -76,7 +67,12 @@ public class Patterdale {
         DBConnectionPool connectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));
 
         Server server = new Server(runtimeParameters.httpPort());
-        List<SQLProbe> probes = singletonList(new OracleSQLProbe(HEALTH_CHECK_SQL, healthCheck(), connectionPool, logger));
+
+        // TODO Ignoring probe definition class
+        List<OracleSQLProbe> probes = runtimeParameters.probes().stream()
+                .map(probeDefinition -> new IntResultOracleSQLProbe(probeDefinition.sql, probeDefinition, connectionPool, logger))
+                .collect(toList());
+
         WebServer webServer = new JettyWebServerBuilder()
                 .withServer(server)
                 .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes), runtimeParameters)
@@ -96,23 +92,6 @@ public class Patterdale {
                 e.printStackTrace();
             }
         }));
-    }
-
-    private Function<ResultSet, ProbeResult> healthCheck() {
-        return (rs) -> {
-            try {
-                int result = rs.getInt(1);
-                if (result != 1) {
-                    return failure(format("Expected a result of '1' from SQL query '%s' but got '%s'",
-                            HEALTH_CHECK_SQL, result));
-                }
-                return success("Successful health check.");
-            } catch (SQLException e) {
-                String message = format("Error occurred executing sql: '%s'", HEALTH_CHECK_SQL);
-                logger.error(message);
-                return failure(message);
-            }
-        };
     }
 
     private HikariDataSource dataSource() {

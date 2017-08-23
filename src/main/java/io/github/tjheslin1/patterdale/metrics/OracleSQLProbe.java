@@ -17,46 +17,7 @@
  */
 package io.github.tjheslin1.patterdale.metrics;
 
-import io.github.tjheslin1.patterdale.ValueType;
-import io.github.tjheslin1.patterdale.database.DBConnectionPool;
-import org.slf4j.Logger;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.function.Function;
-
-import static io.github.tjheslin1.patterdale.metrics.ProbeResult.failure;
-import static java.lang.String.format;
-
-public class OracleSQLProbe extends ValueType implements SQLProbe {
-
-    private final String sql;
-    private final Function<ResultSet, ProbeResult> sqlResultCheck;
-    private final DBConnectionPool connectionPool;
-    private final Logger logger;
-
-    public OracleSQLProbe(String sql, Function<ResultSet, ProbeResult> sqlResultCheck, DBConnectionPool connectionPool, Logger logger) {
-        this.sql = sql;
-        this.sqlResultCheck = sqlResultCheck;
-        this.connectionPool = connectionPool;
-        this.logger = logger;
-    }
-
-    @Override
-    public ProbeResult probe() {
-        try (Connection connection = connectionPool.pool().connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (!resultSet.next()) {
-                return failure(format("Did not receive a result from query '%s'", sql));
-            }
-            return sqlResultCheck.apply(resultSet);
-        } catch (Exception e) {
-            String message = format("Error occurred executing sql: '%s'", sql);
-            logger.error(message, e);
-            return failure(message);
-        }
-    }
+public interface OracleSQLProbe {
+    ProbeDefinition probeDefinition();
+    ProbeResult probe();
 }

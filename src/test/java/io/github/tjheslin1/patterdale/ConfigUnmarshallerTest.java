@@ -17,11 +17,18 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
 
     @Test
     public void unmarshallConfigFileToRuntimeParameters() throws Exception {
-        URL url = this.getClass().getClassLoader().getResource("patterdale.yml");
-        File file = new File(url.getPath());
+        File file = loadTestConfigFile();
         PatterdaleConfig patterdaleConfig = configUnmarshaller.parseConfig(file);
 
-        assertThat(patterdaleConfig).isEqualTo(expectedConfig());
+        assertThat(patterdaleConfig.httpPort).isEqualTo(expectedConfig().httpPort);
+        assertThat(patterdaleConfig.database).isEqualTo(expectedConfig().database);
+        assertThat(patterdaleConfig.connectionPool).isEqualTo(expectedConfig().connectionPool);
+        assertThat(patterdaleConfig.probes).isEqualTo(expectedConfig().probes);
+    }
+
+    private File loadTestConfigFile() {
+        URL url = this.getClass().getClassLoader().getResource("patterdale.yml");
+        return new File(url.getPath());
     }
 
     private PatterdaleConfig expectedConfig() {
@@ -40,10 +47,12 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         connectionPoolProperties.put("minIdle", "1");
         expectedConfig.connectionPool = connectionPoolProperties;
 
-        HashMap<String, String> metrics = new HashMap<>();
-        metrics.put("name", "database_up");
-        metrics.put("labels", "database=myDB");
-        expectedConfig.metrics = metrics;
+        HashMap[] probes = new HashMap[1];
+        probes[0] = new HashMap<>();
+        probes[0].put("metricName", "database_up");
+        probes[0].put("metricLabel", "database=myDB");
+        probes[0].put("query", "SELECT 1 FROM DUAL");
+        expectedConfig.probes = probes;
 
         return expectedConfig;
     }

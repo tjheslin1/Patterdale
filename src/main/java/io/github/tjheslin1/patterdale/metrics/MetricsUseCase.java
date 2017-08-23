@@ -18,22 +18,21 @@
 package io.github.tjheslin1.patterdale.metrics;
 
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toMap;
 
 public class MetricsUseCase {
 
-    private final List<SQLProbe> sqlProbes;
+    private final List<OracleSQLProbe> oracleSqlProbes;
 
-    public MetricsUseCase(List<SQLProbe> sqlProbes) {
-        this.sqlProbes = sqlProbes;
+    public MetricsUseCase(List<OracleSQLProbe> oracleSqlProbes) {
+        this.oracleSqlProbes = oracleSqlProbes;
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
-    public boolean scrapeMetrics() {
-        boolean overallResult = true;
-        for (SQLProbe sqlProbe : sqlProbes) {
-            ProbeResult probe = sqlProbe.probe();
-            overallResult &= probe.result;
-        }
-        return overallResult;
+    // TODO map to a new class which composes a ProbeDefinition + ProbeResult
+    public Map<ProbeDefinition, ProbeResult> scrapeMetrics() {
+        return oracleSqlProbes.stream()
+                .collect(toMap(OracleSQLProbe::probeDefinition, OracleSQLProbe::probe));
     }
 }

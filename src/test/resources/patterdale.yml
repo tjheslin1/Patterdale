@@ -6,6 +6,7 @@ database:
 connectionPool:
   maxSize: 5
   minIdle: 1
-metrics:
-  name: database_up
-  labels: database=myDB
+probes:
+  - query: SELECT 1 FROM DUAL
+    metricName: database_up
+    metricLabel: database=myDB

@@ -17,7 +17,14 @@
  */
 package io.github.tjheslin1.patterdale;
 
+import io.github.tjheslin1.patterdale.metrics.IntResultOracleSQLProbe;
+import io.github.tjheslin1.patterdale.metrics.ProbeDefinition;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -29,18 +36,16 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     private final String jdbcUrl;
     private final int connectionPoolMaxSize;
     private final int connectionPoolMinIdle;
-    private final String metricsName;
-    private final String metricsLabels;
+    private final List<ProbeDefinition> probes;
 
-    PatterdaleRuntimeParameters(int httpPort, String databaseUser, String databasePassword, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle, String metricsName, String metricsLabels) {
+    PatterdaleRuntimeParameters(int httpPort, String databaseUser, String databasePassword, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle, List<ProbeDefinition> probes) {
         this.httpPort = httpPort;
         this.databaseUser = databaseUser;
         this.databasePassword = databasePassword;
         this.jdbcUrl = jdbcUrl;
         this.connectionPoolMaxSize = connectionPoolMaxSize;
         this.connectionPoolMinIdle = connectionPoolMinIdle;
-        this.metricsName = metricsName;
-        this.metricsLabels = metricsLabels;
+        this.probes = probes;
     }
 
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
@@ -51,9 +56,7 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
                 parameterOrBlowUp(config.database, "jdbcUrl"),
                 integerParameterOrBlowUp(config.connectionPool, "maxSize"),
                 integerParameterOrBlowUp(config.connectionPool, "minIdle"),
-                parameterOrBlowUp(config.metrics, "name"),
-                parameterOrBlowUp(config.metrics, "labels")
-        );
+                readProbes(config.probes));
     }
 
     @Override
@@ -87,13 +90,19 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     }
 
     @Override
-    public String metricsName() {
-        return metricsName;
+    public List<ProbeDefinition> probes() {
+        return probes;
     }
 
-    @Override
-    public String metricsLabels() {
-        return metricsLabels;
+    private static List<ProbeDefinition> readProbes(Map<String, String>[] probes) {
+        // TODO assumes SQLProbe implementation
+        return Arrays.stream(probes)
+                .map(probe -> new ProbeDefinition(
+                        parameterOrBlowUp(probe, "query"),
+                        parameterOrBlowUp(probe, "metricName"),
+                        parameterOrBlowUp(probe, "metricLabel"),
+                        IntResultOracleSQLProbe.class))
+                .collect(Collectors.toList());
     }
 
     private static String parameterOrBlowUp(Map<String, String> config, String parameter) {
@@ -115,7 +124,6 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
         if (paramValue == null) {
             throw new IllegalStateException(format("Expected a value for field '%s' based on config.file provided.", parameter));
         }
-        int param = Integer.parseInt(paramValue);
-        return param;
+        return Integer.parseInt(paramValue);
     }
 }
