@@ -2,7 +2,7 @@
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/tjheslin1/patterdale-jvm.svg?maxAge=604800)](https://hub.docker.com/r/tjheslin1/patterdale-jvm/)
 
-`docker run -d -p 7000:7000 -v /your/config/directory:/config tjheslin1/patterdale-jvm:0.6`
+`docker run -d -p 7000:7000 -v /your/config/directory:/config tjheslin1/patterdale-jvm:0.7`
 
 `/your/config/directory` is expected to contain a file `patterdale.yml` with the following content:
 
