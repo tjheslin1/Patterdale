@@ -17,10 +17,9 @@
  */
 package io.github.tjheslin1.patterdale.http;
 
-import io.github.tjheslin1.patterdale.RuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
-import io.github.tjheslin1.patterdale.metrics.ProbeDefinition;
 import io.github.tjheslin1.patterdale.metrics.ProbeResult;
+import org.slf4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,24 +27,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import static java.lang.String.format;
 
 public class MetricsServlet extends HttpServlet {
 
     private final MetricsUseCase metricsUseCase;
-    private final RuntimeParameters runtimeParameters;
+    private final Logger logger;
 
-    public MetricsServlet(MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters) {
+    public MetricsServlet(MetricsUseCase metricsUseCase, Logger logger) {
         this.metricsUseCase = metricsUseCase;
-        this.runtimeParameters = runtimeParameters;
+        this.logger = logger;
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Map<ProbeDefinition, ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
+        List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
-//            resp.getWriter().print(format("%s{%s} %s", "TODO", "TODO", probeResult.result ? 1 : 0));
+        for (ProbeResult probeResult : probeResults) {
+            try {
+                resp.getWriter().print(format("%s{%s} %s", probeResult.probeDefinition.metricName,
+                        probeResult.probeDefinition.metricLabel, probeResult.result ? 1 : 0));
+            } catch (IOException e) {
+                logger.error("IO error occurred writing to /metrics page.", e);
+                throw e;
+            }
+        }
     }
 }

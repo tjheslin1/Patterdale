@@ -26,15 +26,21 @@ import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.slf4j.Logger;
 
 public class JettyWebServerBuilder implements WebServerBuilder {
 
     private final ServletContextHandler servletContextHandler = new ServletContextHandler();
+    private final Logger logger;
     private Server server;
+
+    public JettyWebServerBuilder(Logger logger) {
+        this.logger = logger;
+    }
 
     @Override
     public WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters) {
-        servletContextHandler.addServlet(new ServletHolder(new MetricsServlet(metricsUseCase, runtimeParameters)), path);
+        servletContextHandler.addServlet(new ServletHolder(new MetricsServlet(metricsUseCase, logger)), path);
         return this;
     }
 

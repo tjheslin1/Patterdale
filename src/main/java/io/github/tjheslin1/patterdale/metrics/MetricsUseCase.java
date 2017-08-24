@@ -17,11 +17,9 @@
  */
 package io.github.tjheslin1.patterdale.metrics;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toList;
 
 public class MetricsUseCase {
 
@@ -31,15 +29,10 @@ public class MetricsUseCase {
         this.oracleSqlProbes = oracleSqlProbes;
     }
 
-    public Map<ProbeDefinition, ProbeResult> scrapeMetrics() {
-
-//        Map<ProbeDefinition, ProbeResult> map = new HashMap<>();
-//        for (OracleSQLProbe oracleSqlProbe : oracleSqlProbes) {
-//            if (map.put(oracleSqlProbe.probeDefinition(), oracleSqlProbe.probe()) != null) {
-//                throw new IllegalStateException("Duplicate key");
-//            }
-//        }
-//        return map;
-        return  null;
+    public List<ProbeResult> scrapeMetrics() {
+        return oracleSqlProbes.stream()
+                .map(OracleSQLProbe::probe)
+                .collect(toList());
     }
 }
+

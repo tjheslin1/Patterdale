@@ -73,7 +73,7 @@ public class Patterdale {
                 .map(probeDefinition -> new IntResultOracleSQLProbe(probeDefinition, connectionPool, logger))
                 .collect(toList());
 
-        WebServer webServer = new JettyWebServerBuilder()
+        WebServer webServer = new JettyWebServerBuilder(logger)
                 .withServer(server)
                 .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes), runtimeParameters)
                 .build();
