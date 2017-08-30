@@ -24,19 +24,24 @@ import org.slf4j.Logger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import static io.github.tjheslin1.patterdale.metrics.ProbeResult.failure;
 import static io.github.tjheslin1.patterdale.metrics.ProbeResult.success;
 import static java.lang.String.format;
 
-public class IntResultOracleSQLProbe extends ValueType implements OracleSQLProbe {
+/**
+ * {@link OracleSQLProbe} implementation which expects the provided SQL to return at least one row.
+ * The probe checks the value of the first column and expects it to contain the integer '1'.
+ *
+ * Anything other than a '1' is the first column, or no results returned at all, is treated as a failure.
+ */
+public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
     private final ProbeDefinition probeDefinition;
     private final DBConnectionPool connectionPool;
     private final Logger logger;
 
-    public IntResultOracleSQLProbe(ProbeDefinition probeDefinition, DBConnectionPool connectionPool, Logger logger) {
+    public ExistsOracleSQLProbe(ProbeDefinition probeDefinition, DBConnectionPool connectionPool, Logger logger) {
         this.probeDefinition = probeDefinition;
         this.connectionPool = connectionPool;
         this.logger = logger;
@@ -47,6 +52,11 @@ public class IntResultOracleSQLProbe extends ValueType implements OracleSQLProbe
         return probeDefinition;
     }
 
+    /**
+     *
+     * @return 'true' if the first value returned is a '1'.
+     *          'false' otherwise.
+     */
     @Override
     public ProbeResult probe() {
         try (Connection connection = connectionPool.pool().connection();

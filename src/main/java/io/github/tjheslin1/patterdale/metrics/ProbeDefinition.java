@@ -19,6 +19,10 @@ package io.github.tjheslin1.patterdale.metrics;
 
 import io.github.tjheslin1.patterdale.ValueType;
 
+/**
+ * The definition of a SQL probe that will be queried against a database when requested.
+ * The metricName and metricLabel define how the result of the query is displayed on the metric webpage.
+ */
 public class ProbeDefinition extends ValueType {
 
     public final String sql;

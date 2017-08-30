@@ -26,6 +26,10 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
+/**
+ * The runtime configuration of the app. Configured by the 'patterdale.yml' file passed in on app start up.
+ * This is a flatted representation of {@link PatterdaleConfig}.
+ */
 public class PatterdaleRuntimeParameters extends ValueType implements RuntimeParameters {
 
     private final int httpPort;

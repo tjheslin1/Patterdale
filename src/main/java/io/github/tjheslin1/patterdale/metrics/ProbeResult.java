@@ -19,6 +19,9 @@ package io.github.tjheslin1.patterdale.metrics;
 
 import io.github.tjheslin1.patterdale.ValueType;
 
+/**
+ * Represents the result of a SQL probe.
+ */
 public class ProbeResult extends ValueType {
 
     public final boolean result;

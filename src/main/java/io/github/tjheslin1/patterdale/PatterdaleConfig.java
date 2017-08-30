@@ -19,6 +19,9 @@ package io.github.tjheslin1.patterdale;
 
 import java.util.Map;
 
+/**
+ * The in-memory representation of the 'patterdale.yml' file passed in on app start-up.
+ */
 public class PatterdaleConfig extends ValueType {
     public int httpPort;
     public Map<String, String> database;

@@ -24,7 +24,7 @@ import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
 import io.github.tjheslin1.patterdale.http.WebServer;
 import io.github.tjheslin1.patterdale.http.jetty.JettyWebServerBuilder;
-import io.github.tjheslin1.patterdale.metrics.IntResultOracleSQLProbe;
+import io.github.tjheslin1.patterdale.metrics.ExistsOracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.github.tjheslin1.patterdale.metrics.OracleSQLProbe;
 import oracle.jdbc.pool.OracleDataSource;
@@ -70,7 +70,7 @@ public class Patterdale {
 
         // TODO Ignoring probe definition class
         List<OracleSQLProbe> probes = runtimeParameters.probes().stream()
-                .map(probeDefinition -> new IntResultOracleSQLProbe(probeDefinition, connectionPool, logger))
+                .map(probeDefinition -> new ExistsOracleSQLProbe(probeDefinition, connectionPool, logger))
                 .collect(toList());
 
         WebServer webServer = new JettyWebServerBuilder(logger)

@@ -24,6 +24,9 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Parses the provided 'patterdale.yml' file into an in-memory representation.
+ */
 public class ConfigUnmarshaller {
 
     private final Logger logger;
@@ -32,6 +35,12 @@ public class ConfigUnmarshaller {
         this.logger = logger;
     }
 
+    /**
+     * Unmarshalls the provided 'patterdale.yml' file into a in memory representation.
+     *
+     * @param configFile the 'patterdale.yml' file to be unmarshalled.
+     * @return an in memory representation of the config.
+     */
     public PatterdaleConfig parseConfig(File configFile) {
         PatterdaleConfig config;
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());

@@ -18,6 +18,16 @@
 package io.github.tjheslin1.patterdale.metrics;
 
 public interface OracleSQLProbe {
+
+    /**
+     * @return the definition of the probe, used to map a probe defined in 'patterdale.yml' to
+     * a specific implementation of this interface.
+     */
     ProbeDefinition probeDefinition();
+
+    /**
+     * Executes SQL defined in 'patterdale.yml'.
+     * @return a {@link ProbeResult} containing the result of the probe query.
+     */
     ProbeResult probe();
 }

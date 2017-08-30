@@ -11,7 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class IntResultOracleSQLProbeTest implements WithAssertions, WithMockito {
+public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
 
     private static final String SQL = "SQL";
     private static final String SUCCESS_MESSAGE = "Successful health check.";
@@ -23,7 +23,7 @@ public class IntResultOracleSQLProbeTest implements WithAssertions, WithMockito 
     private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
     private final Logger logger = mock(Logger.class);
 
-    private final IntResultOracleSQLProbe intResultOracleSQLProbe = new IntResultOracleSQLProbe(
+    private final ExistsOracleSQLProbe existsOracleSQLProbe = new ExistsOracleSQLProbe(
             new ProbeDefinition(SQL, "",""), dbConnectionPool, logger);
 
     @Test
@@ -35,7 +35,7 @@ public class IntResultOracleSQLProbeTest implements WithAssertions, WithMockito 
         when(dbConnection.connection()).thenReturn(connection);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
 
-        ProbeResult probeResult = intResultOracleSQLProbe.probe();
+        ProbeResult probeResult = existsOracleSQLProbe.probe();
 
         assertThat(probeResult.result).isTrue();
         assertThat(probeResult.message).isEqualTo(SUCCESS_MESSAGE);
@@ -45,7 +45,7 @@ public class IntResultOracleSQLProbeTest implements WithAssertions, WithMockito 
     public void probeReturnsFailure() throws Exception {
         when(dbConnectionPool.pool()).thenThrow(Exception.class);
 
-        ProbeResult probeResult = intResultOracleSQLProbe.probe();
+        ProbeResult probeResult = existsOracleSQLProbe.probe();
 
         assertThat(probeResult.result).isFalse();
         assertThat(probeResult.message).isEqualTo("Error occurred executing sql: 'SQL'");

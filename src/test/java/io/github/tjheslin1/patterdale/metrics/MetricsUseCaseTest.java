@@ -33,7 +33,7 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     public void scrapeMetricsReturnsSuccess() throws Exception {
         givenAllProbesAreSuccessful();
 
-        List<OracleSQLProbe> probes = singletonList(new IntResultOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger));
+        List<OracleSQLProbe> probes = singletonList(new ExistsOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger));
 
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
@@ -46,8 +46,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     public void scrapeMetricsReturnsSuccessForMultipleProbes() throws Exception {
         givenAllProbesAreSuccessful();
         List<OracleSQLProbe> probes = asList(
-                new IntResultOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger),
-                new IntResultOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger)
+                new ExistsOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger),
+                new ExistsOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger)
         );
 
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
@@ -63,8 +63,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     public void scrapeMetricsReturnsFailureIfAnyProbeFails() throws Exception {
         givenASuccessfulProbeFollowedByAFailedProbe();
         List<OracleSQLProbe> probes = asList(
-                new IntResultOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger),
-                new IntResultOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger)
+                new ExistsOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger),
+                new ExistsOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger)
         );
 
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
@@ -80,8 +80,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     public void scrapeMetricsReturnsFailureIfAllProbeFails() throws Exception {
         givenAllFailedProbes();
         List<OracleSQLProbe> probes = asList(
-                new IntResultOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger),
-                new IntResultOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger)
+                new ExistsOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger),
+                new ExistsOracleSQLProbe(PROBE_DEFINITION, dbConnectionPool, logger)
         );
 
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
