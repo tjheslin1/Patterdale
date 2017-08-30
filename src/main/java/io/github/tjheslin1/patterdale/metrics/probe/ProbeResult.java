@@ -28,7 +28,7 @@ public class ProbeResult extends ValueType {
     public final String message;
     public final ProbeDefinition probeDefinition;
 
-    ProbeResult(boolean result, String message, ProbeDefinition probeDefinition) {
+    public ProbeResult(boolean result, String message, ProbeDefinition probeDefinition) {
         this.result = result;
         this.message = message;
         this.probeDefinition = probeDefinition;
