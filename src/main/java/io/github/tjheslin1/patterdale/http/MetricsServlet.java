@@ -18,7 +18,7 @@
 package io.github.tjheslin1.patterdale.http;
 
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
-import io.github.tjheslin1.patterdale.metrics.ProbeResult;
+import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 import org.slf4j.Logger;
 
 import javax.servlet.ServletException;

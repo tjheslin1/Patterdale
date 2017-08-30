@@ -2,8 +2,8 @@ package io.github.tjheslin1.patterdale.http;
 
 import io.github.tjheslin1.patterdale.RuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
-import io.github.tjheslin1.patterdale.metrics.ProbeDefinition;
-import io.github.tjheslin1.patterdale.metrics.ProbeResult;
+import io.github.tjheslin1.patterdale.metrics.probe.ProbeDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static io.github.tjheslin1.patterdale.metrics.ProbeResult.failure;
-import static io.github.tjheslin1.patterdale.metrics.ProbeResult.success;
+import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.failure;
+import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.success;
 import static java.util.Arrays.asList;
 
 public class MetricsServletTest implements WithAssertions, WithMockito {

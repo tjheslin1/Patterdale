@@ -17,7 +17,7 @@
  */
 package io.github.tjheslin1.patterdale;
 
-import io.github.tjheslin1.patterdale.metrics.ProbeDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.ProbeDefinition;
 
 import java.util.Arrays;
 import java.util.List;

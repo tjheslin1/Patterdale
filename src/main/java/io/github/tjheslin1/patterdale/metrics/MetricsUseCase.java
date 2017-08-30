@@ -17,6 +17,9 @@
  */
 package io.github.tjheslin1.patterdale.metrics;
 
+import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
+import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
+
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;

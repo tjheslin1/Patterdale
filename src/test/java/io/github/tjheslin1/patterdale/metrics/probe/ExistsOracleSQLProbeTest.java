@@ -1,4 +1,4 @@
-package io.github.tjheslin1.patterdale.metrics;
+package io.github.tjheslin1.patterdale.metrics.probe;
 
 import io.github.tjheslin1.patterdale.database.DBConnection;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;

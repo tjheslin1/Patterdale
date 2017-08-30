@@ -2,6 +2,10 @@ package io.github.tjheslin1.patterdale.metrics;
 
 import io.github.tjheslin1.patterdale.database.DBConnection;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
+import io.github.tjheslin1.patterdale.metrics.probe.ExistsOracleSQLProbe;
+import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
+import io.github.tjheslin1.patterdale.metrics.probe.ProbeDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Ignore;
 import org.junit.Test;

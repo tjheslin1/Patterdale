@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale.metrics;
+package io.github.tjheslin1.patterdale.metrics.probe;
 
 import io.github.tjheslin1.patterdale.ValueType;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
@@ -25,8 +25,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import static io.github.tjheslin1.patterdale.metrics.ProbeResult.failure;
-import static io.github.tjheslin1.patterdale.metrics.ProbeResult.success;
+import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.failure;
+import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.success;
 import static java.lang.String.format;
 
 /**
