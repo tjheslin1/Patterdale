@@ -33,6 +33,8 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
 
+    compile group: 'com.google.guava', name: 'guava', version: '23.0'
+
     compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.5.v20170502'
     compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.5.v20170502'
 

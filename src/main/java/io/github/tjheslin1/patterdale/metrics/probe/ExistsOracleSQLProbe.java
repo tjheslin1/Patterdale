@@ -47,11 +47,6 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
         this.logger = logger;
     }
 
-    @Override
-    public ProbeDefinition probeDefinition() {
-        return probeDefinition;
-    }
-
     /**
      *
      * @return 'true' if the first value returned is a '1'.

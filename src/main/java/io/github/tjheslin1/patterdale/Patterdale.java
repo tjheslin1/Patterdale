@@ -25,8 +25,9 @@ import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
 import io.github.tjheslin1.patterdale.http.WebServer;
 import io.github.tjheslin1.patterdale.http.jetty.JettyWebServerBuilder;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
-import io.github.tjheslin1.patterdale.metrics.probe.ExistsOracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
+import io.github.tjheslin1.patterdale.metrics.probe.ProbeDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
 import oracle.jdbc.pool.OracleDataSource;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
@@ -41,10 +42,12 @@ import static java.util.stream.Collectors.toList;
 public class Patterdale {
 
     private final PatterdaleRuntimeParameters runtimeParameters;
+    private final TypeToProbeMapper typeToProbeMapper;
     private final Logger logger;
 
-    public Patterdale(PatterdaleRuntimeParameters runtimeParameters, Logger logger) {
+    public Patterdale(PatterdaleRuntimeParameters runtimeParameters, TypeToProbeMapper typeToProbeMapper, Logger logger) {
         this.runtimeParameters = runtimeParameters;
+        this.typeToProbeMapper = typeToProbeMapper;
         this.logger = logger;
     }
 
@@ -54,7 +57,7 @@ public class Patterdale {
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
                 .parseConfig(new File(System.getProperty("config.file")));
 
-        Patterdale patterdale = new Patterdale(patterdaleRuntimeParameters(patterdaleConfig), logger);
+        Patterdale patterdale = new Patterdale(patterdaleRuntimeParameters(patterdaleConfig), new TypeToProbeMapper(), logger);
         logger.debug("starting Patterdale!");
 
         patterdale.start();
@@ -70,7 +73,7 @@ public class Patterdale {
 
         // TODO Ignoring probe definition class
         List<OracleSQLProbe> probes = runtimeParameters.probes().stream()
-                .map(probeDefinition -> new ExistsOracleSQLProbe(probeDefinition, connectionPool, logger))
+                .map(probeDefinition -> createProbe(probeDefinition, connectionPool, logger))
                 .collect(toList());
 
         WebServer webServer = new JettyWebServerBuilder(logger)
@@ -92,6 +95,10 @@ public class Patterdale {
                 e.printStackTrace();
             }
         }));
+    }
+
+    private OracleSQLProbe createProbe(ProbeDefinition probeDefinition, DBConnectionPool connectionPool, Logger logger) {
+        return typeToProbeMapper.createProbe(probeDefinition, connectionPool, logger);
     }
 
     private HikariDataSource dataSource() {

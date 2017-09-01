@@ -3,6 +3,7 @@ package endtoend;
 import io.github.tjheslin1.patterdale.ConfigUnmarshaller;
 import io.github.tjheslin1.patterdale.Patterdale;
 import io.github.tjheslin1.patterdale.PatterdaleConfig;
+import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -22,12 +23,14 @@ import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterd
 
 public class PatterdaleTest implements WithAssertions {
 
+    private TypeToProbeMapper typeToProbeMapper;
     private Logger logger;
 
     @Before
     public void setUp() {
         System.setProperty("config.file", "src/test/resources/patterdale.yml");
         logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
+        typeToProbeMapper = new TypeToProbeMapper();
     }
 
     @Test
@@ -35,7 +38,7 @@ public class PatterdaleTest implements WithAssertions {
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
                 .parseConfig(new File(System.getProperty("config.file")));
 
-        new Patterdale(patterdaleRuntimeParameters(patterdaleConfig), logger)
+        new Patterdale(patterdaleRuntimeParameters(patterdaleConfig), typeToProbeMapper, logger)
                 .start();
 
         HttpClient httpClient = HttpClientBuilder.create().build();

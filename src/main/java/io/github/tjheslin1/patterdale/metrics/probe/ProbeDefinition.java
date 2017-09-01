@@ -26,11 +26,13 @@ import io.github.tjheslin1.patterdale.ValueType;
 public class ProbeDefinition extends ValueType {
 
     public final String sql;
+    public final String type;
     public final String metricName;
     public final String metricLabel;
 
-    public ProbeDefinition(String sql, String metricName, String metricLabel) {
+    public ProbeDefinition(String sql, String type, String metricName, String metricLabel) {
         this.sql = sql;
+        this.type = type;
         this.metricName = metricName;
         this.metricLabel = metricLabel;
     }

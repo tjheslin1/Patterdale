@@ -97,10 +97,10 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     }
 
     private static List<ProbeDefinition> readProbes(Map<String, String>[] probes) {
-        // TODO assumes SQLProbe implementation
         return Arrays.stream(probes)
                 .map(probe -> new ProbeDefinition(
                         parameterOrBlowUp(probe, "query"),
+                        parameterOrBlowUp(probe, "type"),
                         parameterOrBlowUp(probe, "metricName"),
                         parameterOrBlowUp(probe, "metricLabel")
                 ))

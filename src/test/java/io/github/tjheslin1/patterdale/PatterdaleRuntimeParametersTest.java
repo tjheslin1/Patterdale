@@ -45,9 +45,10 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
 
         HashMap[] probes = new HashMap[1];
         probes[0] = new HashMap();
+        probes[0].put("query", QUERY_SQL);
+        probes[0].put("type", TYPE);
         probes[0].put("metricName", METRIC_NAME);
         probes[0].put("metricLabel", METRIC_LABELS);
-        probes[0].put("query", QUERY_SQL);
         config.probes = probes;
 
         return config;
@@ -64,6 +65,7 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     private static final String METRIC_NAME = "test_metric";
     private static final String METRIC_LABELS = "key=value";
     private static final String QUERY_SQL = "SELECT 1 FROM DUAL";
-    private static final List<ProbeDefinition> PROBES = singletonList(new ProbeDefinition(QUERY_SQL, METRIC_NAME, METRIC_LABELS));
+    private static final String TYPE = "exists";
+    private static final List<ProbeDefinition> PROBES = singletonList(new ProbeDefinition(QUERY_SQL, "exists", METRIC_NAME, METRIC_LABELS));
 
 }

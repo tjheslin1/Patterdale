@@ -49,9 +49,10 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
 
         HashMap[] probes = new HashMap[1];
         probes[0] = new HashMap<>();
+        probes[0].put("query", "SELECT 1 FROM DUAL");
+        probes[0].put("type", "exists");
         probes[0].put("metricName", "database_up");
         probes[0].put("metricLabel", "database=myDB");
-        probes[0].put("query", "SELECT 1 FROM DUAL");
         expectedConfig.probes = probes;
 
         return expectedConfig;

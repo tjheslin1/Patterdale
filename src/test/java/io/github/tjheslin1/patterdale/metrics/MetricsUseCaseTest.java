@@ -21,10 +21,9 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
-@Ignore
 public class MetricsUseCaseTest implements WithAssertions, WithMockito {
 
-    private static final ProbeDefinition PROBE_DEFINITION = new ProbeDefinition("SQL", "name", "label");
+    private static final ProbeDefinition PROBE_DEFINITION = new ProbeDefinition("SQL", "exists", "name", "label");
 
     private final ResultSet resultSet = mock(ResultSet.class);
     private final PreparedStatement preparedStatement = mock(PreparedStatement.class);

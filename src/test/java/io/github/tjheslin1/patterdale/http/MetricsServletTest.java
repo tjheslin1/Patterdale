@@ -20,8 +20,8 @@ import static java.util.Arrays.asList;
 
 public class MetricsServletTest implements WithAssertions, WithMockito {
 
-    private static final ProbeDefinition PROBE_1 = new ProbeDefinition("SQL", "database_up", "key=value");
-    private static final ProbeDefinition PROBE_2 = new ProbeDefinition("SQL", "database_other", "key=something");
+    private static final ProbeDefinition PROBE_1 = new ProbeDefinition("SQL", "exists", "database_up", "key=value");
+    private static final ProbeDefinition PROBE_2 = new ProbeDefinition("SQL", "exists", "database_other", "key=something");
 
     private static final ProbeResult PROBE_RESULT_1 = success("Success", PROBE_1);
     private static final ProbeResult PROBE_RESULT_2 = success("Success", PROBE_2);
