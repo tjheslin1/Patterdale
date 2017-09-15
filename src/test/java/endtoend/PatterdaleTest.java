@@ -1,8 +1,13 @@
 package endtoend;
 
+import com.zaxxer.hikari.HikariDataSource;
 import io.github.tjheslin1.patterdale.ConfigUnmarshaller;
 import io.github.tjheslin1.patterdale.Patterdale;
 import io.github.tjheslin1.patterdale.PatterdaleConfig;
+import io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters;
+import io.github.tjheslin1.patterdale.database.DBConnectionPool;
+import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
+import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
 import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -25,20 +30,27 @@ public class PatterdaleTest implements WithAssertions {
 
     private TypeToProbeMapper typeToProbeMapper;
     private Logger logger;
+    private PatterdaleRuntimeParameters runtimeParameters;
 
     @Before
     public void setUp() {
         System.setProperty("config.file", "src/test/resources/patterdale.yml");
         logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
-        typeToProbeMapper = new TypeToProbeMapper();
+
+        PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
+                .parseConfig(new File(System.getProperty("config.file")));
+
+        runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
+
+        HikariDataSource hikariDataSource = Patterdale.dataSource(runtimeParameters, logger);
+        DBConnectionPool dbConnectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));
+
+        typeToProbeMapper = new TypeToProbeMapper(dbConnectionPool, logger);
     }
 
     @Test
     public void scrapesOracleDatabaseMetricsOnRequest() throws Exception {
-        PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
-                .parseConfig(new File(System.getProperty("config.file")));
-
-        new Patterdale(patterdaleRuntimeParameters(patterdaleConfig), typeToProbeMapper, logger)
+        new Patterdale(runtimeParameters, typeToProbeMapper, logger)
                 .start();
 
         HttpClient httpClient = HttpClientBuilder.create().build();
@@ -46,7 +58,7 @@ public class PatterdaleTest implements WithAssertions {
 
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
-        assertThat(responseBody(response)).isEqualTo("database_up{database=myDB} 1");
+        assertThat(responseBody(response)).isEqualTo("database_up{database=\"myDB\"} 1");
     }
 
     private String responseBody(HttpResponse response) throws IOException {

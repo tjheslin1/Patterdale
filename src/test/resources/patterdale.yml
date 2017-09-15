@@ -10,4 +10,4 @@ probes:
   - query: SELECT 1 FROM DUAL
     type: exists
     metricName: database_up
-    metricLabel: database=myDB
+    metricLabel: database="myDB"

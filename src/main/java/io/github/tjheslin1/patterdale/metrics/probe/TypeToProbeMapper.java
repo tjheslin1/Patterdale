@@ -17,31 +17,32 @@
  */
 package io.github.tjheslin1.patterdale.metrics.probe;
 
-import com.google.common.collect.ImmutableMap;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import org.slf4j.Logger;
 
-import java.util.Map;
-
 import static java.lang.String.format;
 
-// TODO potentially rename
 public class TypeToProbeMapper {
 
     private static final String EXISTS = "exists";
 
-    private static final Map<String, Class> typeToProbe = ImmutableMap.of(
-            EXISTS, ExistsOracleSQLProbe.class
-    );
+    private final DBConnectionPool dbConnectionPool;
+    private final Logger logger;
 
-    public OracleSQLProbe createProbe(ProbeDefinition probeDefinition, DBConnectionPool dbConnectionPool, Logger logger) {
-        Class probeClass = typeToProbe.get(probeDefinition.type.toLowerCase().trim());
+    public TypeToProbeMapper(DBConnectionPool dbConnectionPool, Logger logger) {
+        this.dbConnectionPool = dbConnectionPool;
+        this.logger = logger;
+    }
 
-        if (probeClass == ExistsOracleSQLProbe.class) {
-            return new ExistsOracleSQLProbe(probeDefinition, dbConnectionPool, logger);
-        } else {
-            throw new IllegalArgumentException(
-                    format("Expected the provided 'type' value '%s' to match an OracleSqlProbe definition.", probeDefinition.type));
+    public OracleSQLProbe createProbe(ProbeDefinition probeDefinition) {
+        switch (probeDefinition.type) {
+            case EXISTS: {
+                return new ExistsOracleSQLProbe(probeDefinition, dbConnectionPool, logger);
+            }
+            default: {
+                throw new IllegalArgumentException(
+                        format("Expected the provided 'type' value '%s' to match an OracleSqlProbe definition.", probeDefinition.type));
+            }
         }
     }
 }

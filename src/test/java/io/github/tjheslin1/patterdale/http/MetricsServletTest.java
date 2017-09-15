@@ -20,8 +20,8 @@ import static java.util.Arrays.asList;
 
 public class MetricsServletTest implements WithAssertions, WithMockito {
 
-    private static final ProbeDefinition PROBE_1 = new ProbeDefinition("SQL", "exists", "database_up", "key=value");
-    private static final ProbeDefinition PROBE_2 = new ProbeDefinition("SQL", "exists", "database_other", "key=something");
+    private static final ProbeDefinition PROBE_1 = new ProbeDefinition("SQL", "exists", "database_up", "key=\"value\"");
+    private static final ProbeDefinition PROBE_2 = new ProbeDefinition("SQL", "exists", "database_other", "key=\"something\"");
 
     private static final ProbeResult PROBE_RESULT_1 = success("Success", PROBE_1);
     private static final ProbeResult PROBE_RESULT_2 = success("Success", PROBE_2);
@@ -48,8 +48,8 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         metricsServlet.doGet(null, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).print("database_up{key=value} 1");
-        verify(printerWriter).print("database_other{key=something} 1");
+        verify(printerWriter).print("database_up{key=\"value\"} 1");
+        verify(printerWriter).print("database_other{key=\"something\"} 1");
     }
 
     @Test
@@ -59,13 +59,12 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         metricsServlet.doGet(null, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).print("database_up{key=value} 1");
-        verify(printerWriter).print("database_other{key=something} 0");
+        verify(printerWriter).print("database_up{key=\"value\"} 1");
+        verify(printerWriter).print("database_other{key=\"something\"} 0");
     }
 
     @Test
     public void logsErrorIfFailureOccursWritingToResponse() throws Exception {
-//        IOException ioException = new IOException("ERR");
         when(response.getWriter()).thenThrow(IOException.class);
         when(metricsUseCase.scrapeMetrics()).thenReturn(asList(PROBE_RESULT_1, PROBE_RESULT_2));
 

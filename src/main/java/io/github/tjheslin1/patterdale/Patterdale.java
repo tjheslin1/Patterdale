@@ -57,7 +57,12 @@ public class Patterdale {
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
                 .parseConfig(new File(System.getProperty("config.file")));
 
-        Patterdale patterdale = new Patterdale(patterdaleRuntimeParameters(patterdaleConfig), new TypeToProbeMapper(), logger);
+        PatterdaleRuntimeParameters runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
+
+        HikariDataSource hikariDataSource = dataSource(runtimeParameters, logger);
+        DBConnectionPool dbConnectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));
+
+        Patterdale patterdale = new Patterdale(runtimeParameters, new TypeToProbeMapper(dbConnectionPool, logger), logger);
         logger.debug("starting Patterdale!");
 
         patterdale.start();
@@ -66,14 +71,10 @@ public class Patterdale {
     public void start() {
         System.setProperty("logback.configurationFile", "src/main/resources/logback.xml");
 
-        HikariDataSource hikariDataSource = dataSource();
-        DBConnectionPool connectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));
-
         Server server = new Server(runtimeParameters.httpPort());
 
-        // TODO Ignoring probe definition class
         List<OracleSQLProbe> probes = runtimeParameters.probes().stream()
-                .map(probeDefinition -> createProbe(probeDefinition, connectionPool, logger))
+                .map(this::createProbe)
                 .collect(toList());
 
         WebServer webServer = new JettyWebServerBuilder(logger)
@@ -97,17 +98,17 @@ public class Patterdale {
         }));
     }
 
-    private OracleSQLProbe createProbe(ProbeDefinition probeDefinition, DBConnectionPool connectionPool, Logger logger) {
-        return typeToProbeMapper.createProbe(probeDefinition, connectionPool, logger);
+    private OracleSQLProbe createProbe(ProbeDefinition probeDefinition) {
+        return typeToProbeMapper.createProbe(probeDefinition);
     }
 
-    private HikariDataSource dataSource() {
+    public static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, Logger logger) {
         try {
             OracleDataSource oracleDataSource = new OracleDataSource();
             oracleDataSource.setUser(runtimeParameters.databaseUser());
             oracleDataSource.setPassword(runtimeParameters.databasePassword());
 
-            HikariDataSource hikariDataSource = new HikariDataSource(jdbcConfig());
+            HikariDataSource hikariDataSource = new HikariDataSource(jdbcConfig(runtimeParameters));
             hikariDataSource.setDataSource(oracleDataSource);
             return hikariDataSource;
         } catch (Exception e) {
@@ -116,7 +117,7 @@ public class Patterdale {
         }
     }
 
-    private HikariConfig jdbcConfig() {
+    private static HikariConfig jdbcConfig(PatterdaleRuntimeParameters runtimeParameters) {
         HikariConfig jdbcConfig = new HikariConfig();
         jdbcConfig.setPoolName("patterdale-pool");
         jdbcConfig.setMaximumPoolSize(runtimeParameters.connectionPoolMaxSize());

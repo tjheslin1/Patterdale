@@ -2,11 +2,12 @@ httpPort: 7000
 database:
   user: system
   password: oracle
-  jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
+  jdbcUrl: jdbc:oracle:thin:system/oracle@10.55.59.150:1521:xe
 connectionPool:
   maxSize: 5
   minIdle: 1
 probes:
   - query: SELECT 1 FROM DUAL
+    type: exists
     metricName: database_up
-    metricLabel: database=myDB
+    metricLabel: database="myDB"
