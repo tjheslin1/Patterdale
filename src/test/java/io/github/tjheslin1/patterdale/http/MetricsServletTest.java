@@ -2,7 +2,8 @@ package io.github.tjheslin1.patterdale.http;
 
 import io.github.tjheslin1.patterdale.RuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
-import io.github.tjheslin1.patterdale.metrics.probe.ProbeDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Before;
@@ -14,14 +15,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition.databaseDefinition;
+import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.failure;
 import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.success;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 public class MetricsServletTest implements WithAssertions, WithMockito {
 
-    private static final ProbeDefinition PROBE_1 = new ProbeDefinition("SQL", "exists", "database_up", "key=\"value\"");
-    private static final ProbeDefinition PROBE_2 = new ProbeDefinition("SQL", "exists", "database_other", "key=\"something\"");
+    private static final Probe PROBE_1 = probe("SQL", "exists", "database_up", "key=\"value\"");
+    private static final Probe PROBE_2 = probe("SQL", "exists", "database_other", "key=\"something\"");
+    private static final DatabaseDefinition DATABASE_DEFINITION = databaseDefinition("", "", "", asList(PROBE_1, PROBE_2));
 
     private static final ProbeResult PROBE_RESULT_1 = success("Success", PROBE_1);
     private static final ProbeResult PROBE_RESULT_2 = success("Success", PROBE_2);
@@ -38,7 +43,7 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
     @Before
     public void setup() throws Exception {
         when(response.getWriter()).thenReturn(printerWriter);
-        when(runtimeParameters.probes()).thenReturn(asList(PROBE_1, PROBE_2));
+        when(runtimeParameters.databases()).thenReturn(singletonList(DATABASE_DEFINITION));
     }
 
     @Test

@@ -46,8 +46,8 @@ public class MetricsServlet extends HttpServlet {
 
         for (ProbeResult probeResult : probeResults) {
             try {
-                resp.getWriter().print(format("%s{%s} %s", probeResult.probeDefinition.metricName,
-                        probeResult.probeDefinition.metricLabel, probeResult.result ? 1 : 0));
+                resp.getWriter().print(format("%s{%s} %s", probeResult.probe.metricName,
+                        probeResult.probe.metricLabel, probeResult.result ? 1 : 0));
             } catch (IOException e) {
                 logger.error("IO error occurred writing to /metrics page.", e);
                 throw e;

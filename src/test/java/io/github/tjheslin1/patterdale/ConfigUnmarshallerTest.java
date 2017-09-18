@@ -1,5 +1,7 @@
 package io.github.tjheslin1.patterdale;
 
+import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -8,6 +10,11 @@ import testutil.WithMockito;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
+
+import static io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition.databaseDefinition;
+import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
+import static java.util.Collections.singletonList;
 
 public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
 
@@ -21,9 +28,8 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         PatterdaleConfig patterdaleConfig = configUnmarshaller.parseConfig(file);
 
         assertThat(patterdaleConfig.httpPort).isEqualTo(expectedConfig().httpPort);
-        assertThat(patterdaleConfig.database).isEqualTo(expectedConfig().database);
+        assertThat(patterdaleConfig.databases).isEqualTo(expectedConfig().databases);
         assertThat(patterdaleConfig.connectionPool).isEqualTo(expectedConfig().connectionPool);
-        assertThat(patterdaleConfig.probes).isEqualTo(expectedConfig().probes);
     }
 
     private File loadTestConfigFile() {
@@ -35,26 +41,22 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         PatterdaleConfig expectedConfig = new PatterdaleConfig();
 
         expectedConfig.httpPort = 7000;
-
-        HashMap<String, String> databaseProperties = new HashMap<>();
-        databaseProperties.put("user", "system");
-        databaseProperties.put("password", "oracle");
-        databaseProperties.put("jdbcUrl", "jdbc:oracle:thin:system/oracle@localhost:1521:xe");
-        expectedConfig.database = databaseProperties;
+        expectedConfig.databases = new DatabaseDefinition[]{databaseDefinition(USER, PASSWORD, JDBC_URL, PROBES)};
 
         HashMap<String, String> connectionPoolProperties = new HashMap<>();
         connectionPoolProperties.put("maxSize", "5");
         connectionPoolProperties.put("minIdle", "1");
         expectedConfig.connectionPool = connectionPoolProperties;
 
-        HashMap[] probes = new HashMap[1];
-        probes[0] = new HashMap<>();
-        probes[0].put("query", "SELECT 1 FROM DUAL");
-        probes[0].put("type", "exists");
-        probes[0].put("metricName", "database_up");
-        probes[0].put("metricLabel", "database=myDB");
-        expectedConfig.probes = probes;
-
         return expectedConfig;
     }
+
+    private static final String USER = "system";
+    private static final String PASSWORD = "oracle";
+    private static final String JDBC_URL = "jdbc:oracle:thin:system/oracle@localhost:1521:xe";
+    private static final String TYPE = "exists";
+    private static final String METRIC_NAME = "database_up";
+    private static final String METRIC_LABELS = "database=\"myDB\"";
+    private static final String QUERY_SQL = "SELECT 1 FROM DUAL";
+    private static final List<Probe> PROBES = singletonList(probe(QUERY_SQL, TYPE, METRIC_NAME, METRIC_LABELS));
 }

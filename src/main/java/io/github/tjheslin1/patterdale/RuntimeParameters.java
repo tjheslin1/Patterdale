@@ -17,16 +17,13 @@
  */
 package io.github.tjheslin1.patterdale;
 
-import io.github.tjheslin1.patterdale.metrics.probe.ProbeDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 
 import java.util.List;
 
 public interface RuntimeParameters {
     int httpPort();
-    String databaseUser();
-    String databasePassword();
-    String databaseJdbcUrl();
+    List<DatabaseDefinition> databases();
     int connectionPoolMaxSize();
     int connectionPoolMinIdle();
-    List<ProbeDefinition> probes();
 }

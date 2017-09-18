@@ -1,6 +1,7 @@
 package io.github.tjheslin1.patterdale;
 
-import io.github.tjheslin1.patterdale.metrics.probe.ProbeDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Test;
 
@@ -8,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
+import static io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition.databaseDefinition;
+import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 import static java.util.Collections.singletonList;
 
 public class PatterdaleRuntimeParametersTest implements WithAssertions {
@@ -16,12 +19,9 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     public void extractsRuntimeParametersFromUnmarshalledConfigurationFile() throws Exception {
         PatterdaleRuntimeParameters expectedParameters = new PatterdaleRuntimeParameters(
                 HTTP_PORT,
-                USER,
-                PASSWORD,
-                JDBC_URL,
+                DATABASES,
                 MAX_SIZE,
-                MIN_IDLE,
-                PROBES);
+                MIN_IDLE);
 
         PatterdaleRuntimeParameters actualParameters = patterdaleRuntimeParameters(exampleConfig());
         assertThat(actualParameters).isEqualTo(expectedParameters);
@@ -31,25 +31,12 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
         PatterdaleConfig config = new PatterdaleConfig();
 
         config.httpPort = HTTP_PORT;
-
-        HashMap<String, String> databaseProperties = new HashMap<>();
-        databaseProperties.put("user", USER);
-        databaseProperties.put("password", PASSWORD);
-        databaseProperties.put("jdbcUrl", JDBC_URL);
-        config.database = databaseProperties;
+        config.databases = new DatabaseDefinition[]{databaseDefinition(USER, PASSWORD, JDBC_URL, PROBES)};
 
         HashMap<String, String> connectionPoolProperties = new HashMap<>();
         connectionPoolProperties.put("maxSize", Integer.toString(MAX_SIZE));
         connectionPoolProperties.put("minIdle", Integer.toString(MIN_IDLE));
         config.connectionPool = connectionPoolProperties;
-
-        HashMap[] probes = new HashMap[1];
-        probes[0] = new HashMap();
-        probes[0].put("query", QUERY_SQL);
-        probes[0].put("type", TYPE);
-        probes[0].put("metricName", METRIC_NAME);
-        probes[0].put("metricLabel", METRIC_LABELS);
-        config.probes = probes;
 
         return config;
     }
@@ -57,15 +44,20 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
 
     private static final int HTTP_PORT = 7000;
 
+
     private static final String USER = "user";
     private static final String PASSWORD = "password";
     private static final String JDBC_URL = "jdbc:oracle:thin:@localhost:1521:xe";
+    private static final String TYPE = "exists";
     private static final int MAX_SIZE = 5;
     private static final int MIN_IDLE = 1;
     private static final String METRIC_NAME = "test_metric";
     private static final String METRIC_LABELS = "key=value";
     private static final String QUERY_SQL = "SELECT 1 FROM DUAL";
-    private static final String TYPE = "exists";
-    private static final List<ProbeDefinition> PROBES = singletonList(new ProbeDefinition(QUERY_SQL, "exists", METRIC_NAME, METRIC_LABELS));
+    private static final List<Probe> PROBES = singletonList(probe(QUERY_SQL, TYPE, METRIC_NAME, METRIC_LABELS));
+
+    private static final List<DatabaseDefinition> DATABASES = singletonList(
+            databaseDefinition(USER, PASSWORD, JDBC_URL, PROBES)
+    );
 
 }

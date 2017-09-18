@@ -17,12 +17,11 @@
  */
 package io.github.tjheslin1.patterdale;
 
-import io.github.tjheslin1.patterdale.metrics.probe.ProbeDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -33,32 +32,24 @@ import static java.lang.String.format;
 public class PatterdaleRuntimeParameters extends ValueType implements RuntimeParameters {
 
     private final int httpPort;
-    private final String databaseUser;
-    private final String databasePassword;
-    private final String jdbcUrl;
+    private final List<DatabaseDefinition> databases;
     private final int connectionPoolMaxSize;
     private final int connectionPoolMinIdle;
-    private final List<ProbeDefinition> probes;
 
-    PatterdaleRuntimeParameters(int httpPort, String databaseUser, String databasePassword, String jdbcUrl, int connectionPoolMaxSize, int connectionPoolMinIdle, List<ProbeDefinition> probes) {
+    public PatterdaleRuntimeParameters(int httpPort, List<DatabaseDefinition> databases, int connectionPoolMaxSize, int connectionPoolMinIdle) {
         this.httpPort = httpPort;
-        this.databaseUser = databaseUser;
-        this.databasePassword = databasePassword;
-        this.jdbcUrl = jdbcUrl;
+        this.databases = databases;
         this.connectionPoolMaxSize = connectionPoolMaxSize;
         this.connectionPoolMinIdle = connectionPoolMinIdle;
-        this.probes = probes;
     }
 
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
         return new PatterdaleRuntimeParameters(
                 config.httpPort,
-                parameterOrBlowUp(config.database, "user"),
-                parameterOrBlowUp(config.database, "password"),
-                parameterOrBlowUp(config.database, "jdbcUrl"),
+                Arrays.asList(config.databases),
                 integerParameterOrBlowUp(config.connectionPool, "maxSize"),
-                integerParameterOrBlowUp(config.connectionPool, "minIdle"),
-                readProbes(config.probes));
+                integerParameterOrBlowUp(config.connectionPool, "minIdle")
+        );
     }
 
     @Override
@@ -67,18 +58,8 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     }
 
     @Override
-    public String databaseUser() {
-        return databaseUser;
-    }
-
-    @Override
-    public String databasePassword() {
-        return databasePassword;
-    }
-
-    @Override
-    public String databaseJdbcUrl() {
-        return jdbcUrl;
+    public List<DatabaseDefinition> databases() {
+        return databases;
     }
 
     @Override
@@ -89,33 +70,6 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     @Override
     public int connectionPoolMinIdle() {
         return connectionPoolMinIdle;
-    }
-
-    @Override
-    public List<ProbeDefinition> probes() {
-        return probes;
-    }
-
-    private static List<ProbeDefinition> readProbes(Map<String, String>[] probes) {
-        return Arrays.stream(probes)
-                .map(probe -> new ProbeDefinition(
-                        parameterOrBlowUp(probe, "query"),
-                        parameterOrBlowUp(probe, "type"),
-                        parameterOrBlowUp(probe, "metricName"),
-                        parameterOrBlowUp(probe, "metricLabel")
-                ))
-                .collect(Collectors.toList());
-    }
-
-    private static String parameterOrBlowUp(Map<String, String> config, String parameter) {
-        if (config == null) {
-            throw new IllegalStateException(format("Parent value of field '%s' not present in config.file provided.", parameter));
-        }
-        String param = config.get(parameter);
-        if (param == null) {
-            throw new IllegalStateException(format("Expected a value for database field '%s' based on config.file provided.", parameter));
-        }
-        return param;
     }
 
     private static int integerParameterOrBlowUp(Map<String, String> config, String parameter) {

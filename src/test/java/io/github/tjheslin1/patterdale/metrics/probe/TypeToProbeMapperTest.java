@@ -6,9 +6,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import testutil.WithMockito;
 
+import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
+
 public class TypeToProbeMapperTest implements WithAssertions, WithMockito {
 
-    private static final ProbeDefinition EXIST_PROBE_DEFINITION = new ProbeDefinition("SQL", "exists", "metricName", "metricLabel");
+    private static final Probe EXIST_PROBE_DEFINITION = probe("SQL", "exists", "metricName", "metricLabel");
 
     private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
     private final Logger logger = mock(Logger.class);
@@ -22,6 +24,6 @@ public class TypeToProbeMapperTest implements WithAssertions, WithMockito {
 
     @Test(expected = IllegalArgumentException.class)
     public void blowsUpForUnknownTypeParameter() throws Exception {
-        new TypeToProbeMapper(dbConnectionPool, logger).createProbe(new ProbeDefinition("", "none", "", ""));
+        new TypeToProbeMapper(dbConnectionPool, logger).createProbe(probe("", "none", "", ""));
     }
 }

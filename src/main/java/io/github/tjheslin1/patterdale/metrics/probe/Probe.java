@@ -15,17 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale;
+package io.github.tjheslin1.patterdale.metrics.probe;
 
-import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import io.github.tjheslin1.patterdale.ValueType;
 
-import java.util.Map;
+public class Probe extends ValueType {
+    public String query;
+    public String type;
+    public String metricName;
+    public String metricLabel;
 
-/**
- * The in-memory representation of the 'patterdale.yml' file passed in on app start-up.
- */
-public class PatterdaleConfig extends ValueType {
-    public int httpPort;
-    public DatabaseDefinition[] databases;
-    public Map<String, String> connectionPool;
+    public static Probe probe(String query, String type, String metricName, String metricLabel) {
+        Probe probe = new Probe();
+        probe.query = query;
+        probe.type = type;
+        probe.metricName = metricName;
+        probe.metricLabel = metricLabel;
+
+        return probe;
+    }
 }

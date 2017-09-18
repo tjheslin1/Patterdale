@@ -26,20 +26,20 @@ public class ProbeResult extends ValueType {
 
     public final boolean result;
     public final String message;
-    public final ProbeDefinition probeDefinition;
+    public final Probe probe;
 
-    public ProbeResult(boolean result, String message, ProbeDefinition probeDefinition) {
+    public ProbeResult(boolean result, String message, Probe probe) {
         this.result = result;
         this.message = message;
-        this.probeDefinition = probeDefinition;
+        this.probe = probe;
 
     }
 
-    public static ProbeResult success(String message, ProbeDefinition probeDefinition) {
-        return new ProbeResult(true, message, probeDefinition);
+    public static ProbeResult success(String message, Probe probe) {
+        return new ProbeResult(true, message, probe);
     }
 
-    public static ProbeResult failure(String message, ProbeDefinition probeDefinition) {
-        return new ProbeResult(false, message, probeDefinition);
+    public static ProbeResult failure(String message, Probe probe) {
+        return new ProbeResult(false, message, probe);
     }
 }

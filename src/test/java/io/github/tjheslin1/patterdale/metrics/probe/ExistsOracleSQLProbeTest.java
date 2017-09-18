@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
+
 public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
 
     private static final String SQL = "SQL";
@@ -24,7 +26,7 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
     private final Logger logger = mock(Logger.class);
 
     private final ExistsOracleSQLProbe existsOracleSQLProbe = new ExistsOracleSQLProbe(
-            new ProbeDefinition(SQL, "exists", "",""), dbConnectionPool, logger);
+            probe(SQL, "exists", "", ""), dbConnectionPool, logger);
 
     @Test
     public void probeReturnsSuccess() throws Exception {
@@ -48,6 +50,6 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
         ProbeResult probeResult = existsOracleSQLProbe.probe();
 
         assertThat(probeResult.result).isFalse();
-        assertThat(probeResult.message).isEqualTo("Error occurred executing sql: 'SQL'");
+        assertThat(probeResult.message).isEqualTo("Error occurred executing query: 'SQL'");
     }
 }

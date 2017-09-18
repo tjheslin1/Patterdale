@@ -19,21 +19,24 @@ package io.github.tjheslin1.patterdale.metrics.probe;
 
 import io.github.tjheslin1.patterdale.ValueType;
 
+import java.util.List;
+
 /**
- * The definition of a SQL probe that will be queried against a database when requested.
- * The metricName and metricLabel define how the result of the query is displayed on the metric webpage.
+ * The in-memory representation of databases field in 'patterdale.yml', passed in on app start-up.
  */
-public class ProbeDefinition extends ValueType {
+public class DatabaseDefinition extends ValueType {
+    public String user;
+    public String password;
+    public String jdbcUrl;
+    public Probe[] probes;
 
-    public final String sql;
-    public final String type;
-    public final String metricName;
-    public final String metricLabel;
+    public static DatabaseDefinition databaseDefinition(String user, String password, String jdbcUrl, List<Probe> probes) {
+        DatabaseDefinition databaseDefinition = new DatabaseDefinition();
+        databaseDefinition.user = user;
+        databaseDefinition.password = password;
+        databaseDefinition.jdbcUrl = jdbcUrl;
+        databaseDefinition.probes = probes.toArray(new Probe[probes.size()]);
 
-    public ProbeDefinition(String sql, String type, String metricName, String metricLabel) {
-        this.sql = sql;
-        this.type = type;
-        this.metricName = metricName;
-        this.metricLabel = metricLabel;
+        return databaseDefinition;
     }
 }

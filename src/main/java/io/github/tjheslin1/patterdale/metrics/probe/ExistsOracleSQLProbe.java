@@ -32,47 +32,47 @@ import static java.lang.String.format;
 /**
  * {@link OracleSQLProbe} implementation which expects the provided SQL to return at least one row.
  * The probe checks the value of the first column and expects it to contain the integer '1'.
- *
+ * <p>
  * Anything other than a '1' is the first column, or no results returned at all, is treated as a failure.
  */
 public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
-    private final ProbeDefinition probeDefinition;
+    private final Probe probe;
     private final DBConnectionPool connectionPool;
     private final Logger logger;
 
-    public ExistsOracleSQLProbe(ProbeDefinition probeDefinition, DBConnectionPool connectionPool, Logger logger) {
-        this.probeDefinition = probeDefinition;
+    public ExistsOracleSQLProbe(Probe probe, DBConnectionPool connectionPool, Logger logger) {
+        this.probe = probe;
         this.connectionPool = connectionPool;
         this.logger = logger;
     }
 
     /**
-     *
      * @return 'true' if the first value returned is a '1'.
-     *          'false' otherwise.
+     * 'false' otherwise.
      */
     @Override
     public ProbeResult probe() {
         try (Connection connection = connectionPool.pool().connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(probeDefinition.sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(probe.query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (!resultSet.next()) {
-                return failure(format("Did not receive a result from query '%s'", probeDefinition.sql), probeDefinition);
+                return failure(format("Did not receive a result from query '%s'", probe.query), probe);
             }
 
             int result = resultSet.getInt(1);
             if (result != 1) {
 
-                return failure(format("Expected a result of '1' from SQL query '%s' but got '%d'", probeDefinition.sql, result),
-                        probeDefinition);
+                return failure(format("Expected a result of '1' from SQL query '%s' but got '%d'", probe.query, result),
+                        probe);
             }
-            return success("Successful health check.", probeDefinition);
+
+            return success("Successful health check.", probe);
         } catch (Exception e) {
-            String message = format("Error occurred executing sql: '%s'", probeDefinition.sql);
+            String message = format("Error occurred executing query: '%s'", probe.query);
             logger.error(message, e);
-            return failure(message, probeDefinition);
+            return failure(message, probe);
         }
     }
 }
