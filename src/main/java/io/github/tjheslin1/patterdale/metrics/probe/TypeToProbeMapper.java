@@ -26,15 +26,13 @@ public class TypeToProbeMapper {
 
     private static final String EXISTS = "exists";
 
-    private final DBConnectionPool dbConnectionPool;
     private final Logger logger;
 
-    public TypeToProbeMapper(DBConnectionPool dbConnectionPool, Logger logger) {
-        this.dbConnectionPool = dbConnectionPool;
+    public TypeToProbeMapper(Logger logger) {
         this.logger = logger;
     }
 
-    public OracleSQLProbe createProbe(Probe probe) {
+    public OracleSQLProbe createProbe(DBConnectionPool dbConnectionPool, Probe probe) {
         switch (probe.type) {
             case EXISTS: {
                 return new ExistsOracleSQLProbe(probe, dbConnectionPool, logger);

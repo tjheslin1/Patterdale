@@ -14,6 +14,7 @@ import java.util.List;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition.databaseDefinition;
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
@@ -40,8 +41,11 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
     private PatterdaleConfig expectedConfig() {
         PatterdaleConfig expectedConfig = new PatterdaleConfig();
 
-        expectedConfig.httpPort = 7000;
-        expectedConfig.databases = new DatabaseDefinition[]{databaseDefinition(USER, PASSWORD, JDBC_URL, PROBES)};
+        expectedConfig.httpPort = 7001;
+        expectedConfig.databases = new DatabaseDefinition[]{
+                databaseDefinition(NAME, USER, PASSWORD, JDBC_URL, PROBES),
+                databaseDefinition(NAME_2, USER, PASSWORD, JDBC_URL_2, PROBES_2)
+        };
 
         HashMap<String, String> connectionPoolProperties = new HashMap<>();
         connectionPoolProperties.put("maxSize", "5");
@@ -51,12 +55,22 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         return expectedConfig;
     }
 
+    private static final String NAME = "test";
+    private static final String NAME_2 = "test2";
     private static final String USER = "system";
     private static final String PASSWORD = "oracle";
     private static final String JDBC_URL = "jdbc:oracle:thin:system/oracle@localhost:1521:xe";
+    private static final String JDBC_URL_2 = "jdbc:oracle:thin:system/oracle@localhost:1522:xe";
     private static final String TYPE = "exists";
     private static final String METRIC_NAME = "database_up";
-    private static final String METRIC_LABELS = "database=\"myDB\"";
+    private static final String METRIC_LABELS = "database=\"myDB\",query=\"SELECT 1 FROM DUAL\"";
+    private static final String METRIC_LABELS_2 = "database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"";
+    private static final String METRIC_LABELS_3 = "database=\"myDB2\",query=\"SELECT 2 FROM DUAL\"";
     private static final String QUERY_SQL = "SELECT 1 FROM DUAL";
+    private static final String QUERY_SQL_2 = "SELECT 2 FROM DUAL";
     private static final List<Probe> PROBES = singletonList(probe(QUERY_SQL, TYPE, METRIC_NAME, METRIC_LABELS));
+    private static final List<Probe> PROBES_2 = asList(
+            probe(QUERY_SQL, TYPE, METRIC_NAME, METRIC_LABELS_2),
+            probe(QUERY_SQL_2, TYPE, METRIC_NAME, METRIC_LABELS_3)
+    );
 }

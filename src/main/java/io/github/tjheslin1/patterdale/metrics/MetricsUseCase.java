@@ -26,14 +26,14 @@ import static java.util.stream.Collectors.toList;
 
 public class MetricsUseCase {
 
-    private final List<OracleSQLProbe> oracleSqlProbes;
+    private final List<OracleSQLProbe> probes;
 
-    public MetricsUseCase(List<OracleSQLProbe> oracleSqlProbes) {
-        this.oracleSqlProbes = oracleSqlProbes;
+    public MetricsUseCase(List<OracleSQLProbe> probes) {
+        this.probes = probes;
     }
 
     public List<ProbeResult> scrapeMetrics() {
-        return oracleSqlProbes.stream()
+        return probes.stream()
                 .map(OracleSQLProbe::probe)
                 .collect(toList());
     }

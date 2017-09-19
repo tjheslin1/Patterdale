@@ -1,6 +1,5 @@
 package endtoend;
 
-import com.zaxxer.hikari.HikariDataSource;
 import io.github.tjheslin1.patterdale.ConfigUnmarshaller;
 import io.github.tjheslin1.patterdale.Patterdale;
 import io.github.tjheslin1.patterdale.PatterdaleConfig;
@@ -23,7 +22,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static io.github.tjheslin1.patterdale.Patterdale.dataSource;
 import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
 
 public class PatterdaleTest implements WithAssertions {
@@ -31,6 +33,7 @@ public class PatterdaleTest implements WithAssertions {
     private TypeToProbeMapper typeToProbeMapper;
     private Logger logger;
     private PatterdaleRuntimeParameters runtimeParameters;
+    private Map<String, DBConnectionPool> connectionPools;
 
     @Before
     public void setUp() {
@@ -42,23 +45,28 @@ public class PatterdaleTest implements WithAssertions {
 
         runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
 
-        HikariDataSource hikariDataSource = Patterdale.dataSource(runtimeParameters, logger);
-        DBConnectionPool dbConnectionPool = new HikariDBConnectionPool(new HikariDBConnection(hikariDataSource));
+        connectionPools = runtimeParameters.databases().stream()
+                .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
+                        databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(dataSource(runtimeParameters, databaseDefinition, logger)))));
 
-        typeToProbeMapper = new TypeToProbeMapper(dbConnectionPool, logger);
+        typeToProbeMapper = new TypeToProbeMapper(logger);
     }
 
     @Test
     public void scrapesOracleDatabaseMetricsOnRequest() throws Exception {
-        new Patterdale(runtimeParameters, typeToProbeMapper, logger)
+        new Patterdale(runtimeParameters, connectionPools, typeToProbeMapper, logger)
                 .start();
 
         HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpResponse response = httpClient.execute(new HttpGet("http://localhost:7000/metrics"));
+        HttpResponse response = httpClient.execute(new HttpGet("http://localhost:7001/metrics"));
 
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
-        assertThat(responseBody(response)).isEqualTo("database_up{database=\"myDB\"} 1");
+        assertThat(responseBody(response)).isEqualTo(
+                "database_up{database=\"myDB\",query=\"SELECT 1 FROM DUAL\"} 1" +
+                        "database_up{database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"} 1" +
+                        "database_up{database=\"myDB2\",query=\"SELECT 2 FROM DUAL\"} 0"
+        );
     }
 
     private String responseBody(HttpResponse response) throws IOException {

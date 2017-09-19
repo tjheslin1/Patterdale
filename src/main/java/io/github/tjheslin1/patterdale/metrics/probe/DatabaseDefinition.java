@@ -25,13 +25,16 @@ import java.util.List;
  * The in-memory representation of databases field in 'patterdale.yml', passed in on app start-up.
  */
 public class DatabaseDefinition extends ValueType {
+    public String name;
     public String user;
     public String password;
     public String jdbcUrl;
     public Probe[] probes;
 
-    public static DatabaseDefinition databaseDefinition(String user, String password, String jdbcUrl, List<Probe> probes) {
+    // test use only
+    public static DatabaseDefinition databaseDefinition(String name, String user, String password, String jdbcUrl, List<Probe> probes) {
         DatabaseDefinition databaseDefinition = new DatabaseDefinition();
+        databaseDefinition.name = name;
         databaseDefinition.user = user;
         databaseDefinition.password = password;
         databaseDefinition.jdbcUrl = jdbcUrl;

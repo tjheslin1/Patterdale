@@ -10,20 +10,20 @@ import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 
 public class TypeToProbeMapperTest implements WithAssertions, WithMockito {
 
-    private static final Probe EXIST_PROBE_DEFINITION = probe("SQL", "exists", "metricName", "metricLabel");
+    private static final Probe EXIST_PROBE_DEFINITION = probe("SQL", "exists", "metricName", "metricLabels");
 
     private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
     private final Logger logger = mock(Logger.class);
 
     @Test
     public void mapsKnownTypeToSqlProbeClass() throws Exception {
-        OracleSQLProbe oracleSQLProbe = new TypeToProbeMapper(dbConnectionPool, logger).createProbe(EXIST_PROBE_DEFINITION);
+        OracleSQLProbe oracleSQLProbe = new TypeToProbeMapper(logger).createProbe(dbConnectionPool, EXIST_PROBE_DEFINITION);
 
         assertThat(oracleSQLProbe).isExactlyInstanceOf(ExistsOracleSQLProbe.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void blowsUpForUnknownTypeParameter() throws Exception {
-        new TypeToProbeMapper(dbConnectionPool, logger).createProbe(probe("", "none", "", ""));
+        new TypeToProbeMapper(logger).createProbe(dbConnectionPool, probe("", "none", "", ""));
     }
 }

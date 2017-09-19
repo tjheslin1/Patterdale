@@ -26,7 +26,7 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
 
     private static final Probe PROBE_1 = probe("SQL", "exists", "database_up", "key=\"value\"");
     private static final Probe PROBE_2 = probe("SQL", "exists", "database_other", "key=\"something\"");
-    private static final DatabaseDefinition DATABASE_DEFINITION = databaseDefinition("", "", "", asList(PROBE_1, PROBE_2));
+    private static final DatabaseDefinition DATABASE_DEFINITION = databaseDefinition("", "", "", "", asList(PROBE_1, PROBE_2));
 
     private static final ProbeResult PROBE_RESULT_1 = success("Success", PROBE_1);
     private static final ProbeResult PROBE_RESULT_2 = success("Success", PROBE_2);
@@ -53,8 +53,8 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         metricsServlet.doGet(null, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).print("database_up{key=\"value\"} 1");
-        verify(printerWriter).print("database_other{key=\"something\"} 1");
+        verify(printerWriter).println("database_up{key=\"value\"} 1");
+        verify(printerWriter).println("database_other{key=\"something\"} 1");
     }
 
     @Test
@@ -64,8 +64,8 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         metricsServlet.doGet(null, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).print("database_up{key=\"value\"} 1");
-        verify(printerWriter).print("database_other{key=\"something\"} 0");
+        verify(printerWriter).println("database_up{key=\"value\"} 1");
+        verify(printerWriter).println("database_other{key=\"something\"} 0");
     }
 
     @Test

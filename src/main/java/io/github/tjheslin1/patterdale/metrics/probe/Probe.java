@@ -23,14 +23,14 @@ public class Probe extends ValueType {
     public String query;
     public String type;
     public String metricName;
-    public String metricLabel;
+    public String metricLabels;
 
-    public static Probe probe(String query, String type, String metricName, String metricLabel) {
+    public static Probe probe(String query, String type, String metricName, String metricLabels) {
         Probe probe = new Probe();
         probe.query = query;
         probe.type = type;
         probe.metricName = metricName;
-        probe.metricLabel = metricLabel;
+        probe.metricLabels = metricLabels;
 
         return probe;
     }

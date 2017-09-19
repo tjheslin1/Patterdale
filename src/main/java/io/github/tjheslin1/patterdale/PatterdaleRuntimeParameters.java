@@ -19,11 +19,11 @@ package io.github.tjheslin1.patterdale;
 
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 /**
  * The runtime configuration of the app. Configured by the 'patterdale.yml' file passed in on app start up.
@@ -46,7 +46,7 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
         return new PatterdaleRuntimeParameters(
                 config.httpPort,
-                Arrays.asList(config.databases),
+                asList(config.databases),
                 integerParameterOrBlowUp(config.connectionPool, "maxSize"),
                 integerParameterOrBlowUp(config.connectionPool, "minIdle")
         );
