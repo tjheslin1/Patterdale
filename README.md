@@ -13,7 +13,7 @@ databases:
   - name: test
     user: system
     password: oracle
-    jdbcUrl: jdbc:oracle:thin:system/oracle@10.55.49.77:1521:xe
+    jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
     probes:
       - query: SELECT 1 FROM DUAL
         type: exists
@@ -22,7 +22,7 @@ databases:
   - name: test2
     user: system
     password: oracle
-    jdbcUrl: jdbc:oracle:thin:system/oracle@10.55.49.77:1522:xe
+    jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1522:xe
     probes:
       - query: SELECT 1 FROM DUAL
         type: exists
