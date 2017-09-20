@@ -6,7 +6,7 @@
 
 `/your/config/directory` is expected to contain a file `patterdale.yml` with the following content:
 
-Example 'patterdale.yml' config file':
+Example `patterdale.yml` config file':
 ```yml
 httpPort: 7000
 databases:
