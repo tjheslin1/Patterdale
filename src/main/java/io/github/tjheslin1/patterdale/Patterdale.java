@@ -60,7 +60,6 @@ public class Patterdale {
     }
 
     public static void main(String[] args) {
-        // TODO read environment variable
         Logger logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
 
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
