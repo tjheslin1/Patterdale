@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
+import static java.lang.String.format;
+
 /**
  * Parses the provided 'patterdale.yml' file into an in-memory representation.
  */
@@ -49,7 +51,7 @@ public class ConfigUnmarshaller {
             return config;
         } catch (IOException e) {
             logger.error("Failed to parse provided system property 'config.file'.", e);
-            throw new IllegalStateException(e);
+            throw new IllegalArgumentException(format("Error occurred reading config file '%s'.", configFile.getName()), e);
         }
     }
 }

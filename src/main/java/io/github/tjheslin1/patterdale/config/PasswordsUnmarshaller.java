@@ -24,6 +24,11 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
+import static java.lang.String.format;
+
+/**
+ * Parses the provided 'passwords.yml' file into an in-memory representation.
+ */
 public class PasswordsUnmarshaller {
 
     private final Logger logger;
@@ -32,6 +37,12 @@ public class PasswordsUnmarshaller {
         this.logger = logger;
     }
 
+    /**
+     * Unmarshalls the provided 'passwords.yml' file into an in-memory representation.
+     *
+     * @param passwordFile the 'passwords.yml' file to be unmarshalled.
+     * @return an in memory representation of the config.
+     */
     public Passwords parsePasswords(File passwordFile) {
         Passwords passwords;
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -40,7 +51,7 @@ public class PasswordsUnmarshaller {
             return passwords;
         } catch (IOException e) {
             logger.error("Failed to parse provided system property 'passwords.file'.", e);
-            throw new IllegalStateException(e);
+            throw new IllegalArgumentException(format("Error occurred reading passwords file '%s'", passwordFile.getName()), e);
         }
     }
 }

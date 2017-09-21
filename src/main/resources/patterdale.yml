@@ -1,9 +1,8 @@
-httpPort: 7000
+httpPort: 7001
 databases:
   - name: test
     user: system
-    password: oracle
-    jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
+    jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
     probes:
       - query: SELECT 1 FROM DUAL
         type: exists
@@ -11,8 +10,7 @@ databases:
         metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
   - name: test2
     user: system
-    password: oracle
-    jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1522:xe
+    jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe
     probes:
       - query: SELECT 1 FROM DUAL
         type: exists

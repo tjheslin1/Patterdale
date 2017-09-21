@@ -20,6 +20,16 @@ package io.github.tjheslin1.patterdale.config;
 import io.github.tjheslin1.patterdale.ValueType;
 
 public class PasswordDefinition extends ValueType {
+
     public String databaseName;
     public String value;
+
+    // for tests only
+    public static PasswordDefinition passwordDefinition(String databaseName, String value) {
+        PasswordDefinition passwordDefinition = new PasswordDefinition();
+        passwordDefinition.databaseName = databaseName;
+        passwordDefinition.value = value;
+
+        return passwordDefinition;
+    }
 }

@@ -23,6 +23,9 @@ import java.util.Arrays;
 
 import static java.lang.String.format;
 
+/**
+ * The in-memory representation of the 'passwords.yml' file passed in on app start-up.
+ */
 public class Passwords extends ValueType {
 
     public PasswordDefinition[] passwords;

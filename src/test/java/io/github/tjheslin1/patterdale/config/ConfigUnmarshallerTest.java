@@ -1,19 +1,24 @@
 package io.github.tjheslin1.patterdale.config;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import org.assertj.core.api.WithAssertions;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import testutil.WithMockito;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition.databaseDefinition;
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
@@ -22,6 +27,9 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
     private final Logger logger = mock(Logger.class);
 
     private final ConfigUnmarshaller configUnmarshaller = new ConfigUnmarshaller(logger);
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void unmarshallConfigFileToPatterdaleConfig() throws Exception {
@@ -33,6 +41,20 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         assertThat(patterdaleConfig.connectionPool).isEqualTo(expectedConfig().connectionPool);
     }
 
+    @Test
+    public void blowsUpIfPassWordsFileIsMalformed() throws Exception {
+        File tempFile = temporaryFolder.newFile("patterdale.yml");
+        FileWriter fileWriter = new FileWriter(tempFile);
+        fileWriter.write("invalid content");
+        fileWriter.flush();
+
+        assertThatThrownBy(() -> configUnmarshaller.parseConfig(tempFile))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage(format("Error occurred reading config file '%s'.", tempFile.getName()))
+                .hasCauseExactlyInstanceOf(JsonMappingException.class);
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private File loadTestConfigFile() {
         URL url = this.getClass().getClassLoader().getResource("patterdale.yml");
         return new File(url.getPath());
