@@ -31,7 +31,7 @@ databases:
         type: exists
         metricName: database_up
         metricLabels: database="myDB2",query="SELECT 2 FROM DUAL"
-      - query: SELECT * FROM slowest_queries TOP 5
+      - query: select sql_text, elapsed_time from   v$sql order by ELAPSED_TIME desc FETCH NEXT 10 ROWS ONLY;
         type: list
         metricName: slowest_queries
         metricLabels: database="myDB2",slowQuery="%s"

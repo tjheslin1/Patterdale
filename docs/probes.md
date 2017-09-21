@@ -11,7 +11,7 @@ databases:
       type: exists
       metricName: database_up
       metricLabels: database="myDB2",query="SELECT 1 FROM DUAL"
-    - query: SELECT * FROM slowest_queries TOP 5
+    - query: select sql_text, elapsed_time from   v$sql order by ELAPSED_TIME desc FETCH NEXT 10 ROWS ONLY;
       type: list
       metricName: slowest_queries
       metricLabels: database="myDB2",slowQuery="%s"
@@ -43,10 +43,6 @@ The "list" _probe_ type expects a SQL query to be run which returns any number o
 The String value in the first column is filtered into the _metricLabels_ provided in the probes defintion in `patterdale.yml`. This is done using Java's `java.lang.String#format` method.
 
 The second column should return a double value which will be used as the metric's value.
-
-For example you could provided the query:
-
-_SELECT SLOWEST_QUERY_SQL, AVERAGE_DURATION FROM MY_METRICS_DB_VIEW_.
 
 Using the above configuration, the probe will result in a number of lines on the applications '/metrics' web page in the format:
 
