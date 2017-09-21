@@ -17,6 +17,7 @@
  */
 package io.github.tjheslin1.patterdale;
 
+import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 
 import java.util.List;

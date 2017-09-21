@@ -26,7 +26,7 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
 
     private static final Probe PROBE_1 = probe("SQL", "exists", "database_up", "key=\"value\"");
     private static final Probe PROBE_2 = probe("SQL", "exists", "database_other", "key=\"something\"");
-    private static final DatabaseDefinition DATABASE_DEFINITION = databaseDefinition("", "", "", "", asList(PROBE_1, PROBE_2));
+    private static final DatabaseDefinition DATABASE_DEFINITION = databaseDefinition("", "", "", asList(PROBE_1, PROBE_2));
 
     private static final ProbeResult PROBE_RESULT_1 = success("Success", PROBE_1);
     private static final ProbeResult PROBE_RESULT_2 = success("Success", PROBE_2);

@@ -17,18 +17,20 @@
  */
 package io.github.tjheslin1.patterdale;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import io.github.tjheslin1.patterdale.config.ConfigUnmarshaller;
+import io.github.tjheslin1.patterdale.config.Passwords;
+import io.github.tjheslin1.patterdale.config.PasswordsUnmarshaller;
+import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
+import io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider;
 import io.github.tjheslin1.patterdale.http.WebServer;
 import io.github.tjheslin1.patterdale.http.jetty.JettyWebServerBuilder;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
-import oracle.jdbc.pool.OracleDataSource;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,11 +65,14 @@ public class Patterdale {
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
                 .parseConfig(new File(System.getProperty("config.file")));
 
+        Passwords passwords = new PasswordsUnmarshaller(logger)
+                .parsePasswords(new File(System.getProperty("passwords.file")));
+
         PatterdaleRuntimeParameters runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
 
         Map<String, DBConnectionPool> connectionPools = runtimeParameters.databases().stream()
                 .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
-                        databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(dataSource(runtimeParameters, databaseDefinition, logger)))));
+                        databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(HikariDataSourceProvider.dataSource(runtimeParameters, databaseDefinition, passwords, logger)))));
 
         Patterdale patterdale = new Patterdale(runtimeParameters, connectionPools, new TypeToProbeMapper(logger), logger);
         logger.debug("starting Patterdale!");
@@ -108,30 +113,5 @@ public class Patterdale {
     private Stream<OracleSQLProbe> createProbes(DatabaseDefinition databaseDefinition) {
         return Arrays.stream(databaseDefinition.probes)
                 .map(probe -> typeToProbeMapper.createProbe(connectionPools.get(databaseDefinition.name), probe));
-    }
-
-
-    public static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Logger logger) {
-        try {
-            OracleDataSource oracleDataSource = new OracleDataSource();
-            oracleDataSource.setUser(databaseDefinition.user);
-            oracleDataSource.setPassword(databaseDefinition.password);
-
-            HikariDataSource hikariDataSource = new HikariDataSource(jdbcConfig(runtimeParameters, databaseDefinition));
-            hikariDataSource.setDataSource(oracleDataSource);
-            return hikariDataSource;
-        } catch (Exception e) {
-            logger.error("Error occurred initialising Oracle and Hikari data sources.", e);
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private static HikariConfig jdbcConfig(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition) {
-        HikariConfig jdbcConfig = new HikariConfig();
-        jdbcConfig.setPoolName("patterdale-pool-" + databaseDefinition.name);
-        jdbcConfig.setMaximumPoolSize(runtimeParameters.connectionPoolMaxSize());
-        jdbcConfig.setMinimumIdle(runtimeParameters.connectionPoolMinIdle());
-        jdbcConfig.setJdbcUrl(databaseDefinition.jdbcUrl);
-        return jdbcConfig;
     }
 }

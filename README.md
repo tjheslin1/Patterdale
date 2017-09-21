@@ -2,11 +2,11 @@
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/tjheslin1/patterdale-jvm.svg?maxAge=604800)](https://hub.docker.com/r/tjheslin1/patterdale-jvm/)
 
-`docker run -d -p 7000:7000 -v /your/config/directory:/config tjheslin1/patterdale-jvm:0.8`
+`docker run -d -p 7000:7000 -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale-jvm:0.8`
 
 `/your/config/directory` is expected to contain a file `patterdale.yml` with the following content:
 
-Example `patterdale.yml` config file':
+Example `patterdale.yml` file':
 ```yml
 httpPort: 7000
 databases:
@@ -35,4 +35,16 @@ databases:
 connectionPool:
   maxSize: 5
   minIdle: 1
+```
+
+`/your/secrets/directory` is expected to contain a file `passwords.yml` with the following content:
+It is up to you to encrypt this file and pass it safely to the application (e.g. via Kubernetes secrets).
+
+Example `passwords.yml` file:
+```yml
+passwords:
+  - databaseName: bobsDatabase
+    value: abc123
+  - databaseName: aliceDatabase
+    value: xyz890
 ```

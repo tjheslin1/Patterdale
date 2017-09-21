@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale;
+package io.github.tjheslin1.patterdale.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -24,31 +24,22 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Parses the provided 'patterdale.yml' file into an in-memory representation.
- */
-public class ConfigUnmarshaller {
+public class PasswordsUnmarshaller {
 
     private final Logger logger;
 
-    public ConfigUnmarshaller(Logger logger) {
+    public PasswordsUnmarshaller(Logger logger) {
         this.logger = logger;
     }
 
-    /**
-     * Unmarshalls the provided 'patterdale.yml' file into a in memory representation.
-     *
-     * @param configFile the 'patterdale.yml' file to be unmarshalled.
-     * @return an in memory representation of the config.
-     */
-    public PatterdaleConfig parseConfig(File configFile) {
-        PatterdaleConfig config;
+    public Passwords parsePasswords(File passwordFile) {
+        Passwords passwords;
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         try {
-            config = mapper.readValue(configFile, PatterdaleConfig.class);
-            return config;
+            passwords = mapper.readValue(passwordFile, Passwords.class);
+            return passwords;
         } catch (IOException e) {
-            logger.error("Failed to parse provided 'config.file'.", e);
+            logger.error("Failed to parse provided system property 'passwords.file'.", e);
             throw new IllegalStateException(e);
         }
     }

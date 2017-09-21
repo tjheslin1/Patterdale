@@ -7,4 +7,4 @@ WORKDIR /app
 
 COPY build/libs/patterdale-jvm-all.jar .
 
-ENTRYPOINT ["java", "-jar", "-Dconfig.file=/config/patterdale.yml", "patterdale-jvm-all.jar"]
+ENTRYPOINT ["java", "-jar", "-Dconfig.file=/config/patterdale.yml", "-Dpasswords.file=/passwords/passwords.yml", "patterdale-jvm-all.jar"]

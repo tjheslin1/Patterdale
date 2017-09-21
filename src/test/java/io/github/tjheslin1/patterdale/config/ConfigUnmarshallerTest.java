@@ -1,4 +1,4 @@
-package io.github.tjheslin1.patterdale;
+package io.github.tjheslin1.patterdale.config;
 
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;
@@ -24,7 +24,7 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
     private final ConfigUnmarshaller configUnmarshaller = new ConfigUnmarshaller(logger);
 
     @Test
-    public void unmarshallConfigFileToRuntimeParameters() throws Exception {
+    public void unmarshallConfigFileToPatterdaleConfig() throws Exception {
         File file = loadTestConfigFile();
         PatterdaleConfig patterdaleConfig = configUnmarshaller.parseConfig(file);
 
@@ -43,8 +43,8 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
 
         expectedConfig.httpPort = 7001;
         expectedConfig.databases = new DatabaseDefinition[]{
-                databaseDefinition(NAME, USER, PASSWORD, JDBC_URL, PROBES),
-                databaseDefinition(NAME_2, USER, PASSWORD, JDBC_URL_2, PROBES_2)
+                databaseDefinition(NAME, USER, JDBC_URL, PROBES),
+                databaseDefinition(NAME_2, USER, JDBC_URL_2, PROBES_2)
         };
 
         HashMap<String, String> connectionPoolProperties = new HashMap<>();
@@ -58,9 +58,8 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
     private static final String NAME = "test";
     private static final String NAME_2 = "test2";
     private static final String USER = "system";
-    private static final String PASSWORD = "oracle";
-    private static final String JDBC_URL = "jdbc:oracle:thin:system/oracle@localhost:1521:xe";
-    private static final String JDBC_URL_2 = "jdbc:oracle:thin:system/oracle@localhost:1522:xe";
+    private static final String JDBC_URL = "jdbc:oracle:thin:@localhost:1522:xe";
+    private static final String JDBC_URL_2 = "jdbc:oracle:thin:@localhost:1523:xe";
     private static final String TYPE = "exists";
     private static final String METRIC_NAME = "database_up";
     private static final String METRIC_LABELS = "database=\"myDB\",query=\"SELECT 1 FROM DUAL\"";

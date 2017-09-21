@@ -1,9 +1,11 @@
 package endtoend;
 
-import io.github.tjheslin1.patterdale.ConfigUnmarshaller;
 import io.github.tjheslin1.patterdale.Patterdale;
-import io.github.tjheslin1.patterdale.PatterdaleConfig;
 import io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters;
+import io.github.tjheslin1.patterdale.config.ConfigUnmarshaller;
+import io.github.tjheslin1.patterdale.config.Passwords;
+import io.github.tjheslin1.patterdale.config.PasswordsUnmarshaller;
+import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
@@ -25,8 +27,8 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.github.tjheslin1.patterdale.Patterdale.dataSource;
 import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
+import static io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider.dataSource;
 
 public class PatterdaleTest implements WithAssertions {
 
@@ -37,17 +39,19 @@ public class PatterdaleTest implements WithAssertions {
 
     @Before
     public void setUp() {
-        System.setProperty("config.file", "src/test/resources/patterdale.yml");
         logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
 
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
-                .parseConfig(new File(System.getProperty("config.file")));
+                .parseConfig(new File("src/test/resources/patterdale.yml"));
+
+        Passwords passwords = new PasswordsUnmarshaller(logger)
+                .parsePasswords(new File("src/test/resources/passwords.yml"));
 
         runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
 
         connectionPools = runtimeParameters.databases().stream()
                 .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
-                        databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(dataSource(runtimeParameters, databaseDefinition, logger)))));
+                        databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(dataSource(runtimeParameters, databaseDefinition, passwords, logger)))));
 
         typeToProbeMapper = new TypeToProbeMapper(logger);
     }

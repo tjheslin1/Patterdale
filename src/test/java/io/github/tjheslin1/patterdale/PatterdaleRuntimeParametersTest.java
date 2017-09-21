@@ -1,5 +1,6 @@
 package io.github.tjheslin1.patterdale;
 
+import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import org.assertj.core.api.WithAssertions;
@@ -33,8 +34,8 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
 
         config.httpPort = HTTP_PORT;
         config.databases = new DatabaseDefinition[]{
-                databaseDefinition(NAME, USER, PASSWORD, JDBC_URL, PROBES),
-                databaseDefinition(NAME_2, USER, PASSWORD, JDBC_URL_2, PROBES_2)
+                databaseDefinition(NAME, USER, JDBC_URL, PROBES),
+                databaseDefinition(NAME_2, USER, JDBC_URL_2, PROBES_2)
         };
 
         HashMap<String, String> connectionPoolProperties = new HashMap<>();
@@ -50,7 +51,6 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     private static final String NAME = "test";
     private static final String NAME_2 = "test2";
     private static final String USER = "system";
-    private static final String PASSWORD = "oracle";
     private static final String JDBC_URL = "jdbc:oracle:thin:system/oracle@localhost:1521:xe";
     private static final String JDBC_URL_2 = "jdbc:oracle:thin:system/oracle@localhost:1522:xe";
     private static final String TYPE = "exists";
@@ -64,8 +64,8 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     private static final int MIN_IDLE = 1;
 
     private static final List<DatabaseDefinition> DATABASES = asList(
-            databaseDefinition(NAME, USER, PASSWORD, JDBC_URL, PROBES),
-            databaseDefinition(NAME_2, USER, PASSWORD, JDBC_URL_2, PROBES_2)
+            databaseDefinition(NAME, USER, JDBC_URL, PROBES),
+            databaseDefinition(NAME_2, USER, JDBC_URL_2, PROBES_2)
     );
 
 }
