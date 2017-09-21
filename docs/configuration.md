@@ -2,7 +2,7 @@
 
 The example `docker run` commands includes two volume mounts:
 
-`docker run -d -p 7000:7000 -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale-jvm:0.8`
+`docker run -d -p 7000:7000 -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:0.9`
 
 ## patterdale.yml
 `/your/config/directory` is expected to contain a file `patterdale.yml` with the following content:
