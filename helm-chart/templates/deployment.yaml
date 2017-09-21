@@ -43,6 +43,9 @@ spec:
           - name: config-volume
             mountPath: /config
             readOnly: true
+          - name: passwords-volume
+            mountPath: /passwords
+            readOnly: true
         readinessProbe:
           httpGet:
             path: /metrics
@@ -54,3 +57,6 @@ spec:
         - name: config-volume
           configMap:
             name: {{ .Values.patterdale.config.name }}
+        - name: passwords-volume
+          configMap:
+            name: {{ .Values.patterdale.passwords.name }}

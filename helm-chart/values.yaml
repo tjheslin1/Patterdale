@@ -7,7 +7,10 @@ patterdale:
   targetPort: 7000
 
   config:
-      name: patterdale-config
+    name: patterdale-config
+
+  passwords:
+    name: passwords-config
 
   replicas: 1
 

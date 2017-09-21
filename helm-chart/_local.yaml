@@ -2,13 +2,29 @@ cluster:
   location: local
   environment: laptop
 
-database:
+testDatabase:
   name: test
   user: system
   password: oracle
-  jdbcUrl: jdbc:oracle:thin:system/oracle@10.54.1.102:1521:xe
-  probes:
+  jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1522:xe
+  probe1:
       query: SELECT 1 FROM DUAL
       type: exists
       metricName: database_up
       metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
+
+test2Database:
+  name: test2
+  user: system
+  password: oracle
+  jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1523:xe
+  probe1:
+    query: SELECT 1 FROM DUAL
+    type: exists
+    metricName: database_up
+    metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
+  probe2:
+    query: SELECT 2 FROM DUAL
+    type: exists
+    metricName: database_up
+    metricLabels: database="myDB",query="SELECT 1 FROM DUAL"

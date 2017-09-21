@@ -3,5 +3,5 @@ description: A Helm chart for oracle database monitoring
 name: patterdale
 version: 0.1.0
 maintainers:
-  - name: DOST
-    email: DL-UKIS-DOST
+  - name: Thomas Heslin
+    email: tjheslin1@gmail.com
