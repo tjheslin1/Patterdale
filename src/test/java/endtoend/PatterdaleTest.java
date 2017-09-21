@@ -67,9 +67,9 @@ public class PatterdaleTest implements WithAssertions {
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
         assertThat(responseBody(response)).isEqualTo(
-                "database_up{database=\"myDB\",query=\"SELECT 1 FROM DUAL\"} 1" +
-                        "database_up{database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"} 1" +
-                        "database_up{database=\"myDB2\",query=\"SELECT 2 FROM DUAL\"} 0"
+                "database_up{database=\"myDB\",query=\"SELECT 1 FROM DUAL\"} 1.0" +
+                        "database_up{database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"} 1.0" +
+                        "database_up{database=\"myDB2\",query=\"SELECT 2 FROM DUAL\"} 0.0"
         );
     }
 

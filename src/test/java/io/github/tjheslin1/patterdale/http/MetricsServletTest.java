@@ -12,13 +12,10 @@ import org.slf4j.Logger;
 import testutil.WithMockito;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition.databaseDefinition;
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
-import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.failure;
-import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.success;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
@@ -26,11 +23,14 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
 
     private static final Probe PROBE_1 = probe("SQL", "exists", "database_up", "key=\"value\"");
     private static final Probe PROBE_2 = probe("SQL", "exists", "database_other", "key=\"something\"");
+    private static final Probe PROBE_3 = probe("SQL", "exists", "database_list", "key=\"somethingElse\",result=\"%s\"");
+
     private static final DatabaseDefinition DATABASE_DEFINITION = databaseDefinition("", "", "", asList(PROBE_1, PROBE_2));
 
-    private static final ProbeResult PROBE_RESULT_1 = success("Success", PROBE_1);
-    private static final ProbeResult PROBE_RESULT_2 = success("Success", PROBE_2);
-    private static final ProbeResult FAILED_PROBE = failure("Failure", PROBE_2);
+    private static final ProbeResult PROBE_RESULT_1 = new ProbeResult(1, PROBE_1);
+    private static final ProbeResult PROBE_RESULT_2 = new ProbeResult(1, PROBE_2);
+    private static final ProbeResult PROBE_RESULT_3 = new ProbeResult(4.5, PROBE_3, "example SQL");
+    private static final ProbeResult FAILED_PROBE = new ProbeResult(0, PROBE_2);
 
     private final PrintWriter printerWriter = mock(PrintWriter.class);
     private final HttpServletResponse response = mock(HttpServletResponse.class);
@@ -48,13 +48,14 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
 
     @Test
     public void respondWithDatabaseMetricsOnSuccess() throws Exception {
-        when(metricsUseCase.scrapeMetrics()).thenReturn(asList(PROBE_RESULT_1, PROBE_RESULT_2));
+        when(metricsUseCase.scrapeMetrics()).thenReturn(asList(PROBE_RESULT_1, PROBE_RESULT_2, PROBE_RESULT_3));
 
         metricsServlet.doGet(null, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).println("database_up{key=\"value\"} 1");
-        verify(printerWriter).println("database_other{key=\"something\"} 1");
+        verify(printerWriter).println("database_up{key=\"value\"} 1.0");
+        verify(printerWriter).println("database_other{key=\"something\"} 1.0");
+        verify(printerWriter).println("database_list{key=\"somethingElse\",result=\"example SQL\"} 4.5");
     }
 
     @Test
@@ -64,20 +65,7 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         metricsServlet.doGet(null, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).println("database_up{key=\"value\"} 1");
-        verify(printerWriter).println("database_other{key=\"something\"} 0");
-    }
-
-    @Test
-    public void logsErrorIfFailureOccursWritingToResponse() throws Exception {
-        when(response.getWriter()).thenThrow(IOException.class);
-        when(metricsUseCase.scrapeMetrics()).thenReturn(asList(PROBE_RESULT_1, PROBE_RESULT_2));
-
-        try {
-            metricsServlet.doGet(null, response);
-            fail("Expected an IOException to be caught.");
-        } catch (IOException e) {
-            verify(logger).error("IO error occurred writing to /metrics page.", e);
-        }
+        verify(printerWriter).println("database_up{key=\"value\"} 1.0");
+        verify(printerWriter).println("database_other{key=\"something\"} 0.0");
     }
 }

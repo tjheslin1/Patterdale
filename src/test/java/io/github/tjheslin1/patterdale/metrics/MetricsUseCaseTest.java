@@ -2,10 +2,7 @@ package io.github.tjheslin1.patterdale.metrics;
 
 import io.github.tjheslin1.patterdale.database.DBConnection;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
-import io.github.tjheslin1.patterdale.metrics.probe.ExistsOracleSQLProbe;
-import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
-import io.github.tjheslin1.patterdale.metrics.probe.Probe;
-import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
+import io.github.tjheslin1.patterdale.metrics.probe.*;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -42,23 +39,30 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
         assertThat(probeResults)
-                .isEqualTo(singletonList(new ProbeResult(true, "Successful health check.", PROBE)));
+                .isEqualTo(singletonList(new ProbeResult(1, PROBE)));
     }
 
     @Test
     public void scrapeMetricsReturnsSuccessForMultipleProbes() throws Exception {
-        givenAllProbesAreSuccessful();
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString(1)).thenReturn("example SQL");
+        when(resultSet.getDouble(2)).thenReturn(4.5, 6.7);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
+        when(dbConnection.connection()).thenReturn(connection);
+        when(dbConnectionPool.pool()).thenReturn(dbConnection);
+
         List<OracleSQLProbe> probes = asList(
-                new ExistsOracleSQLProbe(PROBE, dbConnectionPool, logger),
-                new ExistsOracleSQLProbe(PROBE, dbConnectionPool, logger)
+                new ListOracleSQLProbe(PROBE, dbConnectionPool, logger),
+                new ListOracleSQLProbe(PROBE, dbConnectionPool, logger)
         );
 
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
         assertThat(probeResults).isEqualTo(asList(
-                new ProbeResult(true, "Successful health check.", PROBE),
-                new ProbeResult(true, "Successful health check.", PROBE)
+                new ProbeResult(4.5, PROBE, "example SQL"),
+                new ProbeResult(6.7, PROBE, "example SQL")
         ));
     }
 
@@ -74,8 +78,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
         assertThat(probeResults).isEqualTo(asList(
-                new ProbeResult(true, "Successful health check.", PROBE),
-                new ProbeResult(false, "Expected a result of '1' from SQL query 'SQL' but got '0'", PROBE)
+                new ProbeResult(1, PROBE),
+                new ProbeResult(0, PROBE)
         ));
     }
 
@@ -91,8 +95,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
         assertThat(probeResults).isEqualTo(asList(
-                new ProbeResult(false, "Expected a result of '1' from SQL query 'SQL' but got '0'", PROBE),
-                new ProbeResult(false, "Expected a result of '1' from SQL query 'SQL' but got '0'", PROBE)
+                new ProbeResult(0, PROBE),
+                new ProbeResult(0, PROBE)
         ));
     }
 

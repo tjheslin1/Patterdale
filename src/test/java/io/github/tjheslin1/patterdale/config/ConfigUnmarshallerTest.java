@@ -33,8 +33,12 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
 
     @Test
     public void unmarshallConfigFileToPatterdaleConfig() throws Exception {
-        File file = loadTestConfigFile();
-        PatterdaleConfig patterdaleConfig = configUnmarshaller.parseConfig(file);
+        File tempFile = temporaryFolder.newFile("patterdale.yml");
+        FileWriter fileWriter = new FileWriter(tempFile);
+        fileWriter.write(PATTERDALE_YML);
+        fileWriter.flush();
+
+        PatterdaleConfig patterdaleConfig = configUnmarshaller.parseConfig(tempFile);
 
         assertThat(patterdaleConfig.httpPort).isEqualTo(expectedConfig().httpPort);
         assertThat(patterdaleConfig.databases).isEqualTo(expectedConfig().databases);
@@ -82,16 +86,50 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
     private static final String USER = "system";
     private static final String JDBC_URL = "jdbc:oracle:thin:@localhost:1522:xe";
     private static final String JDBC_URL_2 = "jdbc:oracle:thin:@localhost:1523:xe";
-    private static final String TYPE = "exists";
+    private static final String EXISTS = "exists";
+    private static final String LIST = "list";
     private static final String METRIC_NAME = "database_up";
     private static final String METRIC_LABELS = "database=\"myDB\",query=\"SELECT 1 FROM DUAL\"";
     private static final String METRIC_LABELS_2 = "database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"";
     private static final String METRIC_LABELS_3 = "database=\"myDB2\",query=\"SELECT 2 FROM DUAL\"";
+    private static final String METRIC_LABELS_4 = "database=\"myDB2\",slowQuery=\"%s\"";
     private static final String QUERY_SQL = "SELECT 1 FROM DUAL";
     private static final String QUERY_SQL_2 = "SELECT 2 FROM DUAL";
-    private static final List<Probe> PROBES = singletonList(probe(QUERY_SQL, TYPE, METRIC_NAME, METRIC_LABELS));
+    private static final String QUERY_SQL_3 = "SELECT * FROM slowest_queries TOP 5";
+    private static final List<Probe> PROBES = singletonList(probe(QUERY_SQL, EXISTS, METRIC_NAME, METRIC_LABELS));
     private static final List<Probe> PROBES_2 = asList(
-            probe(QUERY_SQL, TYPE, METRIC_NAME, METRIC_LABELS_2),
-            probe(QUERY_SQL_2, TYPE, METRIC_NAME, METRIC_LABELS_3)
+            probe(QUERY_SQL, EXISTS, METRIC_NAME, METRIC_LABELS_2),
+            probe(QUERY_SQL_2, EXISTS, METRIC_NAME, METRIC_LABELS_3),
+            probe(QUERY_SQL_3, LIST, METRIC_NAME, METRIC_LABELS_4)
     );
+
+    private static final String PATTERDALE_YML = "httpPort: 7001\n"+
+            "databases:\n"+
+            "  - name: test\n"+
+            "    user: system\n"+
+            "    jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe\n"+
+            "    probes:\n"+
+            "      - query: SELECT 1 FROM DUAL\n"+
+            "        type: exists\n"+
+            "        metricName: database_up\n"+
+            "        metricLabels: database=\"myDB\",query=\"SELECT 1 FROM DUAL\"\n"+
+            "  - name: test2\n"+
+            "    user: system\n"+
+            "    jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe\n"+
+            "    probes:\n"+
+            "      - query: SELECT 1 FROM DUAL\n"+
+            "        type: exists\n"+
+            "        metricName: database_up\n"+
+            "        metricLabels: database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"\n"+
+            "      - query: SELECT 2 FROM DUAL\n"+
+            "        type: exists\n"+
+            "        metricName: database_up\n"+
+            "        metricLabels: database=\"myDB2\",query=\"SELECT 2 FROM DUAL\"\n"+
+            "      - query: SELECT * FROM slowest_queries TOP 5\n"+
+            "        type: list\n"+
+            "        metricName: database_up\n"+
+            "        metricLabels: database=\"myDB2\",slowQuery=\"%s\"\n"+
+            "connectionPool:\n"+
+            "  maxSize: 5\n"+
+            "  minIdle: 1";
 }

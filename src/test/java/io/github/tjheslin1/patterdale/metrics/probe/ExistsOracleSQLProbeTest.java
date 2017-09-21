@@ -16,7 +16,6 @@ import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
 
     private static final String SQL = "SQL";
-    private static final String SUCCESS_MESSAGE = "Successful health check.";
 
     private final ResultSet resultSet = mock(ResultSet.class);
     private final PreparedStatement preparedStatement = mock(PreparedStatement.class);
@@ -37,19 +36,19 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
         when(dbConnection.connection()).thenReturn(connection);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
 
-        ProbeResult probeResult = existsOracleSQLProbe.probe();
+        ProbeResult probeResult = existsOracleSQLProbe.probe().get(0);
 
-        assertThat(probeResult.result).isTrue();
-        assertThat(probeResult.message).isEqualTo(SUCCESS_MESSAGE);
+        assertThat(probeResult.value).isEqualTo(1);
+        assertThat(probeResult.dynamicLabelValue).isEmpty();
     }
 
     @Test
     public void probeReturnsFailure() throws Exception {
         when(dbConnectionPool.pool()).thenThrow(Exception.class);
 
-        ProbeResult probeResult = existsOracleSQLProbe.probe();
+        ProbeResult probeResult = existsOracleSQLProbe.probe().get(0);
 
-        assertThat(probeResult.result).isFalse();
-        assertThat(probeResult.message).isEqualTo("Error occurred executing query: 'SQL'");
+        assertThat(probeResult.value).isEqualTo(0);
+        assertThat(probeResult.dynamicLabelValue).isEmpty();
     }
 }

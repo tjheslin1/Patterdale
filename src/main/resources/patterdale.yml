@@ -1,4 +1,4 @@
-httpPort: 7001
+httpPort: 7000
 databases:
   - name: test
     user: system

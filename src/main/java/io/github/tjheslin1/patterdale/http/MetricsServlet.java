@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-import static java.lang.String.format;
+import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResultFormatter.formatProbeResults;
 
 public class MetricsServlet extends HttpServlet {
 
@@ -44,14 +44,14 @@ public class MetricsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
-        for (ProbeResult probeResult : probeResults) {
-            try {
-                resp.getWriter().println(format("%s{%s} %s", probeResult.probe.metricName,
-                        probeResult.probe.metricLabels, probeResult.result ? 1 : 0));
-            } catch (IOException e) {
-                logger.error("IO error occurred writing to /metrics page.", e);
-                throw e;
-            }
-        }
+        formatProbeResults(probeResults)
+                .forEach(formattedProbeResult -> {
+                    try {
+                        resp.getWriter().println(formattedProbeResult);
+                    } catch (IOException e) {
+                        logger.error("IO error occurred writing to /metrics page.", e);
+                    }
+                });
     }
+
 }

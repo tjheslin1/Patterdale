@@ -12,8 +12,7 @@ httpPort: 7000
 databases:
   - name: test
     user: system
-    password: oracle
-    jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1521:xe
+    jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
     probes:
       - query: SELECT 1 FROM DUAL
         type: exists
@@ -21,17 +20,20 @@ databases:
         metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
   - name: test2
     user: system
-    password: oracle
-    jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1522:xe
+    jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe
     probes:
       - query: SELECT 1 FROM DUAL
         type: exists
         metricName: database_up
         metricLabels: database="myDB2",query="SELECT 1 FROM DUAL"
       - query: SELECT 2 FROM DUAL
-        type: exists # exists type expects a result of 1, therefore this probe will fail
+        type: exists
         metricName: database_up
         metricLabels: database="myDB2",query="SELECT 2 FROM DUAL"
+      - query: SELECT * FROM slowest_queries TOP 5
+        type: list
+        metricName: database_up
+        metricLabels: database="myDB2",slowQuery="%s"
 connectionPool:
   maxSize: 5
   minIdle: 1

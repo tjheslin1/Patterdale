@@ -25,6 +25,7 @@ import static java.lang.String.format;
 public class TypeToProbeMapper {
 
     private static final String EXISTS = "exists";
+    private static final String LIST = "list";
 
     private final Logger logger;
 
@@ -36,6 +37,9 @@ public class TypeToProbeMapper {
         switch (probe.type) {
             case EXISTS: {
                 return new ExistsOracleSQLProbe(probe, dbConnectionPool, logger);
+            }
+            case LIST: {
+                return new ListOracleSQLProbe(probe, dbConnectionPool, logger);
             }
             default: {
                 throw new IllegalArgumentException(

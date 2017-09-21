@@ -19,27 +19,28 @@ package io.github.tjheslin1.patterdale.metrics.probe;
 
 import io.github.tjheslin1.patterdale.ValueType;
 
+import java.util.Optional;
+
+import static java.util.Optional.empty;
+
 /**
  * Represents the result of a SQL probe.
  */
 public class ProbeResult extends ValueType {
 
-    public final boolean result;
-    public final String message;
+    public final double value;
     public final Probe probe;
+    public final Optional<String> dynamicLabelValue;
 
-    public ProbeResult(boolean result, String message, Probe probe) {
-        this.result = result;
-        this.message = message;
+    public ProbeResult(double value, Probe probe) {
+        this.value = value;
         this.probe = probe;
-
+        this.dynamicLabelValue = empty();
     }
 
-    public static ProbeResult success(String message, Probe probe) {
-        return new ProbeResult(true, message, probe);
-    }
-
-    public static ProbeResult failure(String message, Probe probe) {
-        return new ProbeResult(false, message, probe);
+    public ProbeResult(double value, Probe probe, String dynamicLabelValue) {
+        this.value = value;
+        this.probe = probe;
+        this.dynamicLabelValue = Optional.of(dynamicLabelValue);
     }
 }

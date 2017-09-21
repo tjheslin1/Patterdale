@@ -21,6 +21,7 @@ import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -34,8 +35,12 @@ public class MetricsUseCase {
 
     public List<ProbeResult> scrapeMetrics() {
         return probes.stream()
-                .map(OracleSQLProbe::probe)
+                .flatMap(this::executeProbes)
                 .collect(toList());
+    }
+
+    private Stream<ProbeResult> executeProbes(OracleSQLProbe oracleSQLProbe) {
+        return oracleSQLProbe.probe().stream();
     }
 }
 

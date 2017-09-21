@@ -17,6 +17,8 @@
  */
 package io.github.tjheslin1.patterdale.metrics.probe;
 
+import java.util.List;
+
 public interface OracleSQLProbe {
 
     /**
@@ -24,5 +26,5 @@ public interface OracleSQLProbe {
      *
      * @return a {@link ProbeResult} containing the result of the probe query.
      */
-    ProbeResult probe();
+    List<ProbeResult> probe();
 }

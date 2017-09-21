@@ -20,6 +20,7 @@ package io.github.tjheslin1.patterdale.metrics.probe;
 import io.github.tjheslin1.patterdale.ValueType;
 
 public class Probe extends ValueType {
+
     public String query;
     public String type;
     public String metricName;
