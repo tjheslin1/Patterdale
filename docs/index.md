@@ -12,7 +12,7 @@ Patterdale expects two files. `patterdale.yml` and `passwords.yml`.
 
 `passwords.yml` contains the passwords related to the database users provided. It is expected to be handled appropriately, for example using Kubernetes secrets.
 
-For more information regarding these configuration files and their conventions, see [Configuration](docs/configuration.md).
+For more information regarding these configuration files and their conventions, see [Configuration](configuration.md).
 
 ## Probes
 
@@ -20,7 +20,7 @@ Patterdale executes _probes_ against datbases upon request.
 
 The currently provided _probe_ types are:
 
-- exists (see [ExistsOracleSQLProbe.java](src/main/java/io/github/tjheslin1/patterdale/metrics/probe/ExistsOracleSQLProbe.java))
-- list (see [ListOracleSQLProbe.java](src/main/java/io/github/tjheslin1/patterdale/metrics/probe/ListOracleSQLProbe.java))
+- exists (see [ExistsOracleSQLProbe.java](https://github.com/tjheslin1/Patterdale/blob/master/src/main/java/io/github/tjheslin1/patterdale/metrics/probe/ExistsOracleSQLProbe.java))
+- list (see [ListOracleSQLProbe.java](https://github.com/tjheslin1/Patterdale/blob/master/src/main/java/io/github/tjheslin1/patterdale/metrics/probe/ListOracleSQLProbe.java))
 
-For more information on the usages of these _probes_ and adding more probes, see [Probes](docs/probes.md). 
+For more information on the usages of these _probes_ and adding more probes, see [Probes](probes.md). 
