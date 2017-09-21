@@ -55,7 +55,7 @@ jar {
 }
 
 shadowJar {
-    baseName = 'patterdale-jvm-all'
+    baseName = 'patterdale-all'
     classifier = null
     version = null
 }
