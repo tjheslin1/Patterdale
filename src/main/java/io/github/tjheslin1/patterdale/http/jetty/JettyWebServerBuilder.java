@@ -18,10 +18,7 @@
 package io.github.tjheslin1.patterdale.http.jetty;
 
 import io.github.tjheslin1.patterdale.RuntimeParameters;
-import io.github.tjheslin1.patterdale.http.MetricsServlet;
-import io.github.tjheslin1.patterdale.http.NotFoundServlet;
-import io.github.tjheslin1.patterdale.http.WebServer;
-import io.github.tjheslin1.patterdale.http.WebServerBuilder;
+import io.github.tjheslin1.patterdale.http.*;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -56,6 +53,7 @@ public class JettyWebServerBuilder implements WebServerBuilder {
         }
 
         servletContextHandler.addServlet(new ServletHolder(new NotFoundServlet()), "/");
+        servletContextHandler.addServlet(new ServletHolder(new ReadyServlet()), "/ready");
         servletContextHandler.setContextPath("/");
         server.setHandler(servletContextHandler);
         server.addBean(new UncaughtErrorHandler());

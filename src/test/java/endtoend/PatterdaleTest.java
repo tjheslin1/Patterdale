@@ -15,7 +15,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.assertj.core.api.WithAssertions;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +32,13 @@ import static io.github.tjheslin1.patterdale.database.hikari.HikariDataSourcePro
 
 public class PatterdaleTest implements WithAssertions {
 
-    private TypeToProbeMapper typeToProbeMapper;
-    private Logger logger;
-    private PatterdaleRuntimeParameters runtimeParameters;
-    private Map<String, DBConnectionPool> connectionPools;
+    private static TypeToProbeMapper typeToProbeMapper;
+    private static Logger logger;
+    private static PatterdaleRuntimeParameters runtimeParameters;
+    private static Map<String, DBConnectionPool> connectionPools;
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
 
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
@@ -54,13 +54,13 @@ public class PatterdaleTest implements WithAssertions {
                         databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(dataSource(runtimeParameters, databaseDefinition, passwords, logger)))));
 
         typeToProbeMapper = new TypeToProbeMapper(logger);
+
+        new Patterdale(runtimeParameters, connectionPools, typeToProbeMapper, logger)
+                .start();
     }
 
     @Test
     public void scrapesOracleDatabaseMetricsOnRequest() throws Exception {
-        new Patterdale(runtimeParameters, connectionPools, typeToProbeMapper, logger)
-                .start();
-
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpResponse response = httpClient.execute(new HttpGet("http://localhost:7001/metrics"));
 
@@ -71,6 +71,16 @@ public class PatterdaleTest implements WithAssertions {
                         "database_up{database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"} 1.0" +
                         "database_up{database=\"myDB2\",query=\"SELECT 2 FROM DUAL\"} 0.0"
         );
+    }
+
+    @Test
+    public void readyPageReturns200andOK() throws Exception {
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpResponse response = httpClient.execute(new HttpGet("http://localhost:7001/ready"));
+
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
+
+        assertThat(responseBody(response)).isEqualTo("OK");
     }
 
     private String responseBody(HttpResponse response) throws IOException {

@@ -48,10 +48,15 @@ spec:
             readOnly: true
         readinessProbe:
           httpGet:
-            path: /metrics
+            path: /ready
             port: {{ .Values.patterdale.targetPort}}
           initialDelaySeconds: 30
           timeoutSeconds: 30
+        livenessProbe:
+          initialDelaySeconds: 60
+          httpGet:
+            path: /ready
+            port: {{ .Values.patterdale.targetPort}}
       terminationGracePeriodSeconds: {{ .Values.patterdale.terminationGracePeriodSeconds }}
       volumes:
         - name: config-volume
