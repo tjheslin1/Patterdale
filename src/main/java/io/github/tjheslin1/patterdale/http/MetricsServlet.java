@@ -35,17 +35,17 @@ import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResultFormatter.
 
 public class MetricsServlet extends HttpServlet {
 
-    private final Supplier<List<ProbeResult>> metricsUseCase;
+    private final Supplier<List<ProbeResult>> metricsCache;
     private final Logger logger;
 
     public MetricsServlet(MetricsUseCase metricsUseCase, Logger logger) {
-        this.metricsUseCase = Suppliers.memoizeWithExpiration(metricsUseCase::scrapeMetrics, 1, TimeUnit.MINUTES);
+        this.metricsCache = Suppliers.memoizeWithExpiration(metricsUseCase::scrapeMetrics, 1, TimeUnit.MINUTES);
         this.logger = logger;
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<ProbeResult> probeResults = metricsUseCase.get();
+        List<ProbeResult> probeResults = metricsCache.get();
 
         formatProbeResults(probeResults)
                 .forEach(formattedProbeResult -> {
