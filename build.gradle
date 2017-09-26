@@ -38,7 +38,7 @@ dependencies {
     compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.5.v20170502'
     compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.5.v20170502'
 
-    compile files('./src/main/resources/ojdbc7.jar')
+    compile files('./repo/ojdbc7.jar')
     compile 'com.zaxxer:HikariCP:2.7.1'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
