@@ -41,8 +41,8 @@ public class ProbeResultFormatter {
     }
 
     private static String appendDynamicLabel(ProbeResult probeResult) {
-        if (probeResult.dynamicLabelValue.isPresent()) {
-            return format(probeResult.probe.metricLabels, probeResult.dynamicLabelValue.get());
+        if (!probeResult.dynamicLabelValues.isEmpty()) {
+            return format(probeResult.probe.metricLabels, probeResult.dynamicLabelValues.toArray());
         } else {
             return probeResult.probe.metricLabels;
         }

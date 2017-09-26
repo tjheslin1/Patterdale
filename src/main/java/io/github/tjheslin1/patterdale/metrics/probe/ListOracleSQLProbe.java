@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -58,10 +59,16 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
             List<ProbeResult> probeResults = new ArrayList<>();
             while (resultSet.next()) {
-                String labelValue = resultSet.getString(1);
-                double metricValue = resultSet.getDouble(2);
+                int columnCount = resultSet.getMetaData().getColumnCount();
+                double metricValue = resultSet.getDouble(1);
 
-                probeResults.add(new ProbeResult(metricValue, probe, labelValue));
+                List<String> dynamicLabels = new ArrayList<>(columnCount - 1);
+                for (int columnIndex = 2; columnIndex <= columnCount; columnIndex++) {
+                    String dynamicLabel = resultSet.getString(columnIndex).replaceAll("\\s+", " ");
+                    dynamicLabels.add(dynamicLabel);
+                }
+
+                probeResults.add(new ProbeResult(metricValue, probe, dynamicLabels));
             }
 
             return probeResults;

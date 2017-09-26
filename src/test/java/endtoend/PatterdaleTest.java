@@ -20,11 +20,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
@@ -66,10 +67,14 @@ public class PatterdaleTest implements WithAssertions {
 
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
-        assertThat(responseBody(response)).isEqualTo(
-                "database_up{database=\"myDB\",query=\"SELECT 1 FROM DUAL\"} 1.0" +
-                        "database_up{database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"} 1.0" +
-                        "database_up{database=\"myDB2\",query=\"SELECT 2 FROM DUAL\"} 0.0"
+        assertThat(responseBody(response)).matches(Pattern.compile("database_up\\{database=\"myDB\",query=\"SELECT 1 FROM DUAL\"} 1.0\n" +
+                        "database_up\\{database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"} 1.0\n" +
+                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
+                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
+                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
+                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
+                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*"
+                , Pattern.DOTALL)
         );
     }
 
@@ -80,18 +85,12 @@ public class PatterdaleTest implements WithAssertions {
 
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
-        assertThat(responseBody(response)).isEqualTo("OK");
+        assertThat(responseBody(response)).contains("OK");
     }
 
     private String responseBody(HttpResponse response) throws IOException {
-        BufferedReader rd = new BufferedReader(
-                new InputStreamReader(response.getEntity().getContent()));
-
-        StringBuilder result = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            result.append(line);
+        try (Scanner scanner = new Scanner(response.getEntity().getContent(), StandardCharsets.UTF_8.toString()).useDelimiter("\\A")) {
+            return scanner.hasNext() ? scanner.next() : "";
         }
-        return result.toString();
     }
 }

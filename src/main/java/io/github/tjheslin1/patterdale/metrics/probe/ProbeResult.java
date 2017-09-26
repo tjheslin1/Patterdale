@@ -19,9 +19,9 @@ package io.github.tjheslin1.patterdale.metrics.probe;
 
 import io.github.tjheslin1.patterdale.ValueType;
 
-import java.util.Optional;
+import java.util.List;
 
-import static java.util.Optional.empty;
+import static java.util.Collections.emptyList;
 
 /**
  * Represents the result of a SQL probe.
@@ -30,17 +30,15 @@ public class ProbeResult extends ValueType {
 
     public final double value;
     public final Probe probe;
-    public final Optional<String> dynamicLabelValue;
+    public final List<String> dynamicLabelValues;
 
     public ProbeResult(double value, Probe probe) {
-        this.value = value;
-        this.probe = probe;
-        this.dynamicLabelValue = empty();
+        this(value, probe, emptyList());
     }
 
-    public ProbeResult(double value, Probe probe, String dynamicLabelValue) {
+    public ProbeResult(double value, Probe probe, List<String> dynamicLabelValues) {
         this.value = value;
         this.probe = probe;
-        this.dynamicLabelValue = Optional.of(dynamicLabelValue);
+        this.dynamicLabelValues = dynamicLabelValues;
     }
 }

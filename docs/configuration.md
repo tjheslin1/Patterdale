@@ -9,32 +9,43 @@ The example `docker run` commands includes two volume mounts:
 
 Example `patterdale.yml` file':
 ```yml
-httpPort: 7000
+httpPort: 7001
 databases:
   - name: test
     user: system
     jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
     probes:
-      - query: SELECT 1 FROM DUAL
-        type: exists
+      - type: exists
+        query: SELECT 1 FROM DUAL
         metricName: database_up
         metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
   - name: test2
     user: system
     jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe
     probes:
-      - query: SELECT 1 FROM DUAL
-        type: exists
+      - type: exists
         metricName: database_up
         metricLabels: database="myDB2",query="SELECT 1 FROM DUAL"
-      - query: SELECT 2 FROM DUAL
-        type: exists
-        metricName: database_up
-        metricLabels: database="myDB2",query="SELECT 2 FROM DUAL"
-      - query: select sql_text, elapsed_time from   v$sql order by ELAPSED_TIME desc FETCH NEXT 10 ROWS ONLY;
-        type: list
+        query: SELECT 1 FROM DUAL
+      - type: list
         metricName: slowest_queries
-        metricLabels: database="myDB2",slowQuery="%s"
+        metricLabels: database="myDB2",sqlText="%s",sqlId="%s",username="%s",childNumber="%s",diskReads="%s",executions="%s",firstLoadTime="%s",lastLoadTime="%s"
+        query: |
+            SELECT * FROM
+            (SELECT
+                s.elapsed_time / 1000000,
+                SUBSTR(s.sql_fulltext, 1, 80) As SQL_TEXT,
+                s.sql_id,
+                d.username,
+                s.child_number,
+                s.disk_reads,
+                s.executions,
+                s.first_load_time,
+                s.last_load_time
+            FROM    v$sql s, dba_users d
+            WHERE   s.parsing_user_id = d.user_id
+            ORDER BY elapsed_time DESC)
+            WHERE ROWNUM <= 5;
 connectionPool:
   maxSize: 5
   minIdle: 1

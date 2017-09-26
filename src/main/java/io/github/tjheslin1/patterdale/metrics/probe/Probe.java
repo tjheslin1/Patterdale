@@ -37,6 +37,6 @@ public class Probe extends ValueType {
     }
 
     public String query() {
-        return query.replaceFirst("\\s+;\\s+$", "");
+        return query.replaceFirst("\\s*;\\s*$", "");
     }
 }

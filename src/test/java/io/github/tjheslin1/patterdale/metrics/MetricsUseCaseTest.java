@@ -8,10 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import testutil.WithMockito;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
@@ -23,6 +20,7 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     private static final Probe PROBE = probe("SQL", "exists", "name", "label");
 
     private final ResultSet resultSet = mock(ResultSet.class);
+    private final ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
     private final PreparedStatement preparedStatement = mock(PreparedStatement.class);
     private final Connection connection = mock(Connection.class);
     private final DBConnection dbConnection = mock(DBConnection.class);
@@ -44,9 +42,11 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
 
     @Test
     public void scrapeMetricsReturnsSuccessForMultipleProbes() throws Exception {
+        when(resultSetMetaData.getColumnCount()).thenReturn(2);
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getString(1)).thenReturn("example SQL");
-        when(resultSet.getDouble(2)).thenReturn(4.5, 6.7);
+        when(resultSet.getDouble(1)).thenReturn(4.5, 6.7);
+        when(resultSet.getString(2)).thenReturn("example SQL");
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(dbConnection.connection()).thenReturn(connection);
@@ -61,8 +61,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
         assertThat(probeResults).isEqualTo(asList(
-                new ProbeResult(4.5, PROBE, "example SQL"),
-                new ProbeResult(6.7, PROBE, "example SQL")
+                new ProbeResult(4.5, PROBE, singletonList("example SQL")),
+                new ProbeResult(6.7, PROBE, singletonList("example SQL"))
         ));
     }
 
@@ -113,6 +113,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     }
 
     private void givenProbesReturnValues(int firstValue, Integer... subsequenceValues) throws SQLException {
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(firstValue, subsequenceValues);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);

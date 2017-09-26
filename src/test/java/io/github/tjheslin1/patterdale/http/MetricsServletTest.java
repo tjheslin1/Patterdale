@@ -30,7 +30,7 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
 
     private static final ProbeResult PROBE_RESULT_1 = new ProbeResult(1, PROBE_1);
     private static final ProbeResult PROBE_RESULT_2 = new ProbeResult(1, PROBE_2);
-    private static final ProbeResult PROBE_RESULT_3 = new ProbeResult(4.5, PROBE_3, "example SQL");
+    private static final ProbeResult PROBE_RESULT_3 = new ProbeResult(4.5, PROBE_3, singletonList("example SQL"));
     private static final ProbeResult FAILED_PROBE = new ProbeResult(0, PROBE_2);
 
     private final PrintWriter printerWriter = mock(PrintWriter.class);

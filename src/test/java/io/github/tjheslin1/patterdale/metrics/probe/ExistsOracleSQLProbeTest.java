@@ -39,7 +39,7 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
         ProbeResult probeResult = existsOracleSQLProbe.probe().get(0);
 
         assertThat(probeResult.value).isEqualTo(1);
-        assertThat(probeResult.dynamicLabelValue).isEmpty();
+        assertThat(probeResult.dynamicLabelValues).isEmpty();
     }
 
     @Test
@@ -49,6 +49,6 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
         ProbeResult probeResult = existsOracleSQLProbe.probe().get(0);
 
         assertThat(probeResult.value).isEqualTo(0);
-        assertThat(probeResult.dynamicLabelValue).isEmpty();
+        assertThat(probeResult.dynamicLabelValues).isEmpty();
     }
 }

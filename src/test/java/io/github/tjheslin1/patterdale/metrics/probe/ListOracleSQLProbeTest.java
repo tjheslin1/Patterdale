@@ -11,15 +11,21 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.Collections;
 import java.util.List;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
+import static java.util.Arrays.asList;
+import static java.util.Collections.asLifoQueue;
+import static java.util.Collections.singletonList;
 
 public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
 
     private static final Probe PROBE = probe("SQL", "exists", "name", "label");
 
     private final ResultSet resultSet = mock(ResultSet.class);
+    private final ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
     private final PreparedStatement preparedStatement = mock(PreparedStatement.class);
     private final Connection connection = mock(Connection.class);
     private final DBConnection dbConnection = mock(DBConnection.class);
@@ -30,9 +36,11 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
 
     @Test
     public void probeReturnsMultipleSuccess() throws Exception {
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getString(1)).thenReturn("example SQL", "example SQL2");
-        when(resultSet.getDouble(2)).thenReturn(4.5, 6.7);
+        when(resultSetMetaData.getColumnCount()).thenReturn(2);
+        when(resultSet.getDouble(1)).thenReturn(4.5, 6.7);
+        when(resultSet.getString(2)).thenReturn("example SQL", "example SQL2");
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(dbConnection.connection()).thenReturn(connection);
@@ -40,15 +48,14 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
 
         List<ProbeResult> probeResults = listOracleSQLProbe.probe();
 
-        assertThat(probeResults).hasSize(2);
         assertThat(probeResults).containsExactly(
-                new ProbeResult(4.5, PROBE, "example SQL"),
-                new ProbeResult(6.7, PROBE, "example SQL2")
+                new ProbeResult(4.5, PROBE, singletonList("example SQL")),
+                new ProbeResult(6.7, PROBE, singletonList("example SQL2"))
         );
     }
 
     @Test
-    public void probeReturnsSuccessAndFailure() throws Exception {
+    public void probeFailsAndReturnsEmptyList() throws Exception {
         when(preparedStatement.executeQuery()).thenThrow(IOException.class);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(dbConnection.connection()).thenReturn(connection);
@@ -57,5 +64,25 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
         List<ProbeResult> probeResults = listOracleSQLProbe.probe();
 
         assertThat(probeResults).isEmpty();
+    }
+
+    @Test
+    public void probeAssumesFirstColumnIsProbeValueAndRemainingColumnsAreDynamicLabels() throws Exception {
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSetMetaData.getColumnCount()).thenReturn(3);
+        when(resultSet.getDouble(1)).thenReturn(4.5);
+        when(resultSet.getString(2)).thenReturn("example SQL");
+        when(resultSet.getString(3)).thenReturn("dynamicLabel3");
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
+        when(dbConnection.connection()).thenReturn(connection);
+        when(dbConnectionPool.pool()).thenReturn(dbConnection);
+
+        List<ProbeResult> probeResults = listOracleSQLProbe.probe();
+
+        assertThat(probeResults).containsExactly(
+                new ProbeResult(4.5, PROBE, asList("example SQL", "dynamicLabel3"))
+        );
     }
 }
