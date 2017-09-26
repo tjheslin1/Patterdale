@@ -1,6 +1,7 @@
 # Probes
 
-Probes are defined in `patterdale.yml` and are specific to a database. If you want to run the same probe against multiple databases, simply duplication the definition (e.g _SELECT 1 FROM DUAL_).
+Probes are defined in `patterdale.yml` and are specific to a database.
+If you want to run the same probe against multiple databases, simply duplication the definition (e.g _SELECT 1 FROM DUAL_).
 
 An example set of probe definitions in `patterdale.yml`:
 
@@ -40,7 +41,12 @@ This conforms to the [Prometheus](https://github.com/prometheus/prometheus) stan
 
 ## List
 
-The "list" type expects a SQL query to be run which returns a number of rows. The first column is expected to be a number, representing the metric value. The rest of the columns will be treated as Strings and filtered into the _metricLabels_.
+The "list" type expects a SQL query to be run which returns a number of rows.
+The first column is expected to be a number, representing the metric value.
+
+The rest of the columns will be treated as Strings and filtered into the _metricLabels_.
+For this the _metricLabels_ is expected to have a key/value pair per extra column after the first, in the same order as the SQL:
+`columnName="%s"` where _%s_ will be filtered in.
 
 Using the above configuration, the probe will result in a number of lines on the applications '/metrics' web page in the format:
 
