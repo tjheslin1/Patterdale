@@ -11,7 +11,7 @@ databases:
       type: exists
       metricName: database_up
       metricLabels: database="myDB2",query="SELECT 1 FROM DUAL"
-    - query: select sql_text, elapsed_time from   v$sql order by ELAPSED_TIME desc FETCH NEXT 10 ROWS ONLY;
+    - query: select elapsed_time, sql_text from   v$sql order by ELAPSED_TIME desc FETCH NEXT 2 ROWS ONLY;
       type: list
       metricName: slowest_queries
       metricLabels: database="myDB2",slowQuery="%s"
@@ -22,27 +22,25 @@ The second query, _SELECT * FROM slowest_queries TOP 5_, maps to [ListOracleSQLP
 
 ## Exists
 
-The "exists" _probe_ type expects a SQL query to be run which returns one row and one column.
+The "exists" type expects a SQL query to be run which returns one row and one column.
 
-If the value in that column is a '1'. The probe is treated as a success. _SELECT 1 FROM DUAL' is a perfect example of query for this type of _probe_ and is recommended to be run on every database which is configured.
+If the value in that column is a '1'. The probe is treated as a success. _SELECT 1 FROM DUAL_ is a perfect example of query for this type of _probe_ and is recommended to be run on every database which is configured.
 
 Any other integer value is treated as a failure.
 
 Using the above configuration, the probe will result in a line on the applications '/metrics' web page in the format:
 
 `database_up{database="myDB2",query="SELECT 1 FROM DUAL"} 1.0`
+
 or
+
 `database_up{database="myDB2",query="SELECT 1 FROM DUAL"} 0.0`
 
 This conforms to the [Prometheus](https://github.com/prometheus/prometheus) standard.
 
 ## List
 
-The "list" _probe_ type expects a SQL query to be run which returns any number of rows, with 2 columns. The first column is a String (VARCHAR) and the second volumn is a double value.
-
-The String value in the first column is filtered into the _metricLabels_ provided in the probes defintion in `patterdale.yml`. This is done using Java's `java.lang.String#format` method.
-
-The second column should return a double value which will be used as the metric's value.
+The "list" type expects a SQL query to be run which returns a number of rows. The first column is expected to be a number, representing the metric value. The rest of the columns will be treated as Strings and filtered into the _metricLabels_.
 
 Using the above configuration, the probe will result in a number of lines on the applications '/metrics' web page in the format:
 
