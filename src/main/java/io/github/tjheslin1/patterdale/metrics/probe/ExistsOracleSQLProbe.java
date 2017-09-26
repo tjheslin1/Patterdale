@@ -54,7 +54,7 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
     @Override
     public List<ProbeResult> probe() {
         try (Connection connection = connectionPool.pool().connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(probe.query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(probe.query())) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (!resultSet.next()) {
@@ -68,7 +68,7 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
             return singletonList(new ProbeResult(1, probe));
         } catch (Exception e) {
-            String message = format("Error occurred executing query: '%s'", probe.query);
+            String message = format("Error occurred executing query: '%s'", probe.query());
             logger.error(message, e);
             return singletonList(new ProbeResult(0, probe));
         }

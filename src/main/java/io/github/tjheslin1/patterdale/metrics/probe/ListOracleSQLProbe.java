@@ -53,7 +53,7 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
     @Override
     public List<ProbeResult> probe() {
         try (Connection connection = connectionPool.pool().connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(probe.query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(probe.query())) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             List<ProbeResult> probeResults = new ArrayList<>();
@@ -66,7 +66,7 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
             return probeResults;
         } catch (Exception e) {
-            String message = format("Error occurred executing query: '%s'", probe.query);
+            String message = format("Error occurred executing query: '%s'", probe.query());
             logger.error(message, e);
             return emptyList();
         }
