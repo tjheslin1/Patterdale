@@ -17,6 +17,7 @@
  */
 package io.github.tjheslin1.patterdale.http;
 
+import com.google.common.base.Suppliers;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 import org.slf4j.Logger;
@@ -27,22 +28,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResultFormatter.formatProbeResults;
 
 public class MetricsServlet extends HttpServlet {
 
-    private final MetricsUseCase metricsUseCase;
+    private final Supplier<List<ProbeResult>> metricsUseCase;
     private final Logger logger;
 
     public MetricsServlet(MetricsUseCase metricsUseCase, Logger logger) {
-        this.metricsUseCase = metricsUseCase;
+        this.metricsUseCase = Suppliers.memoizeWithExpiration(metricsUseCase::scrapeMetrics, 1, TimeUnit.MINUTES);
         this.logger = logger;
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
+        List<ProbeResult> probeResults = metricsUseCase.get();
 
         formatProbeResults(probeResults)
                 .forEach(formattedProbeResult -> {
@@ -53,5 +56,4 @@ public class MetricsServlet extends HttpServlet {
                     }
                 });
     }
-
 }

@@ -2,6 +2,7 @@ package testutil;
 
 import org.mockito.Mockito;
 import org.mockito.stubbing.OngoingStubbing;
+import org.mockito.verification.VerificationMode;
 
 public interface WithMockito {
 
@@ -19,6 +20,10 @@ public interface WithMockito {
 
     default <T> T verify(T mock) {
         return Mockito.verify(mock);
+    }
+
+    default <T> T verify(T mock, VerificationMode mode) {
+        return Mockito.verify(mock, mode);
     }
 
     default void verifyNoMoreInteractions(Object... mocks) {

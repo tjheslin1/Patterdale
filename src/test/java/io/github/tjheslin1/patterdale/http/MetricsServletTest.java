@@ -18,6 +18,7 @@ import static io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition.da
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.mockito.Mockito.times;
 
 public class MetricsServletTest implements WithAssertions, WithMockito {
 
@@ -67,5 +68,15 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         verify(metricsUseCase).scrapeMetrics();
         verify(printerWriter).println("database_up{key=\"value\"} 1.0");
         verify(printerWriter).println("database_other{key=\"something\"} 0.0");
+    }
+
+    @Test
+    public void metricsResultsAreCachedForAConfiguredDuration() throws Exception {
+        when(metricsUseCase.scrapeMetrics()).thenReturn(singletonList(PROBE_RESULT_1));
+
+        metricsServlet.doGet(null, response);
+        metricsServlet.doGet(null, response);
+
+        verify(metricsUseCase, times(1)).scrapeMetrics();
     }
 }
