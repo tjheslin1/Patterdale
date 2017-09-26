@@ -46,7 +46,7 @@ The first column is expected to be a number, representing the metric value.
 
 The rest of the columns will be treated as Strings and filtered into the _metricLabels_.
 For this the _metricLabels_ is expected to have a key/value pair per extra column after the first, in the same order as the SQL:
-`columnName="%s"` where _%s_ will be filtered in.
+`columnName="%s"` where _%s_ will be filtered in using `java.lang.String#format`.
 
 Using the above configuration, the probe will result in a number of lines on the applications '/metrics' web page in the format:
 
