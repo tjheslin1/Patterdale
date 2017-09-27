@@ -1,10 +1,11 @@
-namespace: utils
+namespace: sky-mobile
 team: deployment-and-operations-support
 role: live
 
 patterdale:
   name: patterdale
   targetPort: 7000
+  cacheDuration: 60
 
   config:
     name: patterdale-config
@@ -21,7 +22,7 @@ patterdale:
   image:
     repository: docker.io
     name: tjheslin1/patterdale
-    tag: 0.9
+    tag: "0.10"
     pullPolicy: IfNotPresent
 
   terminationGracePeriodSeconds: 30

@@ -1,5 +1,6 @@
 {{ define "patterdale.yml" }}
 httpPort: {{ .Values.patterdale.targetPort }}
+cacheDuration: {{ .Values.patterdale.cacheDuration }}
 databases:
   {{ range .Values.databases }}
   - name: {{ .name }}

@@ -90,7 +90,7 @@ public class Patterdale {
                 .flatMap(this::createProbes)
                 .collect(toList());
 
-        long cacheDuration = Math.min(runtimeParameters.cacheDuration(), 1);
+        long cacheDuration = Math.max(runtimeParameters.cacheDuration(), 1);
         logger.info(format("Using cache duration of %d seconds.", cacheDuration));
 
         WebServer webServer = new JettyWebServerBuilder(logger)
