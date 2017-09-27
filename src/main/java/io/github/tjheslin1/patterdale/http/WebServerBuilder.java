@@ -22,6 +22,6 @@ import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 
 public interface WebServerBuilder {
 
-    WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters);
+    WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters, long cacheDuration);
     WebServer build();
 }

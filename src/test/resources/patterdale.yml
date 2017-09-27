@@ -1,4 +1,5 @@
 httpPort: 7001
+cacheDuration: 60
 databases:
   - name: test
     user: system

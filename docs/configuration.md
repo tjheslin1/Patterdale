@@ -5,11 +5,21 @@ The example `docker run` commands includes two volume mounts:
 `docker run -d -p 7000:7000 -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:0.9`
 
 ## patterdale.yml
-`/your/config/directory` is expected to contain a file `patterdale.yml` with the following content:
+
+`httpPort` is the port the application will run on.
+
+`cacheDuration` is the lifetime, in seconds, of the cache of SQL probe results.
+After which the next call to /metrics will trigger a full scrape of all database probes and store in the cache again. This is to prevent overloading the databases with requests.
+
+`databases` is a list of the databases the application will connect to.
+Each database definition has a list of probes which will be executed against that database.
+
+`/your/config/directory` is expected to contain a file `patterdale.yml`, below is an example:
 
 Example `patterdale.yml` file':
 ```yml
 httpPort: 7001
+cacheDuration: 60
 databases:
   - name: test
     user: system

@@ -36,8 +36,8 @@ public class JettyWebServerBuilder implements WebServerBuilder {
     }
 
     @Override
-    public WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters) {
-        servletContextHandler.addServlet(new ServletHolder(new MetricsServlet(metricsUseCase, logger)), path);
+    public WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters, long cacheDuration) {
+        servletContextHandler.addServlet(new ServletHolder(new MetricsServlet(metricsUseCase, logger, cacheDuration)), path);
         return this;
     }
 

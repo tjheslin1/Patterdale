@@ -39,7 +39,7 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
     private final RuntimeParameters runtimeParameters = mock(RuntimeParameters.class);
     private final Logger logger = mock(Logger.class);
 
-    private final MetricsServlet metricsServlet = new MetricsServlet(metricsUseCase, logger);
+    private final MetricsServlet metricsServlet = new MetricsServlet(metricsUseCase, logger, 60);
 
     @Before
     public void setup() throws Exception {

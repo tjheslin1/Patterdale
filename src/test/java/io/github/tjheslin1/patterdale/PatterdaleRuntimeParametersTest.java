@@ -21,6 +21,7 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     public void extractsRuntimeParametersFromUnmarshalledConfigurationFile() throws Exception {
         PatterdaleRuntimeParameters expectedParameters = new PatterdaleRuntimeParameters(
                 HTTP_PORT,
+                CACHE_DURATION,
                 DATABASES,
                 MAX_SIZE,
                 MIN_IDLE);
@@ -33,6 +34,8 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
         PatterdaleConfig config = new PatterdaleConfig();
 
         config.httpPort = HTTP_PORT;
+        config.cacheDuration = CACHE_DURATION;
+
         config.databases = new DatabaseDefinition[]{
                 databaseDefinition(NAME, USER, JDBC_URL, PROBES),
                 databaseDefinition(NAME_2, USER, JDBC_URL_2, PROBES_2)
@@ -47,6 +50,7 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     }
 
     private static final int HTTP_PORT = 7000;
+    private static final long CACHE_DURATION = 60;
 
     private static final String NAME = "test";
     private static final String NAME_2 = "test2";

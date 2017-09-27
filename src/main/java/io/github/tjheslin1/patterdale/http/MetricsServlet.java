@@ -38,8 +38,8 @@ public class MetricsServlet extends HttpServlet {
     private final Supplier<List<ProbeResult>> metricsCache;
     private final Logger logger;
 
-    public MetricsServlet(MetricsUseCase metricsUseCase, Logger logger) {
-        this.metricsCache = Suppliers.memoizeWithExpiration(metricsUseCase::scrapeMetrics, 1, TimeUnit.MINUTES);
+    public MetricsServlet(MetricsUseCase metricsUseCase, Logger logger, long cacheDuration) {
+        this.metricsCache = Suppliers.memoizeWithExpiration(metricsUseCase::scrapeMetrics, cacheDuration, TimeUnit.SECONDS);
         this.logger = logger;
     }
 

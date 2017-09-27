@@ -23,6 +23,7 @@ import java.util.List;
 
 public interface RuntimeParameters {
     int httpPort();
+    long cacheDuration();
     List<DatabaseDefinition> databases();
     int connectionPoolMaxSize();
     int connectionPoolMinIdle();

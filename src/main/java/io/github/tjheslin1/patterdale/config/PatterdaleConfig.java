@@ -27,6 +27,7 @@ import java.util.Map;
  */
 public class PatterdaleConfig extends ValueType {
     public int httpPort;
+    public long cacheDuration;
     public DatabaseDefinition[] databases;
     public Map<String, String> connectionPool;
 }

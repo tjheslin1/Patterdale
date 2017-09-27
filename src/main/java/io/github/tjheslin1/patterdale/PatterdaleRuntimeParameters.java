@@ -33,12 +33,14 @@ import static java.util.Arrays.asList;
 public class PatterdaleRuntimeParameters extends ValueType implements RuntimeParameters {
 
     private final int httpPort;
+    private final long cacheDuration;
     private final List<DatabaseDefinition> databases;
     private final int connectionPoolMaxSize;
     private final int connectionPoolMinIdle;
 
-    public PatterdaleRuntimeParameters(int httpPort, List<DatabaseDefinition> databases, int connectionPoolMaxSize, int connectionPoolMinIdle) {
+    public PatterdaleRuntimeParameters(int httpPort, long cacheDuration, List<DatabaseDefinition> databases, int connectionPoolMaxSize, int connectionPoolMinIdle) {
         this.httpPort = httpPort;
+        this.cacheDuration = cacheDuration;
         this.databases = databases;
         this.connectionPoolMaxSize = connectionPoolMaxSize;
         this.connectionPoolMinIdle = connectionPoolMinIdle;
@@ -47,27 +49,54 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
         return new PatterdaleRuntimeParameters(
                 config.httpPort,
+                config.cacheDuration,
                 asList(config.databases),
                 integerParameterOrBlowUp(config.connectionPool, "maxSize"),
                 integerParameterOrBlowUp(config.connectionPool, "minIdle")
         );
     }
 
+    /**
+     * @return the HTTP port the jetty server is exposed on.
+     */
     @Override
     public int httpPort() {
         return httpPort;
     }
 
+    /**
+     * Configures the cache of {@link io.github.tjheslin1.patterdale.metrics.probe.ProbeResult}'s which is populated
+     * when the {@link io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe}'s are executed.
+     *
+     * This is to prevent the application hammering the database with queries.
+     *
+     * @return The lifetime of the cache of in seconds.
+     *
+     */
+    @Override
+    public long cacheDuration() {
+        return cacheDuration;
+    }
+
+    /**
+     * @return The listed database definitions.
+     */
     @Override
     public List<DatabaseDefinition> databases() {
         return databases;
     }
 
+    /**
+     * @return The max size of the connection pools for the databases.
+     */
     @Override
     public int connectionPoolMaxSize() {
         return connectionPoolMaxSize;
     }
 
+    /**
+     * @return The minimum size of the connection pools for the databases.
+     */
     @Override
     public int connectionPoolMinIdle() {
         return connectionPoolMinIdle;
