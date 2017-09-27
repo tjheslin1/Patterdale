@@ -6,10 +6,6 @@ metadata:
   labels:
     app_name: {{ .Values.patterdale.name }}
     app_version: {{ .Values.patterdale.image.tag | quote }}
-    environment: {{ .Values.cluster.environment }}
-    location: {{ .Values.cluster.location }}
-    live_or_stub: {{ .Values.role }}
-    dev_team_responsible: {{ .Values.team }}
     helm_chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 spec:
   revisionHistoryLimit: 30
@@ -32,6 +28,9 @@ spec:
         role: {{ .Values.role }}
         dev_team_responsible: {{ .Values.team }}
         helm_chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+      annotations:
+        checksum/configmap: {{ include "patterdale.yml" . | sha256sum }}
+        checksum/secret: {{ include "passwords.yml" . | sha256sum }}
     spec:
       containers:
       - name: {{ .Values.patterdale.name }}

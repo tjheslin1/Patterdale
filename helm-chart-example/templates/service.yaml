@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    prometheus.io/scrape: "true"
+  labels:
+    app_name: {{ .Values.patterdale.name }}
+    app_version: {{ .Values.patterdale.image.tag | quote }}
+    helm_chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  ports:
+  - name: http-port
+    port: {{ .Values.patterdale.servicePort }}
+    targetPort: {{ .Values.patterdale.targetPort }}
+  selector:
+    app_name: {{ .Chart.Name }}

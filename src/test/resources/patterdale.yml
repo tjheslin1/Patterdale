@@ -35,7 +35,8 @@ databases:
             FROM    v$sql s, dba_users d
             WHERE   s.parsing_user_id = d.user_id
             ORDER BY elapsed_time DESC)
-            WHERE ROWNUM <= 5;
+            WHERE ROWNUM <= 5
+            AND trunc(s.last_load_time) >= trunc(SYSTDATE - 1);
 connectionPool:
   maxSize: 5
   minIdle: 1

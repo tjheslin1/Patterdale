@@ -4,12 +4,8 @@ metadata:
   name: {{ .Values.patterdale.config.name }}
   namespace: {{ .Values.namespace }}
   labels:
-    app_name: {{ .Chart.Name }}
+    app_name: {{ .Values.patterdale.name }}
     app_version: {{ .Values.patterdale.image.tag | quote }}
-    environment: {{ .Values.cluster.environment }}
-    location: {{ .Values.cluster.location }}
-    live_or_stub: {{ .Values.role }}
-    dev_team_responsible: {{ .Values.team }}
     helm_chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 data:
   patterdale.yml: |
