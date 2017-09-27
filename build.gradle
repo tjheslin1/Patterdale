@@ -46,6 +46,7 @@ dependencies {
 
     testCompile "org.mockito:mockito-core:2.2.9"
     testCompile 'io.github.tjheslin1:Westie:1.4.2'
+    testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
 }
 
 jar {

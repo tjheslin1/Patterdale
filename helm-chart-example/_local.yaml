@@ -2,29 +2,33 @@ cluster:
   location: local
   environment: laptop
 
-testDatabase:
-  name: test
-  user: system
-  password: oracle
-  jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1522:xe
-  probe1:
-      query: SELECT 1 FROM DUAL
-      type: exists
-      metricName: database_up
-      metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
-
-test2Database:
-  name: test2
-  user: system
-  password: oracle
-  jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1523:xe
-  probe1:
-    query: SELECT 1 FROM DUAL
-    type: exists
-    metricName: database_up
-    metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
-  probe2:
-    query: SELECT 2 FROM DUAL
-    type: exists
-    metricName: database_up
-    metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
+databases:
+  - name: bobsDatabase
+    user: system
+    password: oracle
+    jdbcUrl: jdbc:oracle:thin:system/oracle@localhost:1522:xe
+    probes:
+      - type: exists
+        query: SELECT 1 FROM DUAL
+        metricName: database_up
+        metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
+      - type: list
+        metricName: slowest_queries
+        metricLabels: database="hydra",sqlText="%s",sqlId="%s",username="%s",childNumber="%s",diskReads="%s",executions="%s",firstLoadTime="%s",lastLoadTime="%s"
+        query: |
+            SELECT * FROM
+            (SELECT
+                s.elapsed_time / s.executions / 1000 AS AVG_ELAPSED_TIME_IN_MILLIS,
+                SUBSTR(s.sql_fulltext, 1, 80) AS SQL_TEXT,
+                s.sql_id,
+                d.username,
+                s.child_number,
+                s.disk_reads,
+                s.executions,
+                s.first_load_time,
+                s.last_load_time
+            FROM    v$sql s, dba_users d
+            WHERE   s.parsing_user_id = d.user_id
+            AND trunc(TO_DATE(s.last_load_time, 'YYYY-MM-DD/HH24:MI:SS')) >= trunc(SYSDATE - 1)
+            ORDER BY elapsed_time DESC)
+            WHERE ROWNUM <= 5;

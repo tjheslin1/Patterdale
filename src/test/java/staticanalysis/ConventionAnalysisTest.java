@@ -6,15 +6,18 @@ import io.github.tjheslin1.westie.WestieRegexes;
 import io.github.tjheslin1.westie.gitissue.GitIssueAnalyser;
 import io.github.tjheslin1.westie.infrastructure.GitIssues;
 import io.github.tjheslin1.westie.todostructure.TodosStructureAnalyser;
+import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Test;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 
 public class ConventionAnalysisTest implements WithAssertions {
@@ -45,6 +48,17 @@ public class ConventionAnalysisTest implements WithAssertions {
                 .analyseDirectory(WORKING_DIR.resolve("main").resolve("java"))
                 .forJavaFiles().analyseFileContent(this::javaFileStartsWithLicense,
                         "All src java files must start with open source license header.");
+
+        assertThat(violations).isEmpty();
+    }
+
+    @Test
+    public void configurationDocumentationIsUpToDate() throws Exception {
+        String yamlContent = FileUtils.readFileToString(new File("src/test/resources/patterdale.yml"), UTF_8);
+
+        List<Violation> violations = new WestieAnalyser().analyseFile(Paths.get("docs/configuration.md"))
+                .analyseFileContent(documentation -> !documentation.contains(yamlContent),
+                        "Expected configuration.md to contain the contents of patterdale.yml");
 
         assertThat(violations).isEmpty();
     }

@@ -21,7 +21,7 @@ Example `patterdale.yml` file':
 httpPort: 7001
 cacheDuration: 60
 databases:
-  - name: test
+  - name: bobsDatabase
     user: system
     jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
     probes:
@@ -29,7 +29,7 @@ databases:
         query: SELECT 1 FROM DUAL
         metricName: database_up
         metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
-  - name: test2
+  - name: alicesDatabase
     user: system
     jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe
     probes:
@@ -43,8 +43,8 @@ databases:
         query: |
             SELECT * FROM
             (SELECT
-                s.elapsed_time / 1000000,
-                SUBSTR(s.sql_fulltext, 1, 80) As SQL_TEXT,
+                s.elapsed_time / s.executions / 1000 AS AVG_ELAPSED_TIME_IN_MILLIS,
+                SUBSTR(s.sql_fulltext, 1, 80) AS SQL_TEXT,
                 s.sql_id,
                 d.username,
                 s.child_number,
@@ -54,6 +54,7 @@ databases:
                 s.last_load_time
             FROM    v$sql s, dba_users d
             WHERE   s.parsing_user_id = d.user_id
+            AND trunc(TO_DATE(s.last_load_time, 'YYYY-MM-DD/HH24:MI:SS')) >= trunc(SYSDATE - 1)
             ORDER BY elapsed_time DESC)
             WHERE ROWNUM <= 5;
 connectionPool:
@@ -72,6 +73,6 @@ Example `passwords.yml` file:
 passwords:
   - databaseName: bobsDatabase
     value: abc123
-  - databaseName: aliceDatabase
+  - databaseName: alicesDatabase
     value: xyz890
 ```
