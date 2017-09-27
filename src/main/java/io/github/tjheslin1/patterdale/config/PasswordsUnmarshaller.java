@@ -44,11 +44,9 @@ public class PasswordsUnmarshaller {
      * @return an in memory representation of the config.
      */
     public Passwords parsePasswords(File passwordFile) {
-        Passwords passwords;
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         try {
-            passwords = mapper.readValue(passwordFile, Passwords.class);
-            return passwords;
+            return mapper.readValue(passwordFile, Passwords.class);
         } catch (IOException e) {
             logger.error("Failed to parse provided system property 'passwords.file'.", e);
             throw new IllegalArgumentException(format("Error occurred reading passwords file '%s'", passwordFile.getName()), e);

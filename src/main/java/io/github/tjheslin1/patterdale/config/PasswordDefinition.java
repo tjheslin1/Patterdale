@@ -21,15 +21,11 @@ import io.github.tjheslin1.patterdale.ValueType;
 
 public class PasswordDefinition extends ValueType {
 
-    public String databaseName;
-    public String value;
+    public final String databaseName;
+    public final String value;
 
-    // for tests only
-    public static PasswordDefinition passwordDefinition(String databaseName, String value) {
-        PasswordDefinition passwordDefinition = new PasswordDefinition();
-        passwordDefinition.databaseName = databaseName;
-        passwordDefinition.value = value;
-
-        return passwordDefinition;
+    public PasswordDefinition(String databaseName, String value) {
+        this.databaseName = databaseName;
+        this.value = value;
     }
 }

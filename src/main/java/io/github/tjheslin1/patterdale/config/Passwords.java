@@ -19,7 +19,7 @@ package io.github.tjheslin1.patterdale.config;
 
 import io.github.tjheslin1.patterdale.ValueType;
 
-import java.util.Arrays;
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -28,16 +28,14 @@ import static java.lang.String.format;
  */
 public class Passwords extends ValueType {
 
-    public PasswordDefinition[] passwords;
+    public Map<String, String> passwords;
 
     public PasswordDefinition byDatabaseName(String databaseName) {
-        return Arrays.stream(passwords)
-                .filter(passwordDefinition -> databaseName.equalsIgnoreCase(passwordDefinition.databaseName))
-                .findFirst()
-                .orElseThrow(() -> noMatchingDatabase(databaseName));
+        if (passwords.containsKey(databaseName)) {
+            return new PasswordDefinition(databaseName, passwords.get(databaseName));
+        }
+
+        throw new IllegalArgumentException(format("there was no matching database definition for '%s'", databaseName));
     }
 
-    private IllegalArgumentException noMatchingDatabase(String databaseName) {
-        return new IllegalArgumentException(format("there was no matching database definition for '%s'", databaseName));
-    }
 }

@@ -1,6 +1,7 @@
 package io.github.tjheslin1.patterdale.config;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.collect.ImmutableMap;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,7 +13,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.net.URL;
 
-import static io.github.tjheslin1.patterdale.config.PasswordDefinition.passwordDefinition;
 import static java.lang.String.format;
 
 public class PasswordsUnmarshallerTest implements WithAssertions, WithMockito {
@@ -55,17 +55,16 @@ public class PasswordsUnmarshallerTest implements WithAssertions, WithMockito {
 
     private Passwords expectedPasswords() {
         Passwords passwords = new Passwords();
-        passwords.passwords = new PasswordDefinition[]{
-                passwordDefinition(DATABASE_NAME_1, PASSWORD_VALUE_1),
-                passwordDefinition(DATABASE_NAME_2, PASSWORD_VALUE_2)
-        };
+        passwords.passwords = ImmutableMap.of(
+                DATABASE_NAME_1, PASSWORD_VALUE_1,
+                DATABASE_NAME_2, PASSWORD_VALUE_2);
 
         return passwords;
     }
 
 
-    private static final String DATABASE_NAME_1 = "test";
-    private static final String DATABASE_NAME_2 = "test2";
+    private static final String DATABASE_NAME_1 = "bobsDatabase";
+    private static final String DATABASE_NAME_2 = "alicesDatabase";
     private static final String PASSWORD_VALUE_1 = "oracle";
     private static final String PASSWORD_VALUE_2 = "oracle";
 }
