@@ -1,7 +1,6 @@
 {{ define "passwords.yml" }}
 passwords:
-  {{ range .Values.databases }}
-  - databaseName: {{ .name }}
-    value: {{ .password }}
+  {{ range $name, $pass := .Values.secrets }}
+  {{ $name }}: {{ $pass }}
   {{ end }}
 {{ end }}

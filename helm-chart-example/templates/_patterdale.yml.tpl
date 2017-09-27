@@ -1,20 +1,20 @@
-{{ define "patterdale.yml" }}
+{{ define "patterdale.yml" -}}
 httpPort: {{ .Values.patterdale.targetPort }}
 cacheDuration: {{ .Values.patterdale.cacheDuration }}
 databases:
-  {{ range .Values.databases }}
+  {{ range .Values.databases -}}
   - name: {{ .name }}
     user: {{ .user }}
     jdbcUrl: {{ .jdbcUrl }}
     probes:
-      {{ range .probes }}
-      - query: {{ .query | quote }}
-        type: {{ .type | quote }}
+      {{ range .probes -}}
+      - type: {{ .type | quote }}
+        query: {{ .query | quote }}
         metricName: {{ .metricName | quote }}
         metricLabels: {{ .metricLabels | quote }}
-      {{ end }}
+      {{ end -}}
   {{ end }}
 connectionPool:
-    maxSize: {{ .Values.patterdale.pool.maxSize }}
-    minIdle: {{ .Values.patterdale.pool.minIdle }}
+  maxSize: {{ .Values.patterdale.pool.maxSize }}
+  minIdle: {{ .Values.patterdale.pool.minIdle }}
 {{ end }}

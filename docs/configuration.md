@@ -71,8 +71,6 @@ Provided with the project is a set of helm charts with includes `secrets.yaml` w
 Example `passwords.yml` file:
 ```yml
 passwords:
-  - databaseName: bobsDatabase
-    value: abc123
-  - databaseName: alicesDatabase
-    value: xyz890
+  bobsDatabase: oracle
+  alicesDatabase: oracle
 ```

@@ -9,4 +9,4 @@ metadata:
     helm_chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 data:
   patterdale.yml: |
-{{- include "patterdale.yml" . | indent 4 -}}
+{{ include "patterdale.yml" . | indent 4 -}}

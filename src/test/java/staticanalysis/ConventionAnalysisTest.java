@@ -53,12 +53,23 @@ public class ConventionAnalysisTest implements WithAssertions {
     }
 
     @Test
-    public void configurationDocumentationIsUpToDate() throws Exception {
+    public void configurationConfigDocumentationIsUpToDate() throws Exception {
         String yamlContent = FileUtils.readFileToString(new File("src/test/resources/patterdale.yml"), UTF_8);
 
         List<Violation> violations = new WestieAnalyser().analyseFile(Paths.get("docs/configuration.md"))
                 .analyseFileContent(documentation -> !documentation.contains(yamlContent),
                         "Expected configuration.md to contain the contents of patterdale.yml");
+
+        assertThat(violations).isEmpty();
+    }
+
+    @Test
+    public void configurationPasswordDocumentationIsUpToDate() throws Exception {
+        String yamlContent = FileUtils.readFileToString(new File("src/test/resources/passwords.yml"), UTF_8);
+
+        List<Violation> violations = new WestieAnalyser().analyseFile(Paths.get("docs/configuration.md"))
+                .analyseFileContent(documentation -> !documentation.contains(yamlContent),
+                        "Expected configuration.md to contain the contents of passwords.yml");
 
         assertThat(violations).isEmpty();
     }
