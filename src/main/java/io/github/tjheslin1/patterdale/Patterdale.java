@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 public class Patterdale {
@@ -89,9 +90,12 @@ public class Patterdale {
                 .flatMap(this::createProbes)
                 .collect(toList());
 
+        long cacheDuration = Math.min(runtimeParameters.cacheDuration(), 1);
+        logger.info(format("Using cache duration of %d seconds.", cacheDuration));
+
         WebServer webServer = new JettyWebServerBuilder(logger)
                 .withServer(server)
-                .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes), runtimeParameters, runtimeParameters.cacheDuration())
+                .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes), runtimeParameters, cacheDuration)
                 .build();
 
         try {

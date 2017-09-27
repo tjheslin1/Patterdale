@@ -63,5 +63,5 @@ spec:
           configMap:
             name: {{ .Values.patterdale.config.name }}
         - name: passwords-volume
-          configMap:
-            name: {{ .Values.patterdale.passwords.name }}
+          secret:
+            secretName: {{ .Values.patterdale.passwords.name }}
