@@ -27,7 +27,7 @@ For more information on the usages of these _probes_ and adding more probes, see
 
 ## Local testing
 
-To run the full `./gradlew` build locally, [PatterdaleTest.java](https://github.com/tjheslin1/Patterdale/src/test/java/endtoend/PatterdaleTest.java)
+To run the full `./gradlew` build locally, [PatterdaleTest.java](https://github.com/tjheslin1/Patterdale/blob/master/src/test/java/endtoend/PatterdaleTest.java)
 expects two oracle databases to be running locally.
 
 You can start a pair of default databases with the following commands.
