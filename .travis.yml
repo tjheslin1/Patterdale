@@ -22,4 +22,4 @@ before_install:
 - docker run -d -p 8081:8080 -p 1523:1521 sath89/oracle-12c
 
 script:
-  - ./gradlew clean test
+  - ./gradlew clean unitTest
