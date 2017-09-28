@@ -12,17 +12,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.util.Collections;
 import java.util.List;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 import static java.util.Arrays.asList;
-import static java.util.Collections.asLifoQueue;
 import static java.util.Collections.singletonList;
 
 public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
 
-    private static final Probe PROBE = probe("SQL", "exists", "name", "label");
+    private static final Probe PROBE = probe("name", "SQL", "exists", "name", "label");
 
     private final ResultSet resultSet = mock(ResultSet.class);
     private final ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);

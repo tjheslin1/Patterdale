@@ -30,6 +30,7 @@ import io.github.tjheslin1.patterdale.http.jetty.JettyWebServerBuilder;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
+import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
@@ -45,18 +46,21 @@ import java.util.stream.Stream;
 import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class Patterdale {
 
     private final PatterdaleRuntimeParameters runtimeParameters;
     private final Map<String, DBConnectionPool> connectionPools;
     private final TypeToProbeMapper typeToProbeMapper;
+    private final Map<String, Probe> probesByName;
     private final Logger logger;
 
-    public Patterdale(PatterdaleRuntimeParameters runtimeParameters, Map<String, DBConnectionPool> connectionPools, TypeToProbeMapper typeToProbeMapper, Logger logger) {
+    public Patterdale(PatterdaleRuntimeParameters runtimeParameters, Map<String, DBConnectionPool> connectionPools, TypeToProbeMapper typeToProbeMapper, Map<String, Probe> probesByName, Logger logger) {
         this.runtimeParameters = runtimeParameters;
         this.connectionPools = connectionPools;
         this.typeToProbeMapper = typeToProbeMapper;
+        this.probesByName = probesByName;
         this.logger = logger;
     }
 
@@ -75,7 +79,10 @@ public class Patterdale {
                 .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
                         databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(HikariDataSourceProvider.dataSource(runtimeParameters, databaseDefinition, passwords, logger)))));
 
-        Patterdale patterdale = new Patterdale(runtimeParameters, connectionPools, new TypeToProbeMapper(logger), logger);
+        Map<String, Probe> probesByName = runtimeParameters.probes().stream()
+                .collect(toMap(probe -> probe.name, probe -> probe));
+
+        Patterdale patterdale = new Patterdale(runtimeParameters, connectionPools, new TypeToProbeMapper(logger), probesByName, logger);
         logger.debug("starting Patterdale!");
 
         patterdale.start();
@@ -116,6 +123,6 @@ public class Patterdale {
 
     private Stream<OracleSQLProbe> createProbes(DatabaseDefinition databaseDefinition) {
         return Arrays.stream(databaseDefinition.probes)
-                .map(probe -> typeToProbeMapper.createProbe(connectionPools.get(databaseDefinition.name), probe));
+                .map(probeName -> typeToProbeMapper.createProbe(databaseDefinition.name, connectionPools.get(databaseDefinition.name), probesByName.get(probeName)));
     }
 }

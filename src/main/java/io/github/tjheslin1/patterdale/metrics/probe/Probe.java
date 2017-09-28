@@ -19,21 +19,33 @@ package io.github.tjheslin1.patterdale.metrics.probe;
 
 import io.github.tjheslin1.patterdale.ValueType;
 
+import static java.lang.String.format;
+
+/**
+ * The in-memory representation of probes list in 'patterdale.yml', passed in on app start-up.
+ */
 public class Probe extends ValueType {
 
+    public String name;
     public String query;
     public String type;
     public String metricName;
     public String metricLabels;
 
-    public static Probe probe(String query, String type, String metricName, String metricLabels) {
+    // test only
+    public static Probe probe(String name, String query, String type, String metricName, String metricLabels) {
         Probe probe = new Probe();
+        probe.name = name;
         probe.query = query;
         probe.type = type;
         probe.metricName = metricName;
         probe.metricLabels = metricLabels;
 
         return probe;
+    }
+
+    public Probe dbLabelled(String databaseName) {
+        return probe(this.name, this.query, this.type, this.metricName, format("database=\"%s\",", databaseName) + this.metricLabels);
     }
 
     public String query() {

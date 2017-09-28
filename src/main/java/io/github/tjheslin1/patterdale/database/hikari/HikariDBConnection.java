@@ -31,7 +31,6 @@ public class HikariDBConnection implements DBConnection {
         this.hikariDataSource = hikariDataSource;
     }
 
-
     @Override
     public Connection connection() throws SQLException {
         return hikariDataSource.getConnection();

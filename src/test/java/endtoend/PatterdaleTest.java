@@ -9,6 +9,7 @@ import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
+import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
 import static io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider.dataSource;
+import static java.util.stream.Collectors.toMap;
 
 public class PatterdaleTest implements WithAssertions {
 
@@ -37,6 +39,7 @@ public class PatterdaleTest implements WithAssertions {
     private static Logger logger;
     private static PatterdaleRuntimeParameters runtimeParameters;
     private static Map<String, DBConnectionPool> connectionPools;
+    private static Map<String, Probe> probesByName;
 
     @BeforeClass
     public static void setUp() {
@@ -54,9 +57,12 @@ public class PatterdaleTest implements WithAssertions {
                 .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
                         databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(dataSource(runtimeParameters, databaseDefinition, passwords, logger)))));
 
+        probesByName = runtimeParameters.probes().stream()
+                .collect(toMap(probe -> probe.name, probe -> probe));
+
         typeToProbeMapper = new TypeToProbeMapper(logger);
 
-        new Patterdale(runtimeParameters, connectionPools, typeToProbeMapper, logger)
+        new Patterdale(runtimeParameters, connectionPools, typeToProbeMapper, probesByName, logger)
                 .start();
     }
 
@@ -67,13 +73,14 @@ public class PatterdaleTest implements WithAssertions {
 
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
-        assertThat(responseBody(response)).matches(Pattern.compile("database_up\\{database=\"myDB\",query=\"SELECT 1 FROM DUAL\"} 1.0\n" +
-                        "database_up\\{database=\"myDB2\",query=\"SELECT 1 FROM DUAL\"} 1.0\n" +
-                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
-                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
-                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
-                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
-                "slowest_queries\\{database=\"myDB2\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*"
+        assertThat(responseBody(response)).matches(Pattern.compile(
+                "database_up\\{database=\"bobsDatabase\",query=\"SELECT 1 FROM DUAL\"} 1.0\n" +
+                        "database_up\\{database=\"alicesDatabase\",query=\"SELECT 1 FROM DUAL\"} 1.0\n" +
+                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
+                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
+                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
+                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
+                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*"
                 , Pattern.DOTALL)
         );
     }

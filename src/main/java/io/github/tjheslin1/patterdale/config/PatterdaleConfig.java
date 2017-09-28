@@ -19,6 +19,7 @@ package io.github.tjheslin1.patterdale.config;
 
 import io.github.tjheslin1.patterdale.ValueType;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 
 import java.util.Map;
 
@@ -30,4 +31,5 @@ public class PatterdaleConfig extends ValueType {
     public long cacheDuration;
     public DatabaseDefinition[] databases;
     public Map<String, String> connectionPool;
+    public Probe[] probes;
 }

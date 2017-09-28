@@ -18,6 +18,7 @@
 package io.github.tjheslin1.patterdale;
 
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public interface RuntimeParameters {
     int httpPort();
     long cacheDuration();
     List<DatabaseDefinition> databases();
+    List<Probe> probes();
     int connectionPoolMaxSize();
     int connectionPoolMinIdle();
 }

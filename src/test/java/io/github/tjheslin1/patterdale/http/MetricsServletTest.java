@@ -22,11 +22,11 @@ import static org.mockito.Mockito.times;
 
 public class MetricsServletTest implements WithAssertions, WithMockito {
 
-    private static final Probe PROBE_1 = probe("SQL", "exists", "database_up", "key=\"value\"");
-    private static final Probe PROBE_2 = probe("SQL", "exists", "database_other", "key=\"something\"");
-    private static final Probe PROBE_3 = probe("SQL", "exists", "database_list", "key=\"somethingElse\",result=\"%s\"");
+    private static final Probe PROBE_1 = probe("name", "SQL", "exists", "database_up", "key=\"value\"");
+    private static final Probe PROBE_2 = probe("name2", "SQL", "exists", "database_other", "key=\"something\"");
+    private static final Probe PROBE_3 = probe("name3", "SQL", "exists", "database_list", "key=\"somethingElse\",result=\"%s\"");
 
-    private static final DatabaseDefinition DATABASE_DEFINITION = databaseDefinition("", "", "", asList(PROBE_1, PROBE_2));
+    private static final DatabaseDefinition DATABASE_DEFINITION = databaseDefinition("", "", "", asList(PROBE_1.name, PROBE_2.name));
 
     private static final ProbeResult PROBE_RESULT_1 = new ProbeResult(1, PROBE_1);
     private static final ProbeResult PROBE_RESULT_2 = new ProbeResult(1, PROBE_2);

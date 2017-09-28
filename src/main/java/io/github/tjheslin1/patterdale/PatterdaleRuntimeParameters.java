@@ -19,6 +19,7 @@ package io.github.tjheslin1.patterdale;
 
 import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 
 import java.util.List;
 import java.util.Map;
@@ -37,13 +38,15 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     private final List<DatabaseDefinition> databases;
     private final int connectionPoolMaxSize;
     private final int connectionPoolMinIdle;
+    private final List<Probe> probes;
 
-    public PatterdaleRuntimeParameters(int httpPort, long cacheDuration, List<DatabaseDefinition> databases, int connectionPoolMaxSize, int connectionPoolMinIdle) {
+    public PatterdaleRuntimeParameters(int httpPort, long cacheDuration, List<DatabaseDefinition> databases, int connectionPoolMaxSize, int connectionPoolMinIdle, List<Probe> probes) {
         this.httpPort = httpPort;
         this.cacheDuration = cacheDuration;
         this.databases = databases;
         this.connectionPoolMaxSize = connectionPoolMaxSize;
         this.connectionPoolMinIdle = connectionPoolMinIdle;
+        this.probes = probes;
     }
 
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
@@ -52,8 +55,8 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
                 config.cacheDuration,
                 asList(config.databases),
                 integerParameterOrBlowUp(config.connectionPool, "maxSize"),
-                integerParameterOrBlowUp(config.connectionPool, "minIdle")
-        );
+                integerParameterOrBlowUp(config.connectionPool, "minIdle"),
+                asList(config.probes));
     }
 
     /**
@@ -67,11 +70,10 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     /**
      * Configures the cache of {@link io.github.tjheslin1.patterdale.metrics.probe.ProbeResult}'s which is populated
      * when the {@link io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe}'s are executed.
-     *
+     * <p>
      * This is to prevent the application hammering the database with queries.
      *
      * @return The lifetime of the cache of in seconds.
-     *
      */
     @Override
     public long cacheDuration() {
@@ -84,6 +86,14 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     @Override
     public List<DatabaseDefinition> databases() {
         return databases;
+    }
+
+    /**
+     * @return The listed probe definitions.
+     */
+    @Override
+    public List<Probe> probes() {
+        return probes;
     }
 
     /**

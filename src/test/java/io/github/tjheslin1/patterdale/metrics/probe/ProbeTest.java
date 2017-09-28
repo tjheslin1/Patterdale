@@ -7,7 +7,7 @@ public class ProbeTest implements WithAssertions {
 
     @Test
     public void removesTrailingSemicolon() {
-        Probe probe = Probe.probe("SELECT 1 FROM DUAL ; ", "", "", "");
+        Probe probe = Probe.probe("name", "SELECT 1 FROM DUAL ; ", "", "", "");
 
         assertThat(probe.query()).isEqualTo("SELECT 1 FROM DUAL");
     }

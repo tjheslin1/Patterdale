@@ -25,41 +25,44 @@ databases:
     user: system
     jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
     probes:
-      - type: exists
-        query: SELECT 1 FROM DUAL
-        metricName: database_up
-        metricLabels: database="myDB",query="SELECT 1 FROM DUAL"
+      - healthCheck
   - name: alicesDatabase
     user: system
     jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe
     probes:
-      - type: exists
-        metricName: database_up
-        metricLabels: database="myDB2",query="SELECT 1 FROM DUAL"
-        query: SELECT 1 FROM DUAL
-      - type: list
-        metricName: slowest_queries
-        metricLabels: database="myDB2",sqlText="%s",sqlId="%s",username="%s",childNumber="%s",diskReads="%s",executions="%s",firstLoadTime="%s",lastLoadTime="%s"
-        query: |
-            SELECT * FROM
-            (SELECT
-                s.elapsed_time / s.executions / 1000 AS AVG_ELAPSED_TIME_IN_MILLIS,
-                SUBSTR(s.sql_fulltext, 1, 80) AS SQL_TEXT,
-                s.sql_id,
-                d.username,
-                s.child_number,
-                s.disk_reads,
-                s.executions,
-                s.first_load_time,
-                s.last_load_time
-            FROM    v$sql s, dba_users d
-            WHERE   s.parsing_user_id = d.user_id
-            AND trunc(TO_DATE(s.last_load_time, 'YYYY-MM-DD/HH24:MI:SS')) >= trunc(SYSDATE - 1)
-            ORDER BY elapsed_time DESC)
-            WHERE ROWNUM <= 5;
+      - healthCheck
+      - slowestQueries
 connectionPool:
   maxSize: 5
   minIdle: 1
+
+probes:
+  - name: healthCheck
+    type: exists
+    query: SELECT 1 FROM DUAL
+    metricName: database_up
+    metricLabels: query="SELECT 1 FROM DUAL"
+  - name: slowestQueries
+    type: list
+    metricName: slowest_queries
+    metricLabels: sqlText="%s",sqlId="%s",username="%s",childNumber="%s",diskReads="%s",executions="%s",firstLoadTime="%s",lastLoadTime="%s"
+    query: |
+        SELECT * FROM
+        (SELECT
+            s.elapsed_time / s.executions / 1000 AS AVG_ELAPSED_TIME_IN_MILLIS,
+            SUBSTR(s.sql_fulltext, 1, 80) AS SQL_TEXT,
+            s.sql_id,
+            d.username,
+            s.child_number,
+            s.disk_reads,
+            s.executions,
+            s.first_load_time,
+            s.last_load_time
+        FROM    v$sql s, dba_users d
+        WHERE   s.parsing_user_id = d.user_id
+        AND trunc(TO_DATE(s.last_load_time, 'YYYY-MM-DD/HH24:MI:SS')) >= trunc(SYSDATE - 1)
+        ORDER BY elapsed_time DESC)
+        WHERE ROWNUM <= 5;
 ```
 
 ## passwords.yml

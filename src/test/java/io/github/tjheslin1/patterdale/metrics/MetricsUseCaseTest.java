@@ -17,7 +17,7 @@ import static java.util.Collections.singletonList;
 
 public class MetricsUseCaseTest implements WithAssertions, WithMockito {
 
-    private static final Probe PROBE = probe("SQL", "exists", "name", "label");
+    private static final Probe PROBE = probe("name","SQL", "exists", "name", "label");
 
     private final ResultSet resultSet = mock(ResultSet.class);
     private final ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);

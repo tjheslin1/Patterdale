@@ -25,7 +25,7 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
     private final Logger logger = mock(Logger.class);
 
     private final ExistsOracleSQLProbe existsOracleSQLProbe = new ExistsOracleSQLProbe(
-            probe(SQL, "exists", "", ""), dbConnectionPool, logger);
+            probe("name", SQL, "exists", "", ""), dbConnectionPool, logger);
 
     @Test
     public void probeReturnsSuccess() throws Exception {

@@ -22,21 +22,21 @@ import io.github.tjheslin1.patterdale.ValueType;
 import java.util.List;
 
 /**
- * The in-memory representation of databases field in 'patterdale.yml', passed in on app start-up.
+ * The in-memory representation of databases list in 'patterdale.yml', passed in on app start-up.
  */
 public class DatabaseDefinition extends ValueType {
     public String name;
     public String user;
     public String jdbcUrl;
-    public Probe[] probes;
+    public String[] probes;
 
     // test use only
-    public static DatabaseDefinition databaseDefinition(String name, String user, String jdbcUrl, List<Probe> probes) {
+    public static DatabaseDefinition databaseDefinition(String name, String user, String jdbcUrl, List<String> probes) {
         DatabaseDefinition databaseDefinition = new DatabaseDefinition();
         databaseDefinition.name = name;
         databaseDefinition.user = user;
         databaseDefinition.jdbcUrl = jdbcUrl;
-        databaseDefinition.probes = probes.toArray(new Probe[probes.size()]);
+        databaseDefinition.probes = probes.toArray(new String[probes.size()]);
 
         return databaseDefinition;
     }

@@ -33,17 +33,18 @@ public class TypeToProbeMapper {
         this.logger = logger;
     }
 
-    public OracleSQLProbe createProbe(DBConnectionPool dbConnectionPool, Probe probe) {
-        switch (probe.type) {
+    public OracleSQLProbe createProbe(String databaseName, DBConnectionPool dbConnectionPool, Probe probe) {
+        Probe dbLabelledProbe = probe.dbLabelled(databaseName);
+        switch (dbLabelledProbe.type) {
             case EXISTS: {
-                return new ExistsOracleSQLProbe(probe, dbConnectionPool, logger);
+                return new ExistsOracleSQLProbe(dbLabelledProbe, dbConnectionPool, logger);
             }
             case LIST: {
-                return new ListOracleSQLProbe(probe, dbConnectionPool, logger);
+                return new ListOracleSQLProbe(dbLabelledProbe, dbConnectionPool, logger);
             }
             default: {
                 throw new IllegalArgumentException(
-                        format("Expected the provided 'type' value '%s' to match an OracleSqlProbe definition.", probe.type));
+                        format("Expected the provided 'type' value '%s' to match an OracleSqlProbe definition.", dbLabelledProbe.type));
             }
         }
     }
