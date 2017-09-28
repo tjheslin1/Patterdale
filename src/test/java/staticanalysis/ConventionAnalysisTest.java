@@ -74,6 +74,30 @@ public class ConventionAnalysisTest implements WithAssertions {
         assertThat(violations).isEmpty();
     }
 
+    @Test
+    public void correctDockerImageVersionIsReferenced() throws Exception {
+        String versionLine = FileUtils.readLines(new File("build.gradle"), UTF_8)
+                .stream().filter(line -> line.contains("version '"))
+                .findFirst().get();
+        String buildVersion = versionLine.substring("version '".length(), versionLine.length() - 1);
+
+        String readmeDockerRunCommand = FileUtils.readLines(new File("README.md"), UTF_8)
+                .stream().filter(line -> line.contains("docker run -d -p 7000:7000"))
+                .findFirst().get();
+
+        String configurationDockerRunCommand = FileUtils.readLines(new File("docs/configuration.md"), UTF_8)
+                .stream().filter(line -> line.contains("docker run -d -p 7000:7000"))
+                .findFirst().get();
+
+        assertThat(readmeDockerRunCommand)
+                .describedAs("README.md's docker run command should reference build.gradle's app version")
+                .contains(buildVersion);
+
+        assertThat(configurationDockerRunCommand)
+                .describedAs("docs/configuration.md's docker run command should reference build.gradle's app version")
+                .contains(buildVersion);
+    }
+
     private boolean javaFileStartsWithLicense(String fileContent) {
         return !fileContent.startsWith(LICENSE);
     }
