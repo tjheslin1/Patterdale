@@ -65,7 +65,12 @@ public class Patterdale {
     }
 
     public static void main(String[] args) {
-        Logger logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
+        String logbackEnv = System.getenv("logback.configurationFile");
+        if (logbackEnv != null) {
+            System.setProperty("logback.configurationFile", logbackEnv);
+        }
+
+        Logger logger = LoggerFactory.getLogger("application");
 
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
                 .parseConfig(new File(System.getProperty("config.file")));
@@ -89,7 +94,7 @@ public class Patterdale {
     }
 
     public void start() {
-        System.setProperty("logback.configurationFile", "src/main/resources/logback.xml");
+        logger.info("logback.configurationFile = " + System.getProperty("logback.configurationFile"));
 
         Server server = new Server(runtimeParameters.httpPort());
 

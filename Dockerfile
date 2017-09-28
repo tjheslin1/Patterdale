@@ -7,4 +7,6 @@ WORKDIR /app
 
 COPY build/libs/patterdale-all.jar .
 
-ENTRYPOINT ["java", "-jar", "-Dconfig.file=/config/patterdale.yml", "-Dpasswords.file=/passwords/passwords.yml", "patterdale-all.jar"]
+ENV logback.configurationFile /config/logback.xml
+
+CMD ["java", "-jar", "-Dlogback.configurationFile=${logback.configurationFile}", "-Dconfig.file=/config/patterdale.yml", "-Dpasswords.file=/passwords/passwords.yml", "patterdale-all.jar"]
