@@ -12,7 +12,16 @@ The example `docker run` commands includes two volume mounts:
 After which the next call to /metrics will trigger a full scrape of all database probes and store in the cache again. This is to prevent overloading the databases with requests.
 
 `databases` is a list of the databases the application will connect to.
-Each database definition has a list of probes which will be executed against that database.
+Each database definition references probes defined in the `probes` list below, to be executed against that database.
+
+Note: The metric label of `database=${databaseName}` will be automatically appended to all _metricLabels_.
+
+e.g For the below configuration the _healthCheck_ metrics will appear as:
+
+```
+database_up{database="bobsDatabase",query="SELECT 1 FROM DUAL"} 1.0
+database_up{database="alicesDatabase",query="SELECT 1 FROM DUAL"} 1.0
+```
 
 `/your/config/directory` is expected to contain a file `patterdale.yml`, below is an example:
 
