@@ -45,7 +45,7 @@ docker run -d -p 8082:8080 -p 1523:1521 sath89/oracle-12c
 
 ```
 docker build -t tjheslin1/patterdale:DEV .
-docker run --name patterdale-test -d -p 7001:7001 -v ~/Patterdale-jvm/src/main/resources/:/config -v ~/Patterdale-jvm/src/main/resources/:/passwords tjheslin1/patterdale:DEV
+docker run --name patterdale-test -d -p 7001:7001 -v ~/Patterdale-jvm/repo/ojdbc7.jar:/app/driver.jar -v ~/Patterdale-jvm/src/main/resources/:/config -v ~/Patterdale-jvm/src/main/resources/:/passwords tjheslin1/patterdale:DEV
 
 docker logs -f ${container_id}
 ```
