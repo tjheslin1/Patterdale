@@ -45,9 +45,10 @@ docker run -d -p 8082:8080 -p 1523:1521 sath89/oracle-12c
 
 ```
 docker build -t tjheslin1/patterdale:DEV .
-docker run --name patterdale-test -d -p 7001:7001 -v ~/Patterdale-jvm/src/main/resources/:/config -v ~/Patterdale-jvm/src/main/resources/:/passwords tjheslin1/patterdale:DEV
+docker run --name patterdale-test -d -p 7001:7001 -v ~/Patterdale/src/test/resources/:/config -v ~/Patterdale/src/test/resources/:/passwords tjheslin1/patterdale:DEV
 
 docker logs -f ${container_id}
 ```
 
 Once the app has started up and created connection pools, the URL to the /metrics page will be logged.
+Note: the _sath89/oracle-12c_ containers may take a few minutes to start up.
