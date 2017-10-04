@@ -1,5 +1,10 @@
 # Patterdale
 
+## Contents
+
+- [Configuration](configuration.md)
+- [Probes](probes.md)
+
 ## What is it?
 
 Patterdale monitors Oracle databases and exports metrics conforming to [Prometheus](https://github.com/prometheus/prometheus) standards.
