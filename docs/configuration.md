@@ -2,7 +2,9 @@
 
 The example `docker run` commands includes two volume mounts:
 
-`docker run -d -p 7000:7000 -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:0.13.0`
+`docker run -d -p 7000:7000 -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:0.14.0`
+
+If a logback.xml file is included in the directory passed into the `/config` container volume, this will configure your logging.
 
 ## patterdale.yml
 

@@ -6,3 +6,5 @@ target/
 build/
 .DS_Store
 *.iml
+
+release_test.txt
