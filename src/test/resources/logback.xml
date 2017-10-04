@@ -9,8 +9,7 @@
         </layout>
     </appender>
 
-    <logger name="io.github.tjheslin1" level="debug"
-            additivity="false">
+    <logger name="application" level="debug" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 

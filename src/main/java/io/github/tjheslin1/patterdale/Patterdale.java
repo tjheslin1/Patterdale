@@ -65,11 +65,6 @@ public class Patterdale {
     }
 
     public static void main(String[] args) {
-        String logbackEnv = System.getenv("logback.configurationFile");
-        if (logbackEnv != null) {
-            System.setProperty("logback.configurationFile", logbackEnv);
-        }
-
         Logger logger = LoggerFactory.getLogger("application");
 
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
