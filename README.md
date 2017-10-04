@@ -4,4 +4,6 @@
 
 `docker run -d -p 7000:7000 -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:0.14.0`
 
+If a logback.xml file is included in the directory passed into the /config container volume, this will configure your logging.
+
 [See here for documentation](https://tjheslin1.github.io/Patterdale/)
