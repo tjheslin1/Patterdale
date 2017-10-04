@@ -41,6 +41,7 @@ databases:
     probes:
       - healthCheck
       - slowestQueries
+
 connectionPool:
   maxSize: 5
   minIdle: 1

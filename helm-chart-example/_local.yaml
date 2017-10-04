@@ -3,6 +3,14 @@ cluster:
   environment: laptop
 
 databases:
+  - name: local
+    user: system
+    jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
+    probes:
+      - healthCheck
+      - slowestQueries
+
+databases:
   - name: bobsDatabase
     user: system
     password: oracle
