@@ -43,7 +43,7 @@ public class PatterdaleTest implements WithAssertions {
 
     @BeforeClass
     public static void setUp() {
-        logger = LoggerFactory.getLogger("io.github.tjheslin1.patterdale.Patterdale");
+        logger = LoggerFactory.getLogger("application");
 
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
                 .parseConfig(new File("src/test/resources/patterdale.yml"));

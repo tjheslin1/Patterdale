@@ -1,7 +1,5 @@
 FROM openjdk:8u131-jdk-alpine
 
-MAINTAINER Thomas Heslin <tjheslin1@gmail.com>
-
 RUN mkdir /app && mkdir /config
 WORKDIR /app
 
