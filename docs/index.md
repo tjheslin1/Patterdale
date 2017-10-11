@@ -41,7 +41,7 @@ docker run -d -p 8081:8080 -p 1522:1521 sath89/oracle-12c
 docker run -d -p 8082:8080 -p 1523:1521 sath89/oracle-12c
 ```
 
-`./gradlew` locally will require the `ojdbc7.jar` driver. By adding the property `bundleOjdbc=yes` to your `gradle.properties` file. If this file doesn't exist. Simple create this file in your `.gradle` directory (located in your $HOME dir).
+`./gradlew` locally will require the `ojdbc7.jar` driver. By adding the property `bundleOjdbc=yes` to your `gradle.properties` file. If this file doesn't exist, simply create this file in your `.gradle` directory (located in your $HOME dir).
 
 ### Building snapshot docker images
 
