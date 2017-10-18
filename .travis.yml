@@ -17,5 +17,37 @@ cache:
 services:
   - docker
 
+before_script:
+  - docker pull sath89/oracle-12c
+
 script:
-  - ./gradlew clean unitTest
+  - docker run -d --name db1 -p 8080:8080 -p 1521:1521 sath89/oracle-12c
+  - docker run -d --name db2 -p 8081:8080 -p 1522:1521 sath89/oracle-12c
+
+
+  - 'if docker logs db1 2>&1 | grep -Fxq "Database ready to use"
+    then
+        echo "db1 ready!"
+    else
+        echo "db1 not ready!"
+    fi'
+  - 'if docker logs db2 2>&1 | grep -Fxq "Database ready to use"
+    then
+        echo "db2 ready!"
+    else
+        echo "db2 not ready!"
+    fi'
+
+  - 'until [ docker logs db1 2>&1 | grep -Fxq "Database ready to use" ]; do
+        sleep 1;
+        echo "db1 not ready!"
+    done;'
+  - echo "db1 ready!"
+
+    - 'until [ docker logs db1 2>&1 | grep -Fxq "Database ready to use" ]; do
+        sleep 1;
+        echo "db2 not ready!"
+    done;'
+  - echo "db2 ready!"
+
+  - ./gradlew
