@@ -24,11 +24,18 @@ script:
   - docker run -d --name db1 -p 8080:8080 -p 1522:1521 sath89/oracle-12c
   - docker run -d --name db2 -p 8081:8080 -p 1523:1521 sath89/oracle-12c
 
+  - 'i=1
+     until [ $i -gt 6 ]
+     do
+     	echo "Welcome $i times."
+     	i=$(( i+1 ))
+     done'
+
   - 'until [ docker logs db1 2>&1 | grep -Fxq "Database ready to use" ]
     do
         sleep 1;
         echo "db1 not ready!"
-    done;'
+    done'
 
   - echo "db1 ready!"
 
@@ -36,7 +43,7 @@ script:
     do
       sleep 1;
       echo "db2 not ready!"git
-    done;'
+    done'
   - echo "db2 ready!"
 
   - ./gradlew
