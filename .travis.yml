@@ -17,8 +17,8 @@ cache:
 services:
   - docker
 
-before_script:
-  - docker pull sath89/oracle-12c
+#before_script:
+#  - docker pull sath89/oracle-12c
 
 script:
 #  - docker run -d --name db1 -p 8080:8080 -p 1522:1521 sath89/oracle-12c
