@@ -18,6 +18,7 @@ services:
   - docker
 
 before_script:
+  - sudo apt-get install expect
   - docker pull sath89/oracle-12c
 
 script:
