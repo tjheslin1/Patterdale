@@ -27,7 +27,7 @@ script:
 
   - chmod +x find_in_docker_logs.sh
 
-  - sh find_in_docker_logs.sh db1 300 "Database ready to use"
-  - sh find_in_docker_logs.sh db2 300 "Database ready to use"
+  - sh find_in_docker_logs.sh db1 500 "Database ready to use"
+  - sh find_in_docker_logs.sh db2 500 "Database ready to use"
 
   - ./gradlew
