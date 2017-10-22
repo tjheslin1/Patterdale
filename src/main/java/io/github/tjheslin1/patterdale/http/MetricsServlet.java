@@ -20,6 +20,7 @@ package io.github.tjheslin1.patterdale.http;
 import com.google.common.base.Suppliers;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
+import io.prometheus.client.CollectorRegistry;
 import org.slf4j.Logger;
 
 import javax.servlet.ServletException;
@@ -27,24 +28,31 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
+import java.io.Writer;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResultFormatter.formatProbeResults;
+import io.prometheus.client.exporter.common.TextFormat;
 
 public class MetricsServlet extends HttpServlet {
 
+    private final CollectorRegistry registry;
     private final Supplier<List<ProbeResult>> metricsCache;
     private final Logger logger;
 
-    public MetricsServlet(MetricsUseCase metricsUseCase, Logger logger, long cacheDuration) {
+    public MetricsServlet(CollectorRegistry registry, MetricsUseCase metricsUseCase, Logger logger, long cacheDuration) {
+        this.registry = registry;
         this.metricsCache = Suppliers.memoizeWithExpiration(metricsUseCase::scrapeMetrics, cacheDuration, TimeUnit.SECONDS);
         this.logger = logger;
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.setContentType(TextFormat.CONTENT_TYPE_004);
+
         List<ProbeResult> probeResults = metricsCache.get();
 
         formatProbeResults(probeResults)
@@ -55,5 +63,28 @@ public class MetricsServlet extends HttpServlet {
                         logger.error("IO error occurred writing to /metrics page.", e);
                     }
                 });
+
+        Writer writer = resp.getWriter();
+        try {
+            TextFormat.write004(writer, registry.filteredMetricFamilySamples(parse(req)));
+            writer.flush();
+        } finally {
+            writer.close();
+        }
+    }
+
+    @Override
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp)
+            throws ServletException, IOException {
+        doGet(req, resp);
+    }
+
+    private Set<String> parse(HttpServletRequest req) {
+        String[] includedParam = req.getParameterValues("name[]");
+        if (includedParam == null) {
+            return Collections.emptySet();
+        } else {
+            return new HashSet<>(Arrays.asList(includedParam));
+        }
     }
 }

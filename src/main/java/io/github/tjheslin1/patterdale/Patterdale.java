@@ -27,12 +27,17 @@ import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider;
 import io.github.tjheslin1.patterdale.http.WebServer;
 import io.github.tjheslin1.patterdale.http.jetty.JettyWebServerBuilder;
+import io.github.tjheslin1.patterdale.metrics.JettyStatisticsCollector;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.hotspot.*;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +95,7 @@ public class Patterdale {
 
     public void start() {
         logger.info("logback.configurationFile = " + System.getProperty("logback.configurationFile"));
-
-        Server server = new Server(runtimeParameters.httpPort());
+        CollectorRegistry registry = new CollectorRegistry();
 
         List<OracleSQLProbe> probes = runtimeParameters.databases().stream()
                 .flatMap(this::createProbes)
@@ -101,8 +105,8 @@ public class Patterdale {
         logger.info(format("Using cache duration of %d seconds.", cacheDuration));
 
         WebServer webServer = new JettyWebServerBuilder(logger)
-                .withServer(server)
-                .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes), runtimeParameters, cacheDuration)
+                .withServer(serverWithStatisticsCollection(registry))
+                .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes), runtimeParameters, registry, cacheDuration)
                 .build();
 
         try {
@@ -124,5 +128,26 @@ public class Patterdale {
     private Stream<OracleSQLProbe> createProbes(DatabaseDefinition databaseDefinition) {
         return Arrays.stream(databaseDefinition.probes)
                 .map(probeName -> typeToProbeMapper.createProbe(databaseDefinition.name, connectionPools.get(databaseDefinition.name), probesByName.get(probeName)));
+    }
+
+    private Server serverWithStatisticsCollection(CollectorRegistry registry) {
+        Server server = new Server(runtimeParameters.httpPort());
+
+        new StandardExports().register(registry);
+        new MemoryPoolsExports().register(registry);
+        new GarbageCollectorExports().register(registry);
+        new ThreadExports().register(registry);
+        new ClassLoadingExports().register(registry);
+        new VersionInfoExports().register(registry);
+
+        HandlerCollection handlers = new HandlerCollection();
+        StatisticsHandler statisticsHandler = new StatisticsHandler();
+        statisticsHandler.setServer(server);
+        handlers.addHandler(statisticsHandler);
+
+        new JettyStatisticsCollector(statisticsHandler).register();
+        server.setHandler(handlers);
+
+        return server;
     }
 }
