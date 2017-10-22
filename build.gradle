@@ -17,10 +17,19 @@ defaultTasks 'clean', 'test', 'shadowJar'
 
 sourceCompatibility = 1.8
 
+//def oracleUsername = hasProperty('mavenOracleUsername') ? mavenOracleUsername : System.getenv('mavenOracleUsername')
+//def oraclePassword = hasProperty('mavenOraclePassword') ? mavenOraclePassword : System.getenv('mavenOraclePassword')
+
 repositories {
-    mavenCentral()
-    mavenLocal()
     jcenter()
+
+//    maven {
+//        url "https://www.oracle.com/content/secure/maven/content"
+//        credentials {
+//            username oracleUsername
+//            password oraclePassword
+//        }
+//    }
 }
 
 dependencies {
@@ -37,6 +46,7 @@ dependencies {
     compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.5.v20170502'
     compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.5.v20170502'
 
+//    compile("com.oracle.jdbc:ojdbc7:12.1.0.2")
     if (project.hasProperty('bundleOjdbc')) {
         if (bundleOjdbc == "yes") {
             compile files('./repo/ojdbc7.jar')
@@ -77,5 +87,5 @@ task unitTest(type: Test) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.5'
+    gradleVersion = '4.2.1'
 }
