@@ -52,5 +52,10 @@ docker run --name patterdale-test -d -p 7001:7001 -v ~/Patterdale/repo/ojdbc7.ja
 docker logs -f ${container_id}
 ```
 
+### Getting a _java.net.ConnectException_ when running locally?
+`patterdale.yml` from _src/test/resources_ may need to have the `jdbcUrl`s updating, if this occurs replace _localhost_ in the `jdbcUrl`s with your local IP address. 
+
+
+
 Once the app has started up and created connection pools, the URL to the /metrics page will be logged.
 Note: the _sath89/oracle-12c_ containers may take a few minutes to start up.
