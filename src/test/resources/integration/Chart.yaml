@@ -1,0 +1,3 @@
+name: patterdale-integration-test
+version: 0.1.0
+description: integration test between Patterdale, Oracle and Prometheus
