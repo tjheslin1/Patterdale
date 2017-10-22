@@ -19,9 +19,10 @@ package io.github.tjheslin1.patterdale.http;
 
 import io.github.tjheslin1.patterdale.RuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
+import io.prometheus.client.CollectorRegistry;
 
 public interface WebServerBuilder {
 
-    WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters, long cacheDuration);
+    WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters, CollectorRegistry registry, long cacheDuration);
     WebServer build();
 }
