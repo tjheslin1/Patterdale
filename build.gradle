@@ -18,9 +18,18 @@ defaultTasks 'clean', 'test', 'shadowJar'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
-    mavenLocal()
+//    mavenCentral()
+//    mavenLocal()
     jcenter()
+
+    maven {
+        url "https://www.oracle.com/content/secure/maven/content"
+//        url "https://maven.oracle.com"
+        credentials {
+            username "'" + mavenOracleUsername + "'"
+            password "'" + mavenOraclePassword + "'"
+        }
+    }
 }
 
 dependencies {
@@ -39,11 +48,13 @@ dependencies {
 
     if (project.hasProperty('bundleOjdbc')) {
         if (bundleOjdbc == "yes") {
-            compile files('./repo/ojdbc7.jar')
+//            compile files('./repo/ojdbc7.jar')
+            compile("com.oracle.jdbc:ojdbc7:12.1.0.2")
             println("Including odjdbc7.jar")
         }
     } else {
-        shadow files('./repo/ojdbc7.jar')
+//        shadow files('./repo/ojdbc7.jar')
+        shadow files("com.oracle.jdbc:ojdbc7:12.1.0.2")
         println("Ignoring odjdbc7.jar")
     }
     compile 'com.zaxxer:HikariCP:2.7.1'
