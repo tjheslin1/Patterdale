@@ -17,6 +17,9 @@ defaultTasks 'clean', 'test', 'shadowJar'
 
 sourceCompatibility = 1.8
 
+def oracleUsername = hasProperty('mavenOracleUsername') ? mavenOracleUsername : System.getenv('mavenOracleUsername')
+def oraclePassword = hasProperty('mavenOraclePassword') ? mavenOraclePassword : System.getenv('mavenOraclePassword')
+
 repositories {
 //    mavenCentral()
 //    mavenLocal()
@@ -26,8 +29,8 @@ repositories {
         url "https://www.oracle.com/content/secure/maven/content"
 //        url "https://maven.oracle.com"
         credentials {
-            username "'" + mavenOracleUsername + "'"
-            password "'" + mavenOraclePassword + "'"
+            username "'" + oracleUsername + "'"
+            password "'" + oraclePassword + "'"
         }
     }
 }
