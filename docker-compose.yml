@@ -1,0 +1,33 @@
+version: '1'
+
+volumes:
+    prometheus_data: {}
+
+services:
+  prometheus:
+    image: prom/prometheus:1.7.2
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '-config.file=/etc/prometheus/prometheus.yml'
+      - '-storage.local.path=/prometheus'
+    expose:
+      - 9090
+
+  patterdale:
+    image: tjheslin1/patterdale:DEV-SNAPSHOT
+    volumes:
+      - .repo/ojdbc7.jar:/app/ojdbc7.jar
+      - ./src/test/resources:/config
+      - ./src/test/resources:/passwords
+    command:
+      - '-config.file=/etc/prometheus/prometheus.yml'
+      - '-storage.local.path=/prometheus'
+    expose:
+      - 7000
+    links:
+      - patterdale:patterdale
+
+#    oracle:
+#      image
