@@ -13,8 +13,8 @@ services:
       - '-storage.local.path=/prometheus'
     expose:
       - 9090
-#    links:
-#      - patterdale:patterdale
+    links:
+      - patterdale
 
   patterdale:
     image: tjheslin1/patterdale:DEV-SNAPSHOT
