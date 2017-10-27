@@ -1,23 +1,22 @@
-version: '2'
-
-#volumes:
-#    prometheus_data: {}
+version: '3.3'
 
 services:
   prometheus:
     image: prom/prometheus:v1.7.2
+    ports:
+      - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '-config.file=/etc/prometheus/prometheus.yml'
       - '-storage.local.path=/prometheus'
-    expose:
-      - 9090
     links:
       - patterdale
 
   patterdale:
     image: tjheslin1/patterdale:DEV-SNAPSHOT
+    ports:
+      - "7001:7001"
     volumes:
       - ./repo/ojdbc7.jar:/app/ojdbc7.jar
       - ./src/test/resources:/config
@@ -32,8 +31,6 @@ services:
       - '-Dconfig.file=/config/patterdale.yml'
       - '-Dpasswords.file=/passwords/passwords.yml'
       - '-Dlogback.configurationFile=/config/logback.xml'
-    expose:
-      - 7001
 
 #    oracle:
 #      image
