@@ -3,12 +3,12 @@ cacheDuration: 60
 databases:
   - name: bobsDatabase
     user: system
-    jdbcUrl: jdbc:oracle:thin:@192.168.0.91:1522:xe
+    jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
     probes:
       - healthCheck
   - name: alicesDatabase
     user: system
-    jdbcUrl: jdbc:oracle:thin:@192.168.0.91:1523:xe
+    jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe
     probes:
       - healthCheck
       - slowestQueries

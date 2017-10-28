@@ -32,5 +32,12 @@ services:
       - '-Dpasswords.file=/passwords/passwords.yml'
       - '-Dlogback.configurationFile=/config/logback.xml'
 
-#    oracle:
-#      image
+  oracle1:
+    image: sath89/oracle-12c
+    ports:
+      - "1252:1251"
+
+  oracle2:
+    image: sath89/oracle-12c
+    ports:
+      - "1253:1251"
