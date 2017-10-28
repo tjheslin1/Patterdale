@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
-import static io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider.dataSource;
+import static io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider.retriableDataSource;
 import static java.util.stream.Collectors.toMap;
 
 public class PatterdaleTest implements WithAssertions {
@@ -55,7 +55,7 @@ public class PatterdaleTest implements WithAssertions {
 
         connectionPools = runtimeParameters.databases().stream()
                 .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
-                        databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(dataSource(runtimeParameters, databaseDefinition, passwords, logger)))));
+                        databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(retriableDataSource(runtimeParameters, databaseDefinition, passwords, logger)))));
 
         probesByName = runtimeParameters.probes().stream()
                 .collect(toMap(probe -> probe.name, probe -> probe));

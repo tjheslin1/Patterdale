@@ -19,17 +19,35 @@ package io.github.tjheslin1.patterdale.database.hikari;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.HikariPool;
 import io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters;
 import io.github.tjheslin1.patterdale.config.Passwords;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.RetryPolicy;
 import oracle.jdbc.pool.OracleDataSource;
 import org.slf4j.Logger;
+
+import java.sql.SQLException;
+import java.sql.SQLRecoverableException;
+import java.util.concurrent.TimeUnit;
 
 import static io.github.tjheslin1.patterdale.database.JdbcUrlFormatter.databaseUrlWithCredentials;
 
 public class HikariDataSourceProvider {
 
-    public static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
+    public static HikariDataSource retriableDataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
+        RetryPolicy retryPolicy = new RetryPolicy()
+                .retryOn(HikariPool.PoolInitializationException.class)
+                .withDelay(runtimeParameters.connectionRetryDelayInSeconds(), TimeUnit.SECONDS)
+                .withMaxRetries(runtimeParameters.maxConnectionRetries());
+
+        return Failsafe.with(retryPolicy).get(() -> dataSource(runtimeParameters, databaseDefinition, passwords, logger));
+    }
+
+    private static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) throws SQLException {
+        logger.info("Attempting database connection to: " + databaseDefinition.name + " @ " + databaseDefinition.jdbcUrl);
+
         try {
             OracleDataSource oracleDataSource = new OracleDataSource();
             oracleDataSource.setUser(databaseDefinition.user);
@@ -42,7 +60,7 @@ public class HikariDataSourceProvider {
             return hikariDataSource;
         } catch (Exception e) {
             logger.error("Error occurred initialising Oracle and Hikari data sources.", e);
-            throw new IllegalStateException(e);
+            throw e;
         }
     }
 

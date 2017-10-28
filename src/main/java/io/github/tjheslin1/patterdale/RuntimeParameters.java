@@ -29,4 +29,6 @@ public interface RuntimeParameters {
     List<Probe> probes();
     int connectionPoolMaxSize();
     int connectionPoolMinIdle();
+    int maxConnectionRetries();
+    long connectionRetryDelayInSeconds();
 }

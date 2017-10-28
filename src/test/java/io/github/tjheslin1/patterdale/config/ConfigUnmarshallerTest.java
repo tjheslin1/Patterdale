@@ -73,6 +73,8 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         HashMap<String, String> connectionPoolProperties = new HashMap<>();
         connectionPoolProperties.put("maxSize", "5");
         connectionPoolProperties.put("minIdle", "1");
+        connectionPoolProperties.put("maxConnectionRetries", "10");
+        connectionPoolProperties.put("connectionRetryDelayInSeconds", "60");
         expectedConfig.connectionPool = connectionPoolProperties;
 
         expectedConfig.probes = new Probe[]{

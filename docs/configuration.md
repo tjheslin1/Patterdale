@@ -47,6 +47,8 @@ databases:
 connectionPool:
   maxSize: 5
   minIdle: 1
+  maxConnectionRetries: 10
+  connectionRetryDelayInSeconds: 60
 
 probes:
   - name: healthCheck
