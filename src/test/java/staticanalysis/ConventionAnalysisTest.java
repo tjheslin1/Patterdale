@@ -77,7 +77,7 @@ public class ConventionAnalysisTest implements WithAssertions {
     @Test
     public void correctDockerImageVersionIsReferenced() throws Exception {
         String versionLine = FileUtils.readLines(new File("build.gradle"), UTF_8)
-                .stream().filter(line -> line.contains("version '"))
+                .stream().filter(line -> line.startsWith("version '"))
                 .findFirst().get();
         String buildVersion = versionLine.substring("version '".length(), versionLine.length() - 1);
 

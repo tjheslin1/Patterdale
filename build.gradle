@@ -1,35 +1,37 @@
-group 'io.github.tjheslin1'
-version '0.16.0'
-
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
+        classpath 'com.avast.gradle:gradle-docker-compose-plugin:0.6.0'
     }
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
+plugins {
+    id 'com.palantir.docker' version '0.13.0'
+}
 
-defaultTasks 'clean', 'test', 'shadowJar'
+group 'io.github.tjheslin1'
+version '0.16.0'
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'docker-compose'
 
 sourceCompatibility = 1.8
 
-//def oracleUsername = hasProperty('mavenOracleUsername') ? mavenOracleUsername : System.getenv('mavenOracleUsername')
-//def oraclePassword = hasProperty('mavenOraclePassword') ? mavenOraclePassword : System.getenv('mavenOraclePassword')
-
 repositories {
     jcenter()
+}
 
-//    maven {
-//        url "https://www.oracle.com/content/secure/maven/content"
-//        credentials {
-//            username oracleUsername
-//            password oraclePassword
-//        }
-//    }
+defaultTasks 'clean', 'unitTest', 'shadowJar', 'docker'
+
+dockerCompose.isRequiredBy(test)
+
+docker {
+    name 'tjheslin1/patterdale:DEV-SNAPSHOT'
+    copySpec.from("build/libs").into("build/libs")
 }
 
 dependencies {
@@ -50,7 +52,6 @@ dependencies {
     compile group: 'io.prometheus', name: 'simpleclient_hotspot', version: '0.1.0'
     compile group: 'io.prometheus', name: 'simpleclient_common', version: '0.1.0'
 
-//    compile("com.oracle.jdbc:ojdbc7:12.1.0.2")
     if (project.hasProperty('bundleOjdbc')) {
         if (bundleOjdbc == "yes") {
             compile files('./repo/ojdbc7.jar')
@@ -88,6 +89,11 @@ shadowJar {
 
 task unitTest(type: Test) {
     exclude '**/endtoend/**'
+}
+
+task integrationTest(type: Test) {
+    exclude '**/io/github/tjheslin1/patterdale/**'
+    exclude 'staticanalysis'
 }
 
 task wrapper(type: Wrapper) {
