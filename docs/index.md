@@ -41,15 +41,20 @@ docker run -d -p 8081:8080 -p 1522:1521 sath89/oracle-12c
 docker run -d -p 8082:8080 -p 1523:1521 sath89/oracle-12c
 ```
 
-`./gradlew` locally will require the `ojdbc7.jar` driver. By adding the property `bundleOjdbc=yes` to your `gradle.properties` file. If this file doesn't exist, simply create this file in your `.gradle` directory (located in your $HOME dir).
+Or you can run the following Docker command: `docker-compose up -d` referencing [docker-compose.yml](https://github.com/tjheslin1/Patterdale/blob/master/docker-compose.yml).
+This will start up two Oracle database instances, Prometheus and Patterdale. Prometheus will be available at _http://localhost:9090_. Try searching for the `database_up` metric.
+
+`./gradlew` locally will require the `ojdbc7.jar` driver. This can be downloaded manually from the
+[Oracle JDBC Downloads page](http://www.oracle.com/technetwork/database/features/jdbc/jdbc-drivers-12c-download-1958347.html)
+or you can provide the following properties in your `gradle.properties` file when building locally:
+
+`mavenOracleUsername`
+`mavenOraclePassword`
 
 ### Building snapshot docker images
 
 ```
-docker build -t tjheslin1/patterdale:DEV .
-docker run --name patterdale-test -d -p 7001:7001 -v ~/Patterdale/repo/ojdbc7.jar:/app/ojdbc7.jar -v ~/Patterdale/src/test/resources/:/config -v ~/Patterdale/src/test/resources/:/passwords tjheslin1/patterdale:DEV
-
-docker logs -f ${container_id}
+./gradlew docker
 ```
 
 ### Getting a _java.net.ConnectException_ when running locally?

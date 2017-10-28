@@ -6,4 +6,24 @@
 
 If a `logback.xml` file is included in the directory passed into the /config container volume, this will configure your logging.
 
-[See here for documentation](https://tjheslin1.github.io/Patterdale/)
+Note the volume mount: `/your/jdbc/odjbc7.jar:/app/odjbc7.jar`.
+This can be downloaded manually from the
+[Oracle JDBC Downloads page](http://www.oracle.com/technetwork/database/features/jdbc/jdbc-drivers-12c-download-1958347.html)
+or you can provide the following properties in your `gradle.properties` file when building locally, using gradle:
+
+`mavenOracleUsername` and `mavenOraclePassword`.
+
+[See here for complete documentation](https://tjheslin1.github.io/Patterdale/).
+
+## Troubleshooting
+
+Getting one of the following exceptions when running locally?:
+- `java.sql.SQLRecoverableException`
+- `java.net.ConnectException`
+- `com.zaxxer.hikari.pool.HikariPool$PoolInitializationException`
+- or similar
+
+`patterdale.yml` from _src/test/resources_ will need to have the `jdbcUrl`s changed locally to 
+point to your local Oracle database(s), if this occurs replace _localhost_ in 
+the `jdbcUrl`s with the local IP address or your databases. For local Docker images this 
+will be the IP of your machine.
