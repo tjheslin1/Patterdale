@@ -17,5 +17,17 @@ cache:
 services:
   - docker
 
+before_script:
+  - sudo apt-get install expect
+  - docker pull sath89/oracle-12c
+
 script:
-  - ./gradlew clean unitTest
+  - docker run -d --name db1 -p 8080:8080 -p 1522:1521 sath89/oracle-12c
+  - docker run -d --name db2 -p 8081:8080 -p 1523:1521 sath89/oracle-12c
+
+  - chmod +x find_in_docker_logs.sh
+
+  - sh find_in_docker_logs.sh db1 1000 "Database ready to use"
+  - sh find_in_docker_logs.sh db2 1000 "Database ready to use"
+
+  - ./gradlew
