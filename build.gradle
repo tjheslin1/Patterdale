@@ -21,16 +21,14 @@ def oracleUsername = hasProperty('mavenOracleUsername') ? mavenOracleUsername : 
 def oraclePassword = hasProperty('mavenOraclePassword') ? mavenOraclePassword : System.getenv('mavenOraclePassword')
 
 repositories {
-//    mavenCentral()
-//    mavenLocal()
     jcenter()
 
     maven {
         url "https://www.oracle.com/content/secure/maven/content"
 //        url "https://maven.oracle.com"
         credentials {
-            username oracleUsername
-            password oraclePassword
+            username "${oracleUsername}"
+            password "${oraclePassword}"
         }
     }
 }
@@ -49,8 +47,7 @@ dependencies {
     compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.5.v20170502'
     compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.5.v20170502'
 
-//  compile files('./repo/ojdbc7.jar')
-    compile("com.oracle.jdbc:ojdbc7:12.1.0.2")
+    compile group: 'com.oracle.jdbc', name: 'ojdbc8', version: '12.2.0.1'
     compile 'com.zaxxer:HikariCP:2.7.1'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
