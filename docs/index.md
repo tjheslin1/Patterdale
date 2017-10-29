@@ -42,6 +42,10 @@ docker run -d -p 8082:8080 -p 1523:1521 sath89/oracle-12c
 ```
 
 Or you can run the following Docker command: `docker-compose up -d` referencing [docker-compose.yml](https://github.com/tjheslin1/Patterdale/blob/master/docker-compose.yml).
+Patterdale requires a the Oracle jdbc driver to be passed in as a volume mount.
+It can be downloaded here: [Oracle JDBC Downloads page](http://www.oracle.com/technetwork/database/features/jdbc/jdbc-drivers-12c-download-1958347.html).
+I would recommend placing it in a `repo` directory within the project. The jar is ignored in `.gitignore`.
+
 This will start up two Oracle database instances, Prometheus and Patterdale. Prometheus will be available at _http://localhost:9090_. Try searching for the `database_up` metric.
 
 `./gradlew` will require the `ojdbc8.jar` driver. 
