@@ -41,7 +41,10 @@ docker run -d -p 8081:8080 -p 1522:1521 sath89/oracle-12c
 docker run -d -p 8082:8080 -p 1523:1521 sath89/oracle-12c
 ```
 
-`./gradlew` locally will require the `ojdbc8.jar` driver. By adding the property `bundleOjdbc=yes` to your `gradle.properties` file. If this file doesn't exist, simply create this file in your `.gradle` directory (located in your $HOME dir).
+`./gradlew` will require the `ojdbc8.jar` driver. 
+By adding the properties `mavenOracleUsername` and `mavenOraclePassword` to your `gradle.properties` file, 
+which correspond to a valid Oracle single-sign on account, you'll be able to download the driver. 
+If this file doesn't exist, simply create this file in your `.gradle` directory (located in your $HOME dir).
 
 ### Building snapshot docker images
 
