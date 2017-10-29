@@ -37,7 +37,7 @@ public class ConventionAnalysisTest implements WithAssertions {
     public void todosMustReferenceAGitIssueInOpenStateOnly() throws Exception {
         GitIssues gitIssues = new GitIssues("tjheslin1", "Westie");
         List<Violation> violations = new GitIssueAnalyser(gitIssues, "ISSUE-" + WestieRegexes.EXTRACT_NUMBER_REGEX)
-                .todosAreInOpenState(WORKING_DIR, singletonList("ojdbc7.jar"));
+                .todosAreInOpenState(WORKING_DIR);
 
         assertThat(violations).isEmpty();
     }

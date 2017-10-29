@@ -41,13 +41,13 @@ docker run -d -p 8081:8080 -p 1522:1521 sath89/oracle-12c
 docker run -d -p 8082:8080 -p 1523:1521 sath89/oracle-12c
 ```
 
-`./gradlew` locally will require the `ojdbc7.jar` driver. By adding the property `bundleOjdbc=yes` to your `gradle.properties` file. If this file doesn't exist, simply create this file in your `.gradle` directory (located in your $HOME dir).
+`./gradlew` locally will require the `ojdbc8.jar` driver. By adding the property `bundleOjdbc=yes` to your `gradle.properties` file. If this file doesn't exist, simply create this file in your `.gradle` directory (located in your $HOME dir).
 
 ### Building snapshot docker images
 
 ```
 docker build -t tjheslin1/patterdale:DEV .
-docker run --name patterdale-test -d -p 7001:7001 -v ~/Patterdale/repo/ojdbc7.jar:/app/ojdbc7.jar -v ~/Patterdale/src/test/resources/:/config -v ~/Patterdale/src/test/resources/:/passwords tjheslin1/patterdale:DEV
+docker run --name patterdale-test -d -p 7001:7001 -v ~/Patterdale/repo/ojdbc8.jar:/app/ojdbc8.jar -v ~/Patterdale/src/test/resources/:/config -v ~/Patterdale/src/test/resources/:/passwords tjheslin1/patterdale:DEV
 
 docker logs -f ${container_id}
 ```
