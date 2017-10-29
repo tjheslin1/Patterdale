@@ -25,7 +25,9 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
                 DATABASES,
                 MAX_SIZE,
                 MIN_IDLE,
-                asList(PROBE_1, PROBE_2));
+                asList(PROBE_1, PROBE_2),
+                MAX_CONNECTION_RETRIES,
+                CONNECTION_RETRY_DELAY_IN_SECONDS);
 
         PatterdaleRuntimeParameters actualParameters = patterdaleRuntimeParameters(exampleConfig());
         assertThat(actualParameters).isEqualTo(expectedParameters);
@@ -49,6 +51,8 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
         HashMap<String, String> connectionPoolProperties = new HashMap<>();
         connectionPoolProperties.put("maxSize", Integer.toString(MAX_SIZE));
         connectionPoolProperties.put("minIdle", Integer.toString(MIN_IDLE));
+        connectionPoolProperties.put("maxConnectionRetries", Integer.toString(MAX_CONNECTION_RETRIES));
+        connectionPoolProperties.put("connectionRetryDelayInSeconds", Integer.toString(CONNECTION_RETRY_DELAY_IN_SECONDS));
         config.connectionPool = connectionPoolProperties;
 
         return config;
@@ -75,6 +79,8 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
 
     private static final int MAX_SIZE = 5;
     private static final int MIN_IDLE = 1;
+    private static final int MAX_CONNECTION_RETRIES = 5;
+    private static final int CONNECTION_RETRY_DELAY_IN_SECONDS = 60;
 
     private static final List<DatabaseDefinition> DATABASES = asList(
             databaseDefinition(NAME, USER, JDBC_URL, singletonList(PROBE_NAME_1)),

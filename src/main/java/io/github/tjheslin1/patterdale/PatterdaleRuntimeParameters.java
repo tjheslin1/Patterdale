@@ -36,17 +36,21 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     private final int httpPort;
     private final long cacheDuration;
     private final List<DatabaseDefinition> databases;
+    private final List<Probe> probes;
     private final int connectionPoolMaxSize;
     private final int connectionPoolMinIdle;
-    private final List<Probe> probes;
+    private final int maxConnectionRetries;
+    private final long connectionRetryDelayInSeconds;
 
-    public PatterdaleRuntimeParameters(int httpPort, long cacheDuration, List<DatabaseDefinition> databases, int connectionPoolMaxSize, int connectionPoolMinIdle, List<Probe> probes) {
+    public PatterdaleRuntimeParameters(int httpPort, long cacheDuration, List<DatabaseDefinition> databases, int connectionPoolMaxSize, int connectionPoolMinIdle, List<Probe> probes, int maxConnectionRetries, long connectionRetryDelayInSeconds) {
         this.httpPort = httpPort;
         this.cacheDuration = cacheDuration;
         this.databases = databases;
         this.connectionPoolMaxSize = connectionPoolMaxSize;
         this.connectionPoolMinIdle = connectionPoolMinIdle;
         this.probes = probes;
+        this.maxConnectionRetries = maxConnectionRetries;
+        this.connectionRetryDelayInSeconds = connectionRetryDelayInSeconds;
     }
 
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
@@ -54,9 +58,11 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
                 config.httpPort,
                 config.cacheDuration,
                 asList(config.databases),
-                integerParameterOrBlowUp(config.connectionPool, "maxSize"),
-                integerParameterOrBlowUp(config.connectionPool, "minIdle"),
-                asList(config.probes));
+                integerParameterOrDefault(config.connectionPool, "maxSize", 5),
+                integerParameterOrDefault(config.connectionPool, "minIdle", 1),
+                asList(config.probes),
+                integerParameterOrDefault(config.connectionPool, "maxConnectionRetries", 10),
+                integerParameterOrDefault(config.connectionPool, "connectionRetryDelayInSeconds", 60));
     }
 
     /**
@@ -112,13 +118,29 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
         return connectionPoolMinIdle;
     }
 
-    private static int integerParameterOrBlowUp(Map<String, String> config, String parameter) {
+    /**
+     * @return The number of retry attempts to connect to each database.
+     */
+    @Override
+    public int maxConnectionRetries() {
+        return maxConnectionRetries;
+    }
+
+    /**
+     * @return The delay between database connection retries.
+     */
+    @Override
+    public long connectionRetryDelayInSeconds() {
+        return connectionRetryDelayInSeconds;
+    }
+
+    private static int integerParameterOrDefault(Map<String, String> config, String parameter, int defaultValue) {
         if (config == null) {
             throw new IllegalStateException(format("Parent value of field '%s' not present in config.file provided.", parameter));
         }
         String paramValue = config.get(parameter);
         if (paramValue == null) {
-            throw new IllegalStateException(format("Expected a value for field '%s' based on config.file provided.", parameter));
+            return defaultValue;
         }
         return Integer.parseInt(paramValue);
     }

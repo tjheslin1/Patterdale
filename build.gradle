@@ -1,19 +1,23 @@
-group 'io.github.tjheslin1'
-version '0.15.0'
-
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
+        classpath 'com.avast.gradle:gradle-docker-compose-plugin:0.6.0'
     }
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
+plugins {
+    id 'com.palantir.docker' version '0.13.0'
+}
 
-defaultTasks 'clean', 'test', 'shadowJar'
+group 'io.github.tjheslin1'
+version '0.16.0'
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'docker-compose'
 
 sourceCompatibility = 1.8
 
@@ -33,6 +37,15 @@ repositories {
     }
 }
 
+defaultTasks 'clean', 'test', 'shadowJar', 'docker'
+
+//dockerCompose.isRequiredBy(test)
+
+docker {
+    name 'tjheslin1/patterdale:DEV-SNAPSHOT'
+    copySpec.from("build/libs").into("build/libs")
+}
+
 dependencies {
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
@@ -47,6 +60,12 @@ dependencies {
     compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.5.v20170502'
     compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.5.v20170502'
 
+    compile 'net.jodah:failsafe:1.0.4'
+
+    compile group: 'io.prometheus', name: 'simpleclient', version: '0.1.0'
+    compile group: 'io.prometheus', name: 'simpleclient_hotspot', version: '0.1.0'
+    compile group: 'io.prometheus', name: 'simpleclient_common', version: '0.1.0'
+    
     compile group: 'com.oracle.jdbc', name: 'ojdbc8', version: '12.2.0.1'
     compile 'com.zaxxer:HikariCP:2.7.1'
 
@@ -78,6 +97,11 @@ task unitTest(type: Test) {
     exclude '**/endtoend/**'
 }
 
+task integrationTest(type: Test) {
+    exclude '**/io/github/tjheslin1/patterdale/**'
+    exclude 'staticanalysis'
+}
+
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.5'
+    gradleVersion = '4.2.1'
 }
