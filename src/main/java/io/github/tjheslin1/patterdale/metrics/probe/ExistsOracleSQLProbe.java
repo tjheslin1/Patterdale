@@ -30,7 +30,7 @@ import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 
 /**
- * {@link OracleSQLProbe} implementation which expects the provided SQL to return at least one row.
+ * {@link OracleSQLProbe} implementation which expects the provided SQL to return one row.
  * The probe checks the value of the first column and expects it to contain the integer '1'.
  * <p>
  * Anything other than a '1' is the first column, or no results returned at all, is treated as a failure.

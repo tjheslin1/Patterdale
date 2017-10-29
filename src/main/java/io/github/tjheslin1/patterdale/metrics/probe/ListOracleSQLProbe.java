@@ -32,9 +32,10 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 
 /**
- * {@link OracleSQLProbe} implementation which expects the provided SQL to return rows with 2 columns.
- * The first column is expected to be a String representing a returned value which will be populated as a label in the metric.
- * The second column is expected to be a Double value which will be assigned as the metric value.
+ * {@link OracleSQLProbe} implementation which expects the provided SQL to return one or more rows, with at least 2 columns.
+ * The first column is expected to be a Double value which will be assigned as the metric value.
+ * The second column and onwards represent the metric label values which will be filtered using `java.lang.String#format`
+ *  into the `metricLabels` provided in this probes' config.
  */
 public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
