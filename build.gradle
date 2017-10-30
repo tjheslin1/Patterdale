@@ -13,7 +13,7 @@ plugins {
 }
 
 group 'io.github.tjheslin1'
-version '0.16.0'
+version '0.17.0'
 
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
