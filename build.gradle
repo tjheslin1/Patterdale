@@ -4,7 +4,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
-        classpath 'com.avast.gradle:gradle-docker-compose-plugin:0.6.0'
     }
 }
 
@@ -17,7 +16,6 @@ version '0.17.0'
 
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'docker-compose'
 
 sourceCompatibility = 1.8
 
@@ -38,8 +36,6 @@ repositories {
 }
 
 defaultTasks 'clean', 'test', 'shadowJar', 'docker'
-
-//dockerCompose.isRequiredBy(test)
 
 docker {
     name 'tjheslin1/patterdale:DEV-SNAPSHOT'
@@ -91,15 +87,6 @@ shadowJar {
     baseName = 'patterdale-all'
     classifier = null
     version = null
-}
-
-task unitTest(type: Test) {
-    exclude '**/endtoend/**'
-}
-
-task integrationTest(type: Test) {
-    exclude '**/io/github/tjheslin1/patterdale/**'
-    exclude 'staticanalysis'
 }
 
 task wrapper(type: Wrapper) {
