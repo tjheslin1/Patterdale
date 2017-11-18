@@ -30,4 +30,4 @@ script:
   - sh find_in_docker_logs.sh db1 1000 "Database ready to use"
   - sh find_in_docker_logs.sh db2 1000 "Database ready to use"
 
-  - ./gradlew
+  - ./gradlew test
