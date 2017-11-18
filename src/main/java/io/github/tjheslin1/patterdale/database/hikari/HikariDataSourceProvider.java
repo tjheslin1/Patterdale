@@ -29,25 +29,37 @@ import oracle.jdbc.pool.OracleDataSource;
 import org.slf4j.Logger;
 
 import java.sql.SQLException;
-import java.sql.SQLRecoverableException;
 import java.util.concurrent.TimeUnit;
 
 import static io.github.tjheslin1.patterdale.database.JdbcUrlFormatter.databaseUrlWithCredentials;
+import static java.lang.String.format;
 
 public class HikariDataSourceProvider {
 
-    public static HikariDataSource retriableDataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
+    public static HikariDataSource retriableDataSource(PatterdaleRuntimeParameters runtimeParams, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
         RetryPolicy retryPolicy = new RetryPolicy()
                 .retryOn(HikariPool.PoolInitializationException.class)
-                .withDelay(runtimeParameters.connectionRetryDelayInSeconds(), TimeUnit.SECONDS)
-                .withMaxRetries(runtimeParameters.maxConnectionRetries());
+                .withDelay(runtimeParams.connectionRetryDelayInSeconds(), TimeUnit.SECONDS)
+                .withMaxRetries(runtimeParams.maxConnectionRetries());
 
-        return Failsafe.with(retryPolicy).get(() -> dataSource(runtimeParameters, databaseDefinition, passwords, logger));
+        return Failsafe.with(retryPolicy)
+                .onRetry((result, failure, context) -> logger.info(format("Attempting database connection to: %s at %s.%n" +
+                                "Configured to retry %d times with a delay between retries of %d seconds.",
+                        databaseDefinition.name,
+                        databaseDefinition.jdbcUrl,
+                        runtimeParams.maxConnectionRetries(),
+                        runtimeParams.connectionRetryDelayInSeconds())))
+                .onFailedAttempt((result, failure, context) -> logger.warn(format("Failed attempt connecting to database %s at %s." +
+                        databaseDefinition.name,
+                        databaseDefinition.jdbcUrl)))
+                .onRetriesExceeded(throwable -> logger.error(format("Exceeded retry attempts to database %s at %s.",
+                        databaseDefinition.name,
+                        databaseDefinition.jdbcUrl)))
+                .get(() -> dataSource(runtimeParams, databaseDefinition, passwords, logger));
     }
 
-    private static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) throws SQLException {
-        logger.info("Attempting database connection to: " + databaseDefinition.name + " @ " + databaseDefinition.jdbcUrl);
-
+    private static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger)
+            throws SQLException {
         try {
             OracleDataSource oracleDataSource = new OracleDataSource();
             oracleDataSource.setUser(databaseDefinition.user);
@@ -60,7 +72,7 @@ public class HikariDataSourceProvider {
             return hikariDataSource;
         } catch (Exception e) {
             logger.error("Error occurred initialising Oracle and Hikari data sources.", e);
-            throw e;
+            throw e;    // caught by the RetryPolicy
         }
     }
 

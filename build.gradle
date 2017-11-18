@@ -89,6 +89,15 @@ shadowJar {
     version = null
 }
 
+task unitTest(type: Test) {
+    exclude '**/endtoend/**'
+}
+
+task integrationTest(type: Test) {
+    exclude '**/io/github/tjheslin1/patterdale/**'
+    exclude 'staticanalysis'
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '4.2.1'
 }
