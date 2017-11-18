@@ -35,9 +35,9 @@ services:
   oracle1:
     image: sath89/oracle-12c
     ports:
-      - "1252:1251"
+      - "1522:1521"
 
   oracle2:
     image: sath89/oracle-12c
     ports:
-      - "1253:1251"
+      - "1523:1521"
