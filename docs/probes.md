@@ -1,5 +1,3 @@
-# Probes
-
 Probes are defined in `patterdale.yml` and are specific to a database.
 If you want to run the same probe against multiple databases, simply duplication the definition (e.g _SELECT 1 FROM DUAL_).
 

@@ -97,7 +97,7 @@ public class Patterdale {
                 .collect(toList());
 
         long cacheDuration = Math.max(runtimeParameters.cacheDuration(), 1);
-        logger.info(format("Using cache duration of '%d' seconds.", cacheDuration));
+        logger.info(format("Using database scrape cache duration of '%d' seconds.", cacheDuration));
 
         WebServer webServer = new JettyWebServerBuilder(logger)
                 .withServer(serverWithStatisticsCollection(registry, runtimeParameters.httpPort()))
