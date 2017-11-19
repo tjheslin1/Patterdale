@@ -56,8 +56,11 @@ If this file doesn't exist, simply create this file in your `.gradle` directory 
 ### Building snapshot docker images
 
 ```
-./gradlew docker
+./gradlew shadowJar docker
 ```
+
+The following command will generate a fat jar in the `build/libs` directory and then build a docker image based on the 
+`Dockerfile` provided. The image built will be named: `tjheslin1/patterdale:DEV-SNAPSHOT`.
 
 ### Getting a _java.net.ConnectException_ when running locally?
 `patterdale.yml` from _src/test/resources_ may need to have the `jdbcUrl`s updating, if this occurs replace _localhost_ in the `jdbcUrl`s with your local IP address. 

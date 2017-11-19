@@ -4,12 +4,13 @@
 
 `docker run -d -p 7000:7000 -v /your/jdbc/odjbc7.jar:/app/odjbc7.jar -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:0.18.0`
 
-If a `logback.xml` file is included in the directory passed into the /config container volume, this will configure your logging.
+If a `logback.xml` file is included in the directory passed into the `/config` container volume, this will override your logging configuration.
 
-Note the volume mount: `/your/jdbc/odjbc7.jar:/app/odjbc7.jar`.
-This can be downloaded manually from the
+Note the volume mount: `/your/jdbc/odjbc7.jar:/app/odjbc7.jar` in the example.
+This driver can be downloaded manually from the
 [Oracle JDBC Downloads page](http://www.oracle.com/technetwork/database/features/jdbc/jdbc-drivers-12c-download-1958347.html)
-or you can provide the following properties in your `gradle.properties` file when building locally, using gradle:
+or, **preferably**, you can provide the following properties in your `gradle.properties` file when building locally using gradle which will fetch the driver from the maven repository.
+This requires you register an Oracle single sign-on account.
 
 `mavenOracleUsername` and `mavenOraclePassword`.
 

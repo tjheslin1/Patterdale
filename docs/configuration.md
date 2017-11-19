@@ -91,3 +91,6 @@ passwords:
   bobsDatabase: oracle
   alicesDatabase: oracle
 ```
+
+Note that the keys `bobsDatabase` and `alicesDatabase` correspond to the database `name` fields in `patterdale.yml`.
+This key matching is how the correct password is paired to the correct database configuration.
