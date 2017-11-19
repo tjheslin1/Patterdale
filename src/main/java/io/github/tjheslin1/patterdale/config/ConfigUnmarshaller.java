@@ -50,7 +50,7 @@ public class ConfigUnmarshaller {
             config = mapper.readValue(configFile, PatterdaleConfig.class);
             return config;
         } catch (IOException e) {
-            logger.error("Failed to parse provided system property 'config.file'.", e);
+            logger.error(format("Failed to parse provided file '%s'.", configFile.getName()), e);
             throw new IllegalArgumentException(format("Error occurred reading config file '%s'.", configFile.getName()), e);
         }
     }
