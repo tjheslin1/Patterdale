@@ -43,18 +43,9 @@ public class HikariDataSourceProvider {
                 .withMaxRetries(runtimeParams.maxConnectionRetries());
 
         return Failsafe.with(retryPolicy)
-                .onRetry((result, failure, context) -> logger.info(format("Attempting database connection to: %s at %s.%n" +
-                                "Configured to retry %d times with a delay between retries of %d seconds.",
-                        databaseDefinition.name,
-                        databaseDefinition.jdbcUrl,
-                        runtimeParams.maxConnectionRetries(),
-                        runtimeParams.connectionRetryDelayInSeconds())))
-                .onFailedAttempt((result, failure, context) -> logger.warn(format("Failed attempt connecting to database %s at %s." +
-                        databaseDefinition.name,
-                        databaseDefinition.jdbcUrl)))
-                .onRetriesExceeded(throwable -> logger.error(format("Exceeded retry attempts to database %s at %s.",
-                        databaseDefinition.name,
-                        databaseDefinition.jdbcUrl)))
+                .onRetry((result, failure, context) -> logRetry(runtimeParams, databaseDefinition, logger))
+                .onFailedAttempt((result, failure, context) -> logFailedAttempt(databaseDefinition, logger))
+                .onRetriesExceeded(throwable -> logRetriesExceeded(databaseDefinition, logger))
                 .get(() -> dataSource(runtimeParams, databaseDefinition, passwords, logger));
     }
 
@@ -83,5 +74,26 @@ public class HikariDataSourceProvider {
         jdbcConfig.setMinimumIdle(runtimeParameters.connectionPoolMinIdle());
         jdbcConfig.setJdbcUrl(databaseUrlWithCredentials(databaseDefinition.jdbcUrl, databaseDefinition.user, password));
         return jdbcConfig;
+    }
+
+    private static void logRetriesExceeded(DatabaseDefinition databaseDefinition, Logger logger) {
+        logger.error(format("Exceeded retry attempts to database %s at %s.",
+                databaseDefinition.name,
+                databaseDefinition.jdbcUrl));
+    }
+
+    private static void logFailedAttempt(DatabaseDefinition databaseDefinition, Logger logger) {
+        logger.warn(format("Failed attempt connecting to database %s at %s." +
+                        databaseDefinition.name,
+                databaseDefinition.jdbcUrl));
+    }
+
+    private static void logRetry(PatterdaleRuntimeParameters runtimeParams, DatabaseDefinition databaseDefinition, Logger logger) {
+        logger.info(format("Attempting database connection to: %s at %s.%n" +
+                        "Configured to retry %d times with a delay between retries of %d seconds.",
+                databaseDefinition.name,
+                databaseDefinition.jdbcUrl,
+                runtimeParams.maxConnectionRetries(),
+                runtimeParams.connectionRetryDelayInSeconds()));
     }
 }
