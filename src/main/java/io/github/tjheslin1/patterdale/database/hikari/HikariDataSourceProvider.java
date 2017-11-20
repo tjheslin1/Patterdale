@@ -20,7 +20,7 @@ package io.github.tjheslin1.patterdale.database.hikari;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
-import io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters;
+import io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters;
 import io.github.tjheslin1.patterdale.config.Passwords;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import net.jodah.failsafe.Failsafe;

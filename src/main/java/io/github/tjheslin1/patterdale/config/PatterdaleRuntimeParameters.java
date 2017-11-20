@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale;
+package io.github.tjheslin1.patterdale.config;
 
-import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
+import io.github.tjheslin1.patterdale.ValueType;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 

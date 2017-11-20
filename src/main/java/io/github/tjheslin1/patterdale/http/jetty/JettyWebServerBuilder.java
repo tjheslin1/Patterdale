@@ -17,7 +17,7 @@
  */
 package io.github.tjheslin1.patterdale.http.jetty;
 
-import io.github.tjheslin1.patterdale.RuntimeParameters;
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
 import io.github.tjheslin1.patterdale.http.*;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.prometheus.client.CollectorRegistry;
@@ -55,6 +55,7 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 
         servletContextHandler.addServlet(new ServletHolder(new NotFoundServlet()), "/");
         servletContextHandler.addServlet(new ServletHolder(new ReadyServlet()), "/ready");
+        servletContextHandler.addServlet(new ServletHolder(new StatusServlet()), "/status");
         servletContextHandler.setContextPath("/");
         server.setHandler(servletContextHandler);
         server.addBean(new UncaughtErrorHandler());

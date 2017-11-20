@@ -1,6 +1,6 @@
 package io.github.tjheslin1.patterdale.http;
 
-import io.github.tjheslin1.patterdale.RuntimeParameters;
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;

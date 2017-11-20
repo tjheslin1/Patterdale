@@ -15,20 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale;
+package io.github.tjheslin1.patterdale.http;
 
-import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
-import io.github.tjheslin1.patterdale.metrics.probe.Probe;
+import org.apache.commons.io.FileUtils;
 
-import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 
-public interface RuntimeParameters {
-    int httpPort();
-    long cacheDuration();
-    List<DatabaseDefinition> databases();
-    List<Probe> probes();
-    int connectionPoolMaxSize();
-    int connectionPoolMinIdle();
-    int maxConnectionRetries();
-    long connectionRetryDelayInSeconds();
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+public class StatusServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.getWriter().println(FileUtils.readFileToString(new File(System.getProperty("config.file")), UTF_8));
+    }
 }

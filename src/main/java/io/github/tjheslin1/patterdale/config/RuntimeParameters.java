@@ -15,14 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale.http;
+package io.github.tjheslin1.patterdale.config;
 
-import io.github.tjheslin1.patterdale.config.RuntimeParameters;
-import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
-import io.prometheus.client.CollectorRegistry;
+import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 
-public interface WebServerBuilder {
+import java.util.List;
 
-    WebServerBuilder registerMetricsEndpoint(String path, MetricsUseCase metricsUseCase, RuntimeParameters runtimeParameters, CollectorRegistry registry, long cacheDuration);
-    WebServer build();
+public interface RuntimeParameters {
+    int httpPort();
+    long cacheDuration();
+    List<DatabaseDefinition> databases();
+    List<Probe> probes();
+    int connectionPoolMaxSize();
+    int connectionPoolMinIdle();
+    int maxConnectionRetries();
+    long connectionRetryDelayInSeconds();
 }

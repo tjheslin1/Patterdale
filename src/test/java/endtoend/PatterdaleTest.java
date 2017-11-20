@@ -1,7 +1,7 @@
 package endtoend;
 
 import io.github.tjheslin1.patterdale.Patterdale;
-import io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters;
+import io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters;
 import io.github.tjheslin1.patterdale.config.ConfigUnmarshaller;
 import io.github.tjheslin1.patterdale.config.Passwords;
 import io.github.tjheslin1.patterdale.config.PasswordsUnmarshaller;
@@ -29,7 +29,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
+import static io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
 import static io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider.retriableDataSource;
 import static java.util.stream.Collectors.toMap;
 

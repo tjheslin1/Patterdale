@@ -17,10 +17,7 @@
  */
 package io.github.tjheslin1.patterdale;
 
-import io.github.tjheslin1.patterdale.config.ConfigUnmarshaller;
-import io.github.tjheslin1.patterdale.config.Passwords;
-import io.github.tjheslin1.patterdale.config.PasswordsUnmarshaller;
-import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
+import io.github.tjheslin1.patterdale.config.*;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
@@ -42,7 +39,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
+import static io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
 import static io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider.retriableDataSource;
 import static io.github.tjheslin1.patterdale.infrastructure.RegisterExporters.serverWithStatisticsCollection;
 import static java.lang.String.format;

@@ -1,6 +1,7 @@
 package io.github.tjheslin1.patterdale;
 
 import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
+import io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import org.assertj.core.api.WithAssertions;
@@ -9,7 +10,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.List;
 
-import static io.github.tjheslin1.patterdale.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
+import static io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
 import static io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition.databaseDefinition;
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 import static java.util.Arrays.asList;

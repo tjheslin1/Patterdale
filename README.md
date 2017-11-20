@@ -29,5 +29,11 @@ point to your local Oracle database(s), if this occurs replace _localhost_ in
 the `jdbcUrl`s with the local IP address or your databases. For local Docker images this 
 will be the IP of your machine.
 
+The `sath89/oracle-12c` docker images take a few minutes to start up. 
+Patterdale will retry connections to the database(s) according to the 
+`maxConnectionRetries` and `connectionRetryDelayInSeconds` settings.
+During this time the `HikariPool$PoolInitializationException` will be logged, 
+as will details of the connection retry attempts.
+
 ## Example view of Patterdale metrics within Prometheus
 ![Example view of Patterdale metrics within Prometheus](https://github.com/tjheslin1/Patterdale/blob/master/docs/Patterdale_screenshot.png)
