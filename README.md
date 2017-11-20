@@ -4,7 +4,7 @@
 
 [See here for complete documentation](https://tjheslin1.github.io/Patterdale/).
 
-`docker run -d -p 7000:7000 -v /your/jdbc/odjbc7.jar:/app/odjbc7.jar -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:0.18.1`
+`docker run -d -p 7000:7000 -v /your/jdbc/odjbc7.jar:/app/odjbc7.jar -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:1.0.0`
 
 If a `logback.xml` file is included in the directory passed into the `/config` container volume, this will override your logging configuration.
 
