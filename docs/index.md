@@ -2,6 +2,13 @@
 
 Patterdale is a standalone application for monitoring Oracle databases. It exports metrics conforming to [Prometheus](https://github.com/prometheus/prometheus) standards.
 
+## Contents
+
+- [Configuration](Configuration.md)
+- [Probes](Probes.md)
+- [Endpoints](endpoints.md)
+- [Local testing](Local-testing.md)
+
 ## Configuration
 
 Patterdale expects two files. `patterdale.yml` and `passwords.yml`. 
