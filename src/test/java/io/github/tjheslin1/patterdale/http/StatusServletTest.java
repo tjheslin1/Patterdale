@@ -18,7 +18,7 @@ public class StatusServletTest implements WithAssertions, WithMockito {
     @Before
     public void setup() throws Exception {
         when(resp.getWriter()).thenReturn(printerWriter);
-        System.setProperty("config.file", "src/test/resources/patterdale.yml");
+        System.setProperty("status.page", "src/test/resources/status.page");
     }
 
     @Test

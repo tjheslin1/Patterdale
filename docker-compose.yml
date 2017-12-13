@@ -26,11 +26,9 @@ services:
       - '-jar'
       - '-Dlogback.configurationFile=/config/logback.xml'
       - '-Dconfig.file=/config/patterdale.yml'
+      - '-Dstatus.page=/config/status.page'
       - '-Dpasswords.file=/passwords/passwords.yml'
       - 'patterdale-all.jar'
-      - '-Dconfig.file=/config/patterdale.yml'
-      - '-Dpasswords.file=/passwords/passwords.yml'
-      - '-Dlogback.configurationFile=/config/logback.xml'
 
   oracle1:
     image: sath89/oracle-12c
