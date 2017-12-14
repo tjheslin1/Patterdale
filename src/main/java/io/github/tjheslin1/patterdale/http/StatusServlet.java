@@ -32,6 +32,13 @@ public class StatusServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.getWriter().println(FileUtils.readFileToString(new File(System.getProperty("status.page")), UTF_8));
+        File statusPageContent;
+        String statusPageProperty = System.getProperty("status.page");
+        if (statusPageProperty != null) {
+            statusPageContent = new File(statusPageProperty);
+        } else {
+            statusPageContent = new File(System.getProperty("config.file"));
+        }
+        resp.getWriter().println(FileUtils.readFileToString(statusPageContent, UTF_8));
     }
 }

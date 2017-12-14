@@ -26,7 +26,7 @@ services:
       - '-jar'
       - '-Dlogback.configurationFile=/config/logback.xml'
       - '-Dconfig.file=/config/patterdale.yml'
-      - '-Dstatus.page=/config/status.page'
+      - '-Dstatus.page=/config/patterdale.yml'
       - '-Dpasswords.file=/passwords/passwords.yml'
       - 'patterdale-all.jar'
 
