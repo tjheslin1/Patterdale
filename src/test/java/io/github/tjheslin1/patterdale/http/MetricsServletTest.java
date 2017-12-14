@@ -24,6 +24,50 @@ import static org.mockito.Mockito.times;
 
 public class MetricsServletTest implements WithAssertions, WithMockito {
 
+    @Before
+    public void setup() throws Exception {
+        when(response.getWriter()).thenReturn(printerWriter);
+        when(runtimeParameters.databases()).thenReturn(singletonList(DATABASE_DEFINITION));
+        when(request.getParameterValues("name[]")).thenReturn(new String[]{});
+        when(registry.filteredMetricFamilySamples(emptySet())).thenReturn(emptyEnumeration());
+    }
+
+    @Test
+    public void respondWithDatabaseMetricsOnSuccess() throws Exception {
+        when(metricsUseCase.scrapeMetrics()).thenReturn(asList(PROBE_RESULT_1, PROBE_RESULT_2, PROBE_RESULT_3));
+
+        MetricsServlet metricsServlet = new MetricsServlet(registry, metricsUseCase, logger, 60);
+        metricsServlet.doGet(request, response);
+
+        verify(metricsUseCase).scrapeMetrics();
+        verify(printerWriter).println("database_up{key=\"value\"} 1.0");
+        verify(printerWriter).println("database_other{key=\"something\"} 1.0");
+        verify(printerWriter).println("database_list{key=\"somethingElse\",result=\"example SQL\"} 4.5");
+    }
+
+    @Test
+    public void respondWithDatabaseMetricsErrorOnFailure() throws Exception {
+        when(metricsUseCase.scrapeMetrics()).thenReturn(asList(PROBE_RESULT_1, FAILED_PROBE));
+
+        MetricsServlet metricsServlet = new MetricsServlet(registry, metricsUseCase, logger, 60);
+        metricsServlet.doGet(request, response);
+
+        verify(metricsUseCase).scrapeMetrics();
+        verify(printerWriter).println("database_up{key=\"value\"} 1.0");
+        verify(printerWriter).println("database_other{key=\"something\"} 0.0");
+    }
+
+    @Test
+    public void metricsResultsAreCachedForAConfiguredDuration() throws Exception {
+        when(metricsUseCase.scrapeMetrics()).thenReturn(singletonList(PROBE_RESULT_1));
+
+        MetricsServlet metricsServlet = new MetricsServlet(registry, metricsUseCase, logger, 1);
+        metricsServlet.doGet(request, response);
+        metricsServlet.doGet(request, response);
+
+        verify(metricsUseCase, times(1)).scrapeMetrics();
+    }
+
     private static final Probe PROBE_1 = probe("name", "SQL", "exists", "database_up", "key=\"value\"");
     private static final Probe PROBE_2 = probe("name2", "SQL", "exists", "database_other", "key=\"something\"");
     private static final Probe PROBE_3 = probe("name3", "SQL", "exists", "database_list", "key=\"somethingElse\",result=\"%s\"");
@@ -42,47 +86,4 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
     private final MetricsUseCase metricsUseCase = mock(MetricsUseCase.class);
     private final RuntimeParameters runtimeParameters = mock(RuntimeParameters.class);
     private final Logger logger = mock(Logger.class);
-
-    private final MetricsServlet metricsServlet = new MetricsServlet(registry, metricsUseCase, logger, 60);
-
-    @Before
-    public void setup() throws Exception {
-        when(response.getWriter()).thenReturn(printerWriter);
-        when(runtimeParameters.databases()).thenReturn(singletonList(DATABASE_DEFINITION));
-        when(request.getParameterValues("name[]")).thenReturn(new String[]{});
-        when(registry.filteredMetricFamilySamples(emptySet())).thenReturn(emptyEnumeration());
-    }
-
-    @Test
-    public void respondWithDatabaseMetricsOnSuccess() throws Exception {
-        when(metricsUseCase.scrapeMetrics()).thenReturn(asList(PROBE_RESULT_1, PROBE_RESULT_2, PROBE_RESULT_3));
-
-        metricsServlet.doGet(request, response);
-
-        verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).println("database_up{key=\"value\"} 1.0");
-        verify(printerWriter).println("database_other{key=\"something\"} 1.0");
-        verify(printerWriter).println("database_list{key=\"somethingElse\",result=\"example SQL\"} 4.5");
-    }
-
-    @Test
-    public void respondWithDatabaseMetricsErrorOnFailure() throws Exception {
-        when(metricsUseCase.scrapeMetrics()).thenReturn(asList(PROBE_RESULT_1, FAILED_PROBE));
-
-        metricsServlet.doGet(request, response);
-
-        verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).println("database_up{key=\"value\"} 1.0");
-        verify(printerWriter).println("database_other{key=\"something\"} 0.0");
-    }
-
-    @Test
-    public void metricsResultsAreCachedForAConfiguredDuration() throws Exception {
-        when(metricsUseCase.scrapeMetrics()).thenReturn(singletonList(PROBE_RESULT_1));
-
-        metricsServlet.doGet(request, response);
-        metricsServlet.doGet(request, response);
-
-        verify(metricsUseCase, times(1)).scrapeMetrics();
-    }
 }
