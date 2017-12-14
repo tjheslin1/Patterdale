@@ -17,10 +17,10 @@
  */
 package io.github.tjheslin1.patterdale.http;
 
-import com.google.common.base.Suppliers;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
 import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.common.TextFormat;
 import org.slf4j.Logger;
 
 import javax.servlet.ServletException;
@@ -30,11 +30,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static io.github.tjheslin1.patterdale.http.MetricsCache.metricsCache;
 import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResultFormatter.formatProbeResults;
-import io.prometheus.client.exporter.common.TextFormat;
 
 public class MetricsServlet extends HttpServlet {
 
@@ -44,7 +43,7 @@ public class MetricsServlet extends HttpServlet {
 
     public MetricsServlet(CollectorRegistry registry, MetricsUseCase metricsUseCase, Logger logger, long cacheDuration) {
         this.registry = registry;
-        this.metricsCache = Suppliers.memoizeWithExpiration(metricsUseCase::scrapeMetrics, cacheDuration, TimeUnit.SECONDS);
+        this.metricsCache = metricsCache(metricsUseCase, cacheDuration);
         this.logger = logger;
     }
 
