@@ -35,7 +35,18 @@ import static io.github.tjheslin1.patterdale.database.JdbcUrlFormatter.databaseU
 import static java.lang.String.format;
 
 public class HikariDataSourceProvider {
-
+    /**
+     * Attempts to create a {@link HikariDataSource} by making an initial connection to the database.
+     * Retries a number of times, with a delay between each retry, according to the provided {@link PatterdaleRuntimeParameters}.
+     *
+     * Failed attempts are logged as well as when the number of retries has exceeded.
+     *
+     * @param runtimeParams The app configuration defined in `patterdale.yml`.
+     * @param databaseDefinition The details of the database being connected to.
+     * @param passwords The separate store of passwords, the matching password will be found according to the `databaseDefinition`.
+     * @param logger to log.
+     * @return A data source for a successful connection to the database.
+     */
     public static HikariDataSource retriableDataSource(PatterdaleRuntimeParameters runtimeParams, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
         RetryPolicy retryPolicy = new RetryPolicy()
                 .retryOn(HikariPool.PoolInitializationException.class)
