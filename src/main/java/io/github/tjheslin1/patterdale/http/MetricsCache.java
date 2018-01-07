@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Thomas Heslin <tjheslin1@gmail.com>.
+ * Copyright 2018 Thomas Heslin <tjheslin1@gmail.com>.
  *
  * This file is part of Patterdale-jvm.
  *
