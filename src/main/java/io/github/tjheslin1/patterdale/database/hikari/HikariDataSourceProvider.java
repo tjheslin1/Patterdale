@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
-import static io.github.tjheslin1.patterdale.database.JdbcUrlFormatter.databaseUrlWithCredentials;
 import static java.lang.String.format;
 
 public class HikariDataSourceProvider {
@@ -83,7 +82,7 @@ public class HikariDataSourceProvider {
         jdbcConfig.setPoolName("patterdale-pool-" + databaseDefinition.name);
         jdbcConfig.setMaximumPoolSize(runtimeParameters.connectionPoolMaxSize());
         jdbcConfig.setMinimumIdle(runtimeParameters.connectionPoolMinIdle());
-        jdbcConfig.setJdbcUrl(databaseUrlWithCredentials(databaseDefinition.jdbcUrl, databaseDefinition.user, password));
+        jdbcConfig.setJdbcUrl(databaseDefinition.jdbcUrl);
         return jdbcConfig;
     }
 

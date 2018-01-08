@@ -73,9 +73,7 @@ public class Patterdale {
 
         PatterdaleRuntimeParameters runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
 
-        Map<String, DBConnectionPool> connectionPools = runtimeParameters.databases().stream()
-                .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
-                        databaseDefinition -> connectionPool(logger, passwords, runtimeParameters, databaseDefinition)));
+        Map<String, DBConnectionPool> connectionPools = initialDatabaseConnections(logger, passwords, runtimeParameters);
 
         Map<String, Probe> probesByName = runtimeParameters.probes().stream()
                 .collect(toMap(probe -> probe.name, probe -> probe));
@@ -116,6 +114,12 @@ public class Patterdale {
                 e.printStackTrace();
             }
         }));
+    }
+
+    public static Map<String, DBConnectionPool> initialDatabaseConnections(Logger logger, Passwords passwords, PatterdaleRuntimeParameters runtimeParameters) {
+        return runtimeParameters.databases().stream()
+                .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
+                        databaseDefinition -> connectionPool(logger, passwords, runtimeParameters, databaseDefinition)));
     }
 
     private static HikariDBConnectionPool connectionPool(Logger logger, Passwords passwords, PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition) {

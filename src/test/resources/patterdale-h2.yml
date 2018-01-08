@@ -1,0 +1,26 @@
+httpPort: 7001
+cacheDuration: 60
+databases:
+  - name: bobsDatabase
+    user: user
+    jdbcUrl: jdbc:h2:mem:test
+    probes:
+      - healthCheck
+  - name: alicesDatabase
+    user: user
+    jdbcUrl: jdbc:h2:mem:test
+    probes:
+      - healthCheck
+
+connectionPool:
+  maxSize: 5
+  minIdle: 1
+  maxConnectionRetries: 10
+  connectionRetryDelayInSeconds: 60
+
+probes:
+  - name: healthCheck
+    type: exists
+    query: SELECT 1 FROM DUAL
+    metricName: database_up
+    metricLabels: query="SELECT 1 FROM DUAL"

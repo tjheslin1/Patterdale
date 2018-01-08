@@ -1,14 +1,8 @@
-package endtoend;
+package functional;
 
 import io.github.tjheslin1.patterdale.Patterdale;
-import io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters;
-import io.github.tjheslin1.patterdale.config.ConfigUnmarshaller;
-import io.github.tjheslin1.patterdale.config.Passwords;
-import io.github.tjheslin1.patterdale.config.PasswordsUnmarshaller;
-import io.github.tjheslin1.patterdale.config.PatterdaleConfig;
+import io.github.tjheslin1.patterdale.config.*;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
-import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
-import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
 import org.apache.http.HttpResponse;
@@ -27,10 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
-import static io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider.retriableDataSource;
 import static java.util.stream.Collectors.toMap;
 
 public class PatterdaleTest implements WithAssertions {
@@ -42,24 +34,19 @@ public class PatterdaleTest implements WithAssertions {
     private static Map<String, Probe> probesByName;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws InterruptedException {
         logger = LoggerFactory.getLogger("application");
 
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
-                .parseConfig(new File("src/test/resources/patterdale.yml"));
+                .parseConfig(new File("src/test/resources/patterdale-h2.yml"));
 
         Passwords passwords = new PasswordsUnmarshaller(logger)
                 .parsePasswords(new File("src/test/resources/passwords.yml"));
 
         runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
+        connectionPools = Patterdale.initialDatabaseConnections(logger, passwords, runtimeParameters);
 
-        connectionPools = runtimeParameters.databases().stream()
-                .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
-                        databaseDefinition -> new HikariDBConnectionPool(new HikariDBConnection(retriableDataSource(runtimeParameters, databaseDefinition, passwords, logger)))));
-
-        probesByName = runtimeParameters.probes().stream()
-                .collect(toMap(probe -> probe.name, probe -> probe));
-
+        probesByName = runtimeParameters.probes().stream().collect(toMap(probe -> probe.name, probe -> probe));
         typeToProbeMapper = new TypeToProbeMapper(logger);
 
         new Patterdale(runtimeParameters, connectionPools, typeToProbeMapper, probesByName, logger)
@@ -76,11 +63,7 @@ public class PatterdaleTest implements WithAssertions {
         assertThat(responseBody(response)).matches(Pattern.compile(
                 "database_up\\{database=\"bobsDatabase\",query=\"SELECT 1 FROM DUAL\"} 1.0\n" +
                         "database_up\\{database=\"alicesDatabase\",query=\"SELECT 1 FROM DUAL\"} 1.0\n" +
-                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
-                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
-                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
-                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*\n" +
-                        "slowest_queries\\{database=\"alicesDatabase\",sqlText=.*,sqlId=.*,username=.*,childNumber=.*,diskReads=.*,executions=.*,firstLoadTime=.*,lastLoadTime=.*} .*"
+                        ".*"
                 , Pattern.DOTALL)
         );
     }

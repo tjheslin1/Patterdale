@@ -4,11 +4,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.11'
     }
-}
-
-plugins {
-    id 'com.palantir.docker' version '0.13.0'
 }
 
 group 'io.github.tjheslin1'
@@ -16,6 +13,7 @@ version '1.1.1'
 
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 
 sourceCompatibility = 1.8
 
@@ -27,7 +25,6 @@ repositories {
 
     maven {
         url "https://www.oracle.com/content/secure/maven/content"
-//        url "https://maven.oracle.com"
         credentials {
             username "${oracleUsername}"
             password "${oraclePassword}"
@@ -35,12 +32,7 @@ repositories {
     }
 }
 
-defaultTasks 'clean', 'test', 'shadowJar', 'docker'
-
-docker {
-    name 'tjheslin1/patterdale:DEV-SNAPSHOT'
-    copySpec.from("build/libs").into("build/libs")
-}
+defaultTasks 'clean', 'test', 'shadowJar', 'buildMyAppImage'
 
 dependencies {
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
@@ -71,6 +63,7 @@ dependencies {
 
     testCompile "org.mockito:mockito-core:2.2.9"
     testCompile 'io.github.tjheslin1:Westie:1.4.2'
+    testCompile group: 'com.h2database', name: 'h2', version: '1.4.196'
 }
 
 tasks.withType(AbstractCompile) {
@@ -89,15 +82,22 @@ shadowJar {
     version = null
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2.1'
+}
+
+import com.bmuschko.gradle.docker.tasks.image.*
+
+task buildMyAppImage(type: DockerBuildImage) {
+    inputDir = file('.')
+    tag = 'tjheslin1/patterdale:DEV-SNAPSHOT'
+}
+
 task unitTest(type: Test) {
     exclude '**/endtoend/**'
 }
 
-task integrationTest(type: Test) {
+task functionalTest(type: Test) {
     exclude '**/io/github/tjheslin1/patterdale/**'
     exclude 'staticanalysis'
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.2.1'
 }
