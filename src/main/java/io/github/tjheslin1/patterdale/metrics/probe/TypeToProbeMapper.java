@@ -20,6 +20,8 @@ package io.github.tjheslin1.patterdale.metrics.probe;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import org.slf4j.Logger;
 
+import java.util.concurrent.Future;
+
 import static java.lang.String.format;
 
 public class TypeToProbeMapper {
@@ -33,7 +35,7 @@ public class TypeToProbeMapper {
         this.logger = logger;
     }
 
-    public OracleSQLProbe createProbe(String databaseName, DBConnectionPool dbConnectionPool, Probe probe) {
+    public OracleSQLProbe createProbe(String databaseName, Future<DBConnectionPool> dbConnectionPool, Probe probe) {
         Probe dbLabelledProbe = probe.dbLabelled(databaseName);
         switch (dbLabelledProbe.type) {
             case EXISTS: {

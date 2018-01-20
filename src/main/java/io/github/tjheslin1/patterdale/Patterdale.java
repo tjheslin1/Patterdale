@@ -36,6 +36,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,12 +52,13 @@ import static java.util.stream.Collectors.toMap;
 public class Patterdale {
 
     private final PatterdaleRuntimeParameters runtimeParameters;
-    private final Map<String, DBConnectionPool> connectionPools;
+    private final Map<String, Future<DBConnectionPool>> connectionPools;
     private final TypeToProbeMapper typeToProbeMapper;
     private final Map<String, Probe> probesByName;
     private final Logger logger;
+    private WebServer webServer;
 
-    public Patterdale(PatterdaleRuntimeParameters runtimeParameters, Map<String, DBConnectionPool> connectionPools, TypeToProbeMapper typeToProbeMapper, Map<String, Probe> probesByName, Logger logger) {
+    public Patterdale(PatterdaleRuntimeParameters runtimeParameters, Map<String, Future<DBConnectionPool>> connectionPools, TypeToProbeMapper typeToProbeMapper, Map<String, Probe> probesByName, Logger logger) {
         this.runtimeParameters = runtimeParameters;
         this.connectionPools = connectionPools;
         this.typeToProbeMapper = typeToProbeMapper;
@@ -73,13 +77,13 @@ public class Patterdale {
 
         PatterdaleRuntimeParameters runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
 
-        Map<String, DBConnectionPool> connectionPools = initialDatabaseConnections(logger, passwords, runtimeParameters);
+        Map<String, Future<DBConnectionPool>> futureConnections = initialDatabaseConnections(logger, passwords, runtimeParameters);
 
         Map<String, Probe> probesByName = runtimeParameters.probes().stream()
                 .collect(toMap(probe -> probe.name, probe -> probe));
 
         logger.debug("starting Patterdale!");
-        new Patterdale(runtimeParameters, connectionPools, new TypeToProbeMapper(logger), probesByName, logger)
+        new Patterdale(runtimeParameters, futureConnections, new TypeToProbeMapper(logger), probesByName, logger)
                 .start();
     }
 
@@ -94,7 +98,7 @@ public class Patterdale {
         long cacheDuration = Math.max(runtimeParameters.cacheDuration(), 1);
         logger.info(format("Using database scrape cache duration of '%d' seconds.", cacheDuration));
 
-        WebServer webServer = new JettyWebServerBuilder(logger)
+        webServer = new JettyWebServerBuilder(logger)
                 .withServer(serverWithStatisticsCollection(registry, runtimeParameters.httpPort()))
                 .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes), runtimeParameters, registry, cacheDuration)
                 .build();
@@ -108,18 +112,23 @@ public class Patterdale {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                webServer.stop();
-                logger.info("Shutting down.");
+                stop();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }));
     }
 
-    public static Map<String, DBConnectionPool> initialDatabaseConnections(Logger logger, Passwords passwords, PatterdaleRuntimeParameters runtimeParameters) {
+    public void stop() throws Exception {
+        webServer.stop();
+        logger.info("Shutting down.");
+    }
+
+    public static Map<String, Future<DBConnectionPool>> initialDatabaseConnections(Logger logger, Passwords passwords, PatterdaleRuntimeParameters runtimeParameters) {
+        ExecutorService executor = Executors.newFixedThreadPool(runtimeParameters.databases().size());
         return runtimeParameters.databases().stream()
                 .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
-                        databaseDefinition -> connectionPool(logger, passwords, runtimeParameters, databaseDefinition)));
+                        databaseDefinition -> executor.submit(() -> connectionPool(logger, passwords, runtimeParameters, databaseDefinition))));
     }
 
     private static HikariDBConnectionPool connectionPool(Logger logger, Passwords passwords, PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition) {

@@ -26,10 +26,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * {@link OracleSQLProbe} implementation which expects the provided SQL to return one or more rows, with at least 2 columns.
@@ -39,11 +42,14 @@ import static java.util.Collections.emptyList;
  */
 public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
+    private static final long TIMEOUT = 10;
+    private static final int DYNAMIC_LABELS_START_INDEX = 2;
+
     private final Probe probe;
-    private final DBConnectionPool connectionPool;
+    private final Future<DBConnectionPool> connectionPool;
     private final Logger logger;
 
-    public ListOracleSQLProbe(Probe probe, DBConnectionPool connectionPool, Logger logger) {
+    public ListOracleSQLProbe(Probe probe, Future<DBConnectionPool> connectionPool, Logger logger) {
         this.probe = probe;
         this.connectionPool = connectionPool;
         this.logger = logger;
@@ -54,7 +60,7 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
      */
     @Override
     public List<ProbeResult> probe() {
-        try (Connection connection = connectionPool.pool().connection();
+        try (Connection connection = connectionPool.get(TIMEOUT, SECONDS).pool().connection();
              PreparedStatement preparedStatement = connection.prepareStatement(probe.query())) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -64,7 +70,7 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
                 double metricValue = resultSet.getDouble(1);
 
                 List<String> dynamicLabels = new ArrayList<>(columnCount - 1);
-                for (int columnIndex = 2; columnIndex <= columnCount; columnIndex++) {
+                for (int columnIndex = DYNAMIC_LABELS_START_INDEX; columnIndex <= columnCount; columnIndex++) {
                     String dynamicLabel = resultSet.getString(columnIndex).replaceAll("\\s+", " ");
                     dynamicLabels.add(dynamicLabel);
                 }
@@ -73,6 +79,9 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
             }
 
             return probeResults;
+        } catch (TimeoutException timeoutEx) {
+            logger.warn(format("Timed out waiting for connection for probe '%s' after '%d' seconds", probe.name, TIMEOUT));
+            return singletonList(new ProbeResult(-1, probe));
         } catch (Exception e) {
             String message = format("Error occurred executing query: '%s'", probe.query());
             logger.error(message, e);

@@ -25,9 +25,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * {@link OracleSQLProbe} implementation which expects the provided SQL to return one row.
@@ -37,11 +40,13 @@ import static java.util.Collections.singletonList;
  */
 public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
+    private static final int TIMEOUT = 10;
+
     private final Probe probe;
-    private final DBConnectionPool connectionPool;
+    private final Future<DBConnectionPool> connectionPool;
     private final Logger logger;
 
-    public ExistsOracleSQLProbe(Probe probe, DBConnectionPool connectionPool, Logger logger) {
+    public ExistsOracleSQLProbe(Probe probe, Future<DBConnectionPool> connectionPool, Logger logger) {
         this.probe = probe;
         this.connectionPool = connectionPool;
         this.logger = logger;
@@ -49,11 +54,11 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
     /**
      * @return a single {@link ProbeResult} with a metric value of 1.0 for a successful probe,
-     * or a value of 0.0 for a failed probe.
+     * a value of 0.0 for a failed probe or a value of -1.0 if the probe was unable to query the database.
      */
     @Override
     public List<ProbeResult> probe() {
-        try (Connection connection = connectionPool.pool().connection();
+        try (Connection connection = connectionPool.get(TIMEOUT, SECONDS).pool().connection();
              PreparedStatement preparedStatement = connection.prepareStatement(probe.query())) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -67,6 +72,9 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
             }
 
             return singletonList(new ProbeResult(1, probe));
+        } catch (TimeoutException timeoutEx) {
+            logger.warn(format("Timed out waiting for connection for probe '%s' after '%d' seconds", probe.name, TIMEOUT));
+            return singletonList(new ProbeResult(-1, probe));
         } catch (Exception e) {
             String message = format("Error occurred executing query: '%s'", probe.query());
             logger.error(message, e);

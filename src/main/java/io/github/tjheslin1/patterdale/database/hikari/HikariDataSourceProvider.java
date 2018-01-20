@@ -25,7 +25,6 @@ import io.github.tjheslin1.patterdale.config.Passwords;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.RetryPolicy;
-import oracle.jdbc.pool.OracleDataSource;
 import org.slf4j.Logger;
 
 import java.sql.SQLException;
@@ -62,15 +61,8 @@ public class HikariDataSourceProvider {
     private static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger)
             throws SQLException {
         try {
-            OracleDataSource oracleDataSource = new OracleDataSource();
-            oracleDataSource.setUser(databaseDefinition.user);
-
             String password = passwords.byDatabaseName(databaseDefinition.name).value;
-            oracleDataSource.setPassword(password);
-
-            HikariDataSource hikariDataSource = new HikariDataSource(jdbcConfig(runtimeParameters, databaseDefinition, password));
-            hikariDataSource.setDataSource(oracleDataSource);
-            return hikariDataSource;
+            return new HikariDataSource(jdbcConfig(runtimeParameters, databaseDefinition, password));
         } catch (Exception e) {
             logger.error("Error occurred initialising Oracle and Hikari data sources.", e);
             throw e;    // caught by the RetryPolicy
@@ -79,6 +71,9 @@ public class HikariDataSourceProvider {
 
     private static HikariConfig jdbcConfig(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, String password) {
         HikariConfig jdbcConfig = new HikariConfig();
+        jdbcConfig.setJdbcUrl(databaseDefinition.jdbcUrl);
+        jdbcConfig.setUsername(databaseDefinition.user);
+        jdbcConfig.setPassword(password);
         jdbcConfig.setPoolName("patterdale-pool-" + databaseDefinition.name);
         jdbcConfig.setMaximumPoolSize(runtimeParameters.connectionPoolMaxSize());
         jdbcConfig.setMinimumIdle(runtimeParameters.connectionPoolMinIdle());

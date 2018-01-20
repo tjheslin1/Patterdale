@@ -8,12 +8,17 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import testutil.WithMockito;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class MetricsUseCaseTest implements WithAssertions, WithMockito {
 
@@ -25,13 +30,14 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     private final Connection connection = mock(Connection.class);
     private final DBConnection dbConnection = mock(DBConnection.class);
     private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
+    private final Future<DBConnectionPool> futureConnectionPool = mock(Future.class);
     private final Logger logger = mock(Logger.class);
 
     @Test
     public void scrapeMetricsReturnsSuccess() throws Exception {
         givenAllProbesAreSuccessful();
 
-        List<OracleSQLProbe> probes = singletonList(new ExistsOracleSQLProbe(PROBE, dbConnectionPool, logger));
+        List<OracleSQLProbe> probes = singletonList(new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger));
 
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
@@ -50,11 +56,12 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(dbConnection.connection()).thenReturn(connection);
+        when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
 
         List<OracleSQLProbe> probes = asList(
-                new ListOracleSQLProbe(PROBE, dbConnectionPool, logger),
-                new ListOracleSQLProbe(PROBE, dbConnectionPool, logger)
+                new ListOracleSQLProbe(PROBE, futureConnectionPool, logger),
+                new ListOracleSQLProbe(PROBE, futureConnectionPool, logger)
         );
 
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
@@ -70,8 +77,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     public void scrapeMetricsReturnsFailureIfAnyProbeFails() throws Exception {
         givenASuccessfulProbeFollowedByAFailedProbe();
         List<OracleSQLProbe> probes = asList(
-                new ExistsOracleSQLProbe(PROBE, dbConnectionPool, logger),
-                new ExistsOracleSQLProbe(PROBE, dbConnectionPool, logger)
+                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger),
+                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger)
         );
 
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
@@ -87,8 +94,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     public void scrapeMetricsReturnsFailureIfAllProbeFails() throws Exception {
         givenAllFailedProbes();
         List<OracleSQLProbe> probes = asList(
-                new ExistsOracleSQLProbe(PROBE, dbConnectionPool, logger),
-                new ExistsOracleSQLProbe(PROBE, dbConnectionPool, logger)
+                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger),
+                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger)
         );
 
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
@@ -100,26 +107,27 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         ));
     }
 
-    private void givenAllProbesAreSuccessful() throws SQLException {
+    private void givenAllProbesAreSuccessful() throws Exception {
         givenProbesReturnValues(1);
     }
 
-    private void givenASuccessfulProbeFollowedByAFailedProbe() throws SQLException {
+    private void givenASuccessfulProbeFollowedByAFailedProbe() throws Exception {
         givenProbesReturnValues(1, 0);
     }
 
-    private void givenAllFailedProbes() throws SQLException {
+    private void givenAllFailedProbes() throws Exception {
         givenProbesReturnValues(0);
     }
 
-    private void givenProbesReturnValues(int firstValue, Integer... subsequenceValues) throws SQLException {
+    private void givenProbesReturnValues(int firstValue, Integer... subsequentValues) throws Exception {
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSet.next()).thenReturn(true);
-        when(resultSet.getInt(1)).thenReturn(firstValue, subsequenceValues);
+        when(resultSet.getInt(1)).thenReturn(firstValue, subsequentValues);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(dbConnection.connection()).thenReturn(connection);
+        when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
     }
 }

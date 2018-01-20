@@ -6,13 +6,15 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import testutil.WithMockito;
 
+import java.util.concurrent.Future;
+
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 
 public class TypeToProbeMapperTest implements WithAssertions, WithMockito {
 
     private static final Probe EXIST_PROBE_DEFINITION = probe("name", "SQL", "exists", "metricName", "metricLabels");
 
-    private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
+    private final Future<DBConnectionPool> dbConnectionPool = mock(Future.class);
     private final Logger logger = mock(Logger.class);
 
     @Test

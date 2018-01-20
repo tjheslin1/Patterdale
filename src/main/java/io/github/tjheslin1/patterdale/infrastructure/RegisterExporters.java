@@ -46,7 +46,7 @@ public class RegisterExporters {
         statisticsHandler.setServer(server);
         handlers.addHandler(statisticsHandler);
 
-        new JettyStatisticsCollector(statisticsHandler).register();
+        new JettyStatisticsCollector(statisticsHandler).register(registry);
         server.setHandler(handlers);
 
         return server;

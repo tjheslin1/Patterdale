@@ -14,13 +14,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.Future;
 
+import static io.github.tjheslin1.patterdale.Patterdale.initialDatabaseConnections;
 import static io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
 import static java.util.stream.Collectors.toMap;
 
 public class TestUtil {
 
-    public static void startPatterdale(String configFile, String passwordsFile) {
+    public static Patterdale startPatterdale(String configFile, String passwordsFile) {
         Logger logger = LoggerFactory.getLogger("application");
 
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
@@ -30,13 +32,14 @@ public class TestUtil {
                 .parsePasswords(new File(passwordsFile));
 
         PatterdaleRuntimeParameters runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
-        Map<String, DBConnectionPool> connectionPools = Patterdale.initialDatabaseConnections(logger, passwords, runtimeParameters);
+        Map<String, Future<DBConnectionPool>> futureConnections = initialDatabaseConnections(logger, passwords, runtimeParameters);
 
         Map<String, Probe> probesByName = runtimeParameters.probes().stream().collect(toMap(probe -> probe.name, probe -> probe));
         TypeToProbeMapper typeToProbeMapper = new TypeToProbeMapper(logger);
 
-        new Patterdale(runtimeParameters, connectionPools, typeToProbeMapper, probesByName, logger)
-                .start();
+        Patterdale patterdale = new Patterdale(runtimeParameters, futureConnections, typeToProbeMapper, probesByName, logger);
+        patterdale.start();
+        return patterdale;
     }
 
     public static String responseBody(HttpResponse response) throws IOException {

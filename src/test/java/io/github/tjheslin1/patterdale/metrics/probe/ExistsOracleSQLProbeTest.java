@@ -10,8 +10,10 @@ import testutil.WithMockito;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.concurrent.Future;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
 
@@ -22,10 +24,11 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
     private final Connection connection = mock(Connection.class);
     private final DBConnection dbConnection = mock(DBConnection.class);
     private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
+    private final Future<DBConnectionPool> futureConnectionPool = mock(Future.class);
     private final Logger logger = mock(Logger.class);
 
     private final ExistsOracleSQLProbe existsOracleSQLProbe = new ExistsOracleSQLProbe(
-            probe("name", SQL, "exists", "", ""), dbConnectionPool, logger);
+            probe("name", SQL, "exists", "", ""), futureConnectionPool, logger);
 
     @Test
     public void probeReturnsSuccess() throws Exception {
@@ -34,6 +37,7 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(dbConnection.connection()).thenReturn(connection);
+        when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
 
         ProbeResult probeResult = existsOracleSQLProbe.probe().get(0);
