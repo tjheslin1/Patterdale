@@ -34,7 +34,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * {@link OracleSQLProbe} implementation which expects the provided SQL to return one row.
- * The probe checks the value of the first column and expects it to contain the integer '1'.
+ * The probes checks the value of the first column and expects it to contain the integer '1'.
  * <p>
  * Anything other than a '1' is the first column, or no results returned at all, is treated as a failure.
  */
@@ -52,12 +52,17 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
         this.logger = logger;
     }
 
+    @Override
+    public Probe probeDefinition() {
+        return probe;
+    }
+
     /**
-     * @return a single {@link ProbeResult} with a metric value of 1.0 for a successful probe,
-     * a value of 0.0 for a failed probe or a value of -1.0 if the probe was unable to query the database.
+     * @return a single {@link ProbeResult} with a metric value of 1.0 for a successful probes,
+     * a value of 0.0 for a failed probes or a value of -1.0 if the probes was unable to query the database.
      */
     @Override
-    public List<ProbeResult> probe() {
+    public List<ProbeResult> probes() {
         try (Connection connection = connectionPool.get(TIMEOUT, SECONDS).pool().connection();
              PreparedStatement preparedStatement = connection.prepareStatement(probe.query())) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -73,7 +78,7 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
             return singletonList(new ProbeResult(1, probe));
         } catch (TimeoutException timeoutEx) {
-            logger.warn(format("Timed out waiting for connection for probe '%s' after '%d' seconds", probe.name, TIMEOUT));
+            logger.warn(format("Timed out waiting for connection for probes '%s' after '%d' seconds", probe.name, TIMEOUT));
             return singletonList(new ProbeResult(-1, probe));
         } catch (Exception e) {
             String message = format("Error occurred executing query: '%s'", probe.query());

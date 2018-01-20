@@ -48,7 +48,7 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
         when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
 
-        List<ProbeResult> probeResults = listOracleSQLProbe.probe();
+        List<ProbeResult> probeResults = listOracleSQLProbe.probes();
 
         assertThat(probeResults).containsExactly(
                 new ProbeResult(4.5, PROBE, singletonList("example SQL")),
@@ -63,7 +63,7 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
         when(dbConnection.connection()).thenReturn(connection);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
 
-        List<ProbeResult> probeResults = listOracleSQLProbe.probe();
+        List<ProbeResult> probeResults = listOracleSQLProbe.probes();
 
         assertThat(probeResults).isEmpty();
     }
@@ -82,7 +82,7 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
         when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
 
-        List<ProbeResult> probeResults = listOracleSQLProbe.probe();
+        List<ProbeResult> probeResults = listOracleSQLProbe.probes();
 
         assertThat(probeResults).containsExactly(
                 new ProbeResult(4.5, PROBE, asList("example SQL", "dynamicLabel3"))

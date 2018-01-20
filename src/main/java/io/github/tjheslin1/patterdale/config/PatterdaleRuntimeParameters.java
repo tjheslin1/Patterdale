@@ -95,7 +95,7 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     }
 
     /**
-     * @return The listed probe definitions.
+     * @return The listed probes definitions.
      */
     @Override
     public List<Probe> probes() {

@@ -6,8 +6,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.assertj.core.api.WithAssertions;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.regex.Pattern;
@@ -17,21 +15,11 @@ import static testutil.TestUtil.startPatterdale;
 
 public class ResiliencyTest implements WithAssertions {
 
-
-    private static Patterdale patterdale;
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        patterdale = startPatterdale("src/test/resources/patterdale.yml", "src/test/resources/passwords.yml");
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        patterdale.stop();
-    }
-
-    @Test(timeout = 60000)
+    @Test(timeout = 15000)
     public void startUpCompletesEvenIfDatabaseIsDown() throws Exception {
+        // cannot use @Before and @After as startup of app is included in timeout
+        Patterdale patterdale = startPatterdale("src/test/resources/patterdale.yml", "src/test/resources/passwords.yml");
+
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpResponse response = httpClient.execute(new HttpGet("http://localhost:7001/metrics"));
 
@@ -49,5 +37,7 @@ public class ResiliencyTest implements WithAssertions {
         // the order of the jvm and jetty metrics changes
         assertThat(responseBody).matches(Pattern.compile(".*jvm.*\\{.*}.*", Pattern.DOTALL));
         assertThat(responseBody).matches(Pattern.compile(".*jetty.*\\{.*}.*", Pattern.DOTALL));
+
+        patterdale.stop();
     }
 }

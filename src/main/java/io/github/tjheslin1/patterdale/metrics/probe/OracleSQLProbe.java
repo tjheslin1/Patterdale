@@ -24,7 +24,9 @@ public interface OracleSQLProbe {
     /**
      * Executes SQL defined in 'patterdale.yml'.
      *
-     * @return a {@link ProbeResult} containing the result of the probe query.
+     * @return {@link ProbeResult}s containing the result of the probes query.
      */
-    List<ProbeResult> probe();
+    List<ProbeResult> probes();
+
+    Probe probeDefinition();
 }

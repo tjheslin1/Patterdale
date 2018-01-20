@@ -55,11 +55,16 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
         this.logger = logger;
     }
 
+    @Override
+    public Probe probeDefinition() {
+        return probe;
+    }
+
     /**
      * @return a List of {@link ProbeResult}. Each {@link ProbeResult} represents a row returned from the provided SQL.
      */
     @Override
-    public List<ProbeResult> probe() {
+    public List<ProbeResult> probes() {
         try (Connection connection = connectionPool.get(TIMEOUT, SECONDS).pool().connection();
              PreparedStatement preparedStatement = connection.prepareStatement(probe.query())) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -80,7 +85,7 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
             return probeResults;
         } catch (TimeoutException timeoutEx) {
-            logger.warn(format("Timed out waiting for connection for probe '%s' after '%d' seconds", probe.name, TIMEOUT));
+            logger.warn(format("Timed out waiting for connection for probes '%s' after '%d' seconds", probe.name, TIMEOUT));
             return singletonList(new ProbeResult(-1, probe));
         } catch (Exception e) {
             String message = format("Error occurred executing query: '%s'", probe.query());

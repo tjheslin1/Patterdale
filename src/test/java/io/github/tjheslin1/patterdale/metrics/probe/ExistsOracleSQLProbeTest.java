@@ -40,7 +40,7 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
         when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
 
-        ProbeResult probeResult = existsOracleSQLProbe.probe().get(0);
+        ProbeResult probeResult = existsOracleSQLProbe.probes().get(0);
 
         assertThat(probeResult.value).isEqualTo(1);
         assertThat(probeResult.dynamicLabelValues).isEmpty();
@@ -50,7 +50,7 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
     public void probeReturnsFailure() throws Exception {
         when(dbConnectionPool.pool()).thenThrow(Exception.class);
 
-        ProbeResult probeResult = existsOracleSQLProbe.probe().get(0);
+        ProbeResult probeResult = existsOracleSQLProbe.probes().get(0);
 
         assertThat(probeResult.value).isEqualTo(0);
         assertThat(probeResult.dynamicLabelValues).isEmpty();
