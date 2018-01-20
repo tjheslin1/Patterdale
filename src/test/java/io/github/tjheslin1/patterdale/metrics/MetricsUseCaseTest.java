@@ -67,10 +67,10 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
-        assertThat(probeResults).isEqualTo(asList(
+        assertThat(probeResults).containsExactlyInAnyOrder(
                 new ProbeResult(4.5, PROBE, singletonList("example SQL")),
                 new ProbeResult(6.7, PROBE, singletonList("example SQL"))
-        ));
+        );
     }
 
     @Test
@@ -84,10 +84,10 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
-        assertThat(probeResults).isEqualTo(asList(
+        assertThat(probeResults).containsExactlyInAnyOrder(
                 new ProbeResult(1, PROBE),
                 new ProbeResult(0, PROBE)
-        ));
+        );
     }
 
     @Test

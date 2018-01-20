@@ -17,7 +17,7 @@ public class ResiliencyTest implements WithAssertions {
 
     @Test(timeout = 15000)
     public void startUpCompletesEvenIfDatabaseIsDown() throws Exception {
-        // cannot use @Before and @After as startup of app is included in timeout
+        // cannot use @Before and @After as startup of app needs to be included in timeout
         Patterdale patterdale = startPatterdale("src/test/resources/patterdale.yml", "src/test/resources/passwords.yml");
 
         HttpClient httpClient = HttpClientBuilder.create().build();
