@@ -60,7 +60,7 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
     }
 
     @Test
-    public void probeFailsAndReturnsEmptyList() throws Exception {
+    public void probeFailsAndReturnsASingleProbeResult() throws Exception {
         when(preparedStatement.executeQuery()).thenThrow(IOException.class);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(dbConnection.connection()).thenReturn(connection);
@@ -68,7 +68,7 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
 
         List<ProbeResult> probeResults = listOracleSQLProbe.probes();
 
-        assertThat(probeResults).isEmpty();
+        assertThat(probeResults).isEqualTo(singletonList(new ProbeResult(-1, PROBE)));
     }
 
     @Test

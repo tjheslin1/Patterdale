@@ -86,7 +86,7 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
         } catch (Exception e) {
             String message = format("Error occurred executing query: '%s'", probe.query());
             logger.error(message, e);
-            return singletonList(new ProbeResult(0, probe));
+            return singletonList(new ProbeResult(-1, probe));
         }
     }
 }
