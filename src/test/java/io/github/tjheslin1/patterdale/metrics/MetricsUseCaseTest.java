@@ -8,10 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import testutil.WithMockito;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.sql.*;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -47,18 +44,8 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     }
 
     @Test
-    public void scrapeMetricsReturnsSuccessForMultipleProbes() throws Exception {
-        when(resultSetMetaData.getColumnCount()).thenReturn(2);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getDouble(1)).thenReturn(4.5, 6.7);
-        when(resultSet.getString(2)).thenReturn("example SQL");
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(dbConnection.connection()).thenReturn(connection);
-        when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
-        when(dbConnectionPool.pool()).thenReturn(dbConnection);
-
+    public void scrapeMetricsReturnsSuccessForMultipleProbesWithMultipleColumns() throws Exception {
+        givenASuccessfulProbeFollowedByAFailureWithMultipleColumns();
         List<OracleSQLProbe> probes = asList(
                 new ListOracleSQLProbe(PROBE, futureConnectionPool, logger),
                 new ListOracleSQLProbe(PROBE, futureConnectionPool, logger)
@@ -109,6 +96,19 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
 
     private void givenAllProbesAreSuccessful() throws Exception {
         givenProbesReturnValues(1);
+    }
+
+    private void givenASuccessfulProbeFollowedByAFailureWithMultipleColumns() throws SQLException, InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException {
+        when(resultSetMetaData.getColumnCount()).thenReturn(2);
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getDouble(1)).thenReturn(4.5, 6.7);
+        when(resultSet.getString(2)).thenReturn("example SQL");
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
+        when(dbConnection.connection()).thenReturn(connection);
+        when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
+        when(dbConnectionPool.pool()).thenReturn(dbConnection);
     }
 
     private void givenASuccessfulProbeFollowedByAFailedProbe() throws Exception {

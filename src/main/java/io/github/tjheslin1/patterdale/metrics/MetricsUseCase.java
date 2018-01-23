@@ -47,7 +47,7 @@ public class MetricsUseCase {
 
         try {
             executor.awaitTermination(10, SECONDS);
-            return collectProbeResultsWithTimeout(0, eventualProbeResults);
+            return collectProbeResults(eventualProbeResults);
         } catch (InterruptedException e) {
             return failedProbeResults().collect(toList());
         }
@@ -57,9 +57,9 @@ public class MetricsUseCase {
         return oracleSQLProbe.probes();
     }
 
-    private List<ProbeResult> collectProbeResultsWithTimeout(int timeout, List<Future<List<ProbeResult>>> eventualProbeResults) {
+    private List<ProbeResult> collectProbeResults(List<Future<List<ProbeResult>>> eventualProbeResults) {
         return eventualProbeResults.stream()
-                .flatMap(probe -> eventualResult(timeout, probe))
+                .flatMap(probe -> eventualResult(1, probe))
                 .collect(toList());
     }
 
@@ -67,7 +67,7 @@ public class MetricsUseCase {
         try {
             return eventualResult.get(timeout, SECONDS).stream();
         } catch (Exception e) {
-            return failedProbeResults();
+            return Stream.empty();
         }
     }
 
