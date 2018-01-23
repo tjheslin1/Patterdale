@@ -100,7 +100,7 @@ public class Patterdale {
 
         webServer = new JettyWebServerBuilder(logger)
                 .withServer(serverWithStatisticsCollection(registry, runtimeParameters.httpPort()))
-                .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes), runtimeParameters, registry, cacheDuration)
+                .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes, runtimeParameters), runtimeParameters, registry, cacheDuration)
                 .build();
 
         try {
@@ -138,7 +138,7 @@ public class Patterdale {
 
     private Stream<OracleSQLProbe> createProbes(DatabaseDefinition databaseDefinition) {
         return Arrays.stream(databaseDefinition.probes)
-                .map(probeName -> typeToProbeMapper.createProbe(databaseDefinition.name, connectionPools.get(databaseDefinition.name), probesByName.get(probeName)));
+                .map(probeName -> typeToProbeMapper.createProbe(databaseDefinition.name, connectionPools.get(databaseDefinition.name), probesByName.get(probeName), runtimeParameters));
     }
 
 }

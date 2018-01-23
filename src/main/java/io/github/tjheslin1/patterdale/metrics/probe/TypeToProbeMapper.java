@@ -17,6 +17,7 @@
  */
 package io.github.tjheslin1.patterdale.metrics.probe;
 
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import org.slf4j.Logger;
 
@@ -35,14 +36,14 @@ public class TypeToProbeMapper {
         this.logger = logger;
     }
 
-    public OracleSQLProbe createProbe(String databaseName, Future<DBConnectionPool> dbConnectionPool, Probe probe) {
+    public OracleSQLProbe createProbe(String databaseName, Future<DBConnectionPool> dbConnectionPool, Probe probe, RuntimeParameters runtimeParameters) {
         Probe dbLabelledProbe = probe.dbLabelled(databaseName);
         switch (dbLabelledProbe.type) {
             case EXISTS: {
-                return new ExistsOracleSQLProbe(dbLabelledProbe, dbConnectionPool, logger);
+                return new ExistsOracleSQLProbe(dbLabelledProbe, dbConnectionPool, runtimeParameters, logger);
             }
             case LIST: {
-                return new ListOracleSQLProbe(dbLabelledProbe, dbConnectionPool, logger);
+                return new ListOracleSQLProbe(dbLabelledProbe, dbConnectionPool, runtimeParameters, logger);
             }
             default: {
                 throw new IllegalArgumentException(

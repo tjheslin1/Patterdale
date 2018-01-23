@@ -1,5 +1,6 @@
 package io.github.tjheslin1.patterdale.metrics.probe;
 
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
 import io.github.tjheslin1.patterdale.database.DBConnection;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import org.assertj.core.api.WithAssertions;
@@ -25,10 +26,11 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
     private final DBConnection dbConnection = mock(DBConnection.class);
     private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
     private final Future<DBConnectionPool> futureConnectionPool = mock(Future.class);
+    private final RuntimeParameters runtimeParameters = mock(RuntimeParameters.class);
     private final Logger logger = mock(Logger.class);
 
     private final ExistsOracleSQLProbe existsOracleSQLProbe = new ExistsOracleSQLProbe(
-            probe("name", SQL, "exists", "", ""), futureConnectionPool, logger);
+            probe("name", SQL, "exists", "", ""), futureConnectionPool, runtimeParameters, logger);
 
     @Test
     public void probeReturnsSuccess() throws Exception {
@@ -39,6 +41,7 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
         when(dbConnection.connection()).thenReturn(connection);
         when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
+        when(runtimeParameters.probeConnectionWaitInSeconds()).thenReturn(10);
 
         ProbeResult probeResult = existsOracleSQLProbe.probes().get(0);
 

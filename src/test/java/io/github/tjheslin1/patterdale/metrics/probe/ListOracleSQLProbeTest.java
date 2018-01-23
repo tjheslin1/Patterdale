@@ -1,5 +1,6 @@
 package io.github.tjheslin1.patterdale.metrics.probe;
 
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
 import io.github.tjheslin1.patterdale.database.DBConnection;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import org.assertj.core.api.WithAssertions;
@@ -31,9 +32,10 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
     private final DBConnection dbConnection = mock(DBConnection.class);
     private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
     private final Future<DBConnectionPool> futureConnectionPool = mock(Future.class);
+    private final RuntimeParameters runtimeParameters = mock(RuntimeParameters.class);
     private final Logger logger = mock(Logger.class);
 
-    private final ListOracleSQLProbe listOracleSQLProbe = new ListOracleSQLProbe(PROBE, futureConnectionPool, logger);
+    private final ListOracleSQLProbe listOracleSQLProbe = new ListOracleSQLProbe(PROBE, futureConnectionPool, runtimeParameters, logger);
 
     @Test
     public void probeReturnsMultipleSuccess() throws Exception {
@@ -47,6 +49,7 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
         when(dbConnection.connection()).thenReturn(connection);
         when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
+        when(runtimeParameters.probeConnectionWaitInSeconds()).thenReturn(10);
 
         List<ProbeResult> probeResults = listOracleSQLProbe.probes();
 
@@ -81,6 +84,7 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
         when(dbConnection.connection()).thenReturn(connection);
         when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
+        when(runtimeParameters.probeConnectionWaitInSeconds()).thenReturn(10);
 
         List<ProbeResult> probeResults = listOracleSQLProbe.probes();
 

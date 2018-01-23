@@ -35,6 +35,7 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
 
     private final int httpPort;
     private final long cacheDuration;
+    private final int probeConnectionWaitInSeconds;
     private final List<DatabaseDefinition> databases;
     private final List<Probe> probes;
     private final int connectionPoolMaxSize;
@@ -42,9 +43,10 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     private final int maxConnectionRetries;
     private final long connectionRetryDelayInSeconds;
 
-    public PatterdaleRuntimeParameters(int httpPort, long cacheDuration, List<DatabaseDefinition> databases, int connectionPoolMaxSize, int connectionPoolMinIdle, List<Probe> probes, int maxConnectionRetries, long connectionRetryDelayInSeconds) {
+    public PatterdaleRuntimeParameters(int httpPort, long cacheDuration, int probeConnectionWaitInSeconds, List<DatabaseDefinition> databases, int connectionPoolMaxSize, int connectionPoolMinIdle, List<Probe> probes, int maxConnectionRetries, long connectionRetryDelayInSeconds) {
         this.httpPort = httpPort;
         this.cacheDuration = cacheDuration;
+        this.probeConnectionWaitInSeconds = probeConnectionWaitInSeconds;
         this.databases = databases;
         this.connectionPoolMaxSize = connectionPoolMaxSize;
         this.connectionPoolMinIdle = connectionPoolMinIdle;
@@ -54,9 +56,13 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     }
 
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
+        if(config.httpPort <= 0)
+            throw new IllegalArgumentException("`httpPort` must be set to a positive integer value");
+
         return new PatterdaleRuntimeParameters(
                 config.httpPort,
                 config.cacheDuration,
+                config.probeConnectionWaitInSeconds,
                 asList(config.databases),
                 integerParameterOrDefault(config.connectionPool, "maxSize", 5),
                 integerParameterOrDefault(config.connectionPool, "minIdle", 1),
@@ -84,6 +90,11 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     @Override
     public long cacheDuration() {
         return cacheDuration;
+    }
+
+    @Override
+    public int probeConnectionWaitInSeconds() {
+        return probeConnectionWaitInSeconds;
     }
 
     /**

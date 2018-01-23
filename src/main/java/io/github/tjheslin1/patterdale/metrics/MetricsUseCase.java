@@ -17,6 +17,7 @@
  */
 package io.github.tjheslin1.patterdale.metrics;
 
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 
@@ -33,9 +34,11 @@ import static java.util.stream.Collectors.toList;
 public class MetricsUseCase {
 
     private final List<OracleSQLProbe> probes;
+    private final RuntimeParameters runtimeParameters;
 
-    public MetricsUseCase(List<OracleSQLProbe> probes) {
+    public MetricsUseCase(List<OracleSQLProbe> probes, RuntimeParameters runtimeParameters) {
         this.probes = probes;
+        this.runtimeParameters = runtimeParameters;
     }
 
     public List<ProbeResult> scrapeMetrics() {
@@ -46,7 +49,7 @@ public class MetricsUseCase {
                 .collect(toList());
 
         try {
-            executor.awaitTermination(10, SECONDS);
+            executor.awaitTermination(runtimeParameters.probeConnectionWaitInSeconds(), SECONDS);
             return collectProbeResults(eventualProbeResults);
         } catch (InterruptedException e) {
             return failedProbeResults().collect(toList());

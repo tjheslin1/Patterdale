@@ -1,5 +1,6 @@
 package io.github.tjheslin1.patterdale.metrics;
 
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
 import io.github.tjheslin1.patterdale.database.DBConnection;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
 import io.github.tjheslin1.patterdale.metrics.probe.*;
@@ -28,15 +29,16 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     private final DBConnection dbConnection = mock(DBConnection.class);
     private final DBConnectionPool dbConnectionPool = mock(DBConnectionPool.class);
     private final Future<DBConnectionPool> futureConnectionPool = mock(Future.class);
+    private final RuntimeParameters runtimeParameters = mock(RuntimeParameters.class);
     private final Logger logger = mock(Logger.class);
 
     @Test
     public void scrapeMetricsReturnsSuccess() throws Exception {
         givenAllProbesAreSuccessful();
 
-        List<OracleSQLProbe> probes = singletonList(new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger));
+        List<OracleSQLProbe> probes = singletonList(new ExistsOracleSQLProbe(PROBE, futureConnectionPool, runtimeParameters, logger));
 
-        MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
+        MetricsUseCase metricsUseCase = new MetricsUseCase(probes, runtimeParameters);
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
         assertThat(probeResults)
@@ -47,11 +49,11 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     public void scrapeMetricsReturnsSuccessForMultipleProbesWithMultipleColumns() throws Exception {
         givenASuccessfulProbeFollowedByAFailureWithMultipleColumns();
         List<OracleSQLProbe> probes = asList(
-                new ListOracleSQLProbe(PROBE, futureConnectionPool, logger),
-                new ListOracleSQLProbe(PROBE, futureConnectionPool, logger)
+                new ListOracleSQLProbe(PROBE, futureConnectionPool, runtimeParameters, logger),
+                new ListOracleSQLProbe(PROBE, futureConnectionPool, runtimeParameters, logger)
         );
 
-        MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
+        MetricsUseCase metricsUseCase = new MetricsUseCase(probes, runtimeParameters);
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
         assertThat(probeResults).containsExactlyInAnyOrder(
@@ -64,11 +66,11 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     public void scrapeMetricsReturnsFailureIfAnyProbeFails() throws Exception {
         givenASuccessfulProbeFollowedByAFailedProbe();
         List<OracleSQLProbe> probes = asList(
-                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger),
-                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger)
+                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, runtimeParameters, logger),
+                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, runtimeParameters, logger)
         );
 
-        MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
+        MetricsUseCase metricsUseCase = new MetricsUseCase(probes, runtimeParameters);
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
         assertThat(probeResults).containsExactlyInAnyOrder(
@@ -81,11 +83,11 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
     public void scrapeMetricsReturnsFailureIfAllProbeFails() throws Exception {
         givenAllFailedProbes();
         List<OracleSQLProbe> probes = asList(
-                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger),
-                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, logger)
+                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, runtimeParameters, logger),
+                new ExistsOracleSQLProbe(PROBE, futureConnectionPool, runtimeParameters, logger)
         );
 
-        MetricsUseCase metricsUseCase = new MetricsUseCase(probes);
+        MetricsUseCase metricsUseCase = new MetricsUseCase(probes, runtimeParameters);
         List<ProbeResult> probeResults = metricsUseCase.scrapeMetrics();
 
         assertThat(probeResults).isEqualTo(asList(
@@ -109,6 +111,7 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         when(dbConnection.connection()).thenReturn(connection);
         when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
+        when(runtimeParameters.probeConnectionWaitInSeconds()).thenReturn(10);
     }
 
     private void givenASuccessfulProbeFollowedByAFailedProbe() throws Exception {
@@ -129,5 +132,6 @@ public class MetricsUseCaseTest implements WithAssertions, WithMockito {
         when(dbConnection.connection()).thenReturn(connection);
         when(futureConnectionPool.get(anyLong(), eq(SECONDS))).thenReturn(dbConnectionPool);
         when(dbConnectionPool.pool()).thenReturn(dbConnection);
+        when(runtimeParameters.probeConnectionWaitInSeconds()).thenReturn(10);
     }
 }
