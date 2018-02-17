@@ -20,35 +20,35 @@ package io.github.tjheslin1.patterdale.database.hikari;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
-import io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters;
 import io.github.tjheslin1.patterdale.config.Passwords;
+import io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.RetryPolicy;
 import org.slf4j.Logger;
 
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class HikariDataSourceProvider {
     /**
      * Attempts to create a {@link HikariDataSource} by making an initial connection to the database.
      * Retries a number of times, with a delay between each retry, according to the provided {@link PatterdaleRuntimeParameters}.
-     *
+     * <p>
      * Failed attempts are logged as well as when the number of retries has exceeded.
      *
-     * @param runtimeParams The app configuration defined in `patterdale.yml`.
+     * @param runtimeParams      The app configuration defined in `patterdale.yml`.
      * @param databaseDefinition The details of the database being connected to.
-     * @param passwords The separate store of passwords, the matching password will be found according to the `databaseDefinition`.
-     * @param logger to log.
+     * @param passwords          The separate store of passwords, the matching password will be found according to the `databaseDefinition`.
+     * @param logger             to log.
      * @return A data source for a successful connection to the database.
      */
     public static HikariDataSource retriableDataSource(PatterdaleRuntimeParameters runtimeParams, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
         RetryPolicy retryPolicy = new RetryPolicy()
                 .retryOn(HikariPool.PoolInitializationException.class)
-                .withDelay(runtimeParams.connectionRetryDelayInSeconds(), TimeUnit.SECONDS)
+                .withDelay(runtimeParams.connectionRetryDelayInSeconds(), SECONDS)
                 .withMaxRetries(runtimeParams.maxConnectionRetries());
 
         return Failsafe.with(retryPolicy)
@@ -64,7 +64,7 @@ public class HikariDataSourceProvider {
             String password = passwords.byDatabaseName(databaseDefinition.name).value;
             return new HikariDataSource(jdbcConfig(runtimeParameters, databaseDefinition, password));
         } catch (Exception e) {
-            logger.error("Error occurred initialising Oracle and Hikari data sources.", e);
+            logger.error("Error occurred initialising Oracle and Hikari data sources.");
             throw e;    // caught by the RetryPolicy
         }
     }
@@ -78,6 +78,7 @@ public class HikariDataSourceProvider {
         jdbcConfig.setMaximumPoolSize(runtimeParameters.connectionPoolMaxSize());
         jdbcConfig.setMinimumIdle(runtimeParameters.connectionPoolMinIdle());
         jdbcConfig.setJdbcUrl(databaseDefinition.jdbcUrl);
+        jdbcConfig.setInitializationFailTimeout(SECONDS.toMillis(runtimeParameters.probeConnectionWaitInSeconds()));
         return jdbcConfig;
     }
 

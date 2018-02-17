@@ -132,8 +132,8 @@ public class Patterdale {
     }
 
     private static HikariDBConnectionPool connectionPool(Logger logger, Passwords passwords, PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition) {
-        return new HikariDBConnectionPool(new HikariDBConnection(retriableDataSource
-                (runtimeParameters, databaseDefinition, passwords, logger)));
+        return new HikariDBConnectionPool(new HikariDBConnection(
+                retriableDataSource(runtimeParameters, databaseDefinition, passwords, logger)));
     }
 
     private Stream<OracleSQLProbe> createProbes(DatabaseDefinition databaseDefinition) {
