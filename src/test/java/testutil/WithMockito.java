@@ -18,6 +18,14 @@ public interface WithMockito {
         return Mockito.any();
     }
 
+    default Long anyLong() {
+        return Mockito.anyLong();
+    }
+
+    default <T> T eq(T t) {
+        return Mockito.eq(t);
+    }
+
     default <T> T verify(T mock) {
         return Mockito.verify(mock);
     }

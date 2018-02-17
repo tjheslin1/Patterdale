@@ -32,6 +32,10 @@ Application configuration as well as database connection and probe information i
 `cacheDuration` is the lifetime, in seconds, of the cache of SQL probe results.
 After which the next call to /metrics will trigger a full scrape of all database probes and store in the cache again. This is to prevent overloading the databases with requests.
 
+`probeConnectionWaitInSeconds` is the time, in seconds, to wait during a probe scrape for the initial database connection pools to be initialised.
+If this times out, no metrics for that probe are returned. 
+The app will wait for this time for each scrape, once it has passed once it will always pass.
+
 `databases` is a list of the databases the application will connect to.
 Each database definition references probes defined in the `probes` list below, to be executed against that database.
 
@@ -48,6 +52,7 @@ database_up{database="alicesDatabase",query="SELECT 1 FROM DUAL"} 1.0
 ```yml
 httpPort: 7001
 cacheDuration: 60
+probeConnectionWaitInSeconds: 10
 databases:
   - name: bobsDatabase
     user: system

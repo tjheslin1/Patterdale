@@ -23,6 +23,7 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
         PatterdaleRuntimeParameters expectedParameters = new PatterdaleRuntimeParameters(
                 HTTP_PORT,
                 CACHE_DURATION,
+                PROBE_CONNECTION_WAIT_IN_SECONDS,
                 DATABASES,
                 MAX_SIZE,
                 MIN_IDLE,
@@ -30,15 +31,21 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
                 MAX_CONNECTION_RETRIES,
                 CONNECTION_RETRY_DELAY_IN_SECONDS);
 
-        PatterdaleRuntimeParameters actualParameters = patterdaleRuntimeParameters(exampleConfig());
+        PatterdaleRuntimeParameters actualParameters = patterdaleRuntimeParameters(exampleConfig(HTTP_PORT));
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
-    private static PatterdaleConfig exampleConfig() {
+    @Test(expected = IllegalArgumentException.class)
+    public void httpPortMustBeSet() throws Exception {
+        patterdaleRuntimeParameters(exampleConfig(0));
+    }
+
+    private static PatterdaleConfig exampleConfig(int httpPort) {
         PatterdaleConfig config = new PatterdaleConfig();
 
-        config.httpPort = HTTP_PORT;
+        config.httpPort = httpPort;
         config.cacheDuration = CACHE_DURATION;
+        config.probeConnectionWaitInSeconds = PROBE_CONNECTION_WAIT_IN_SECONDS;
 
         config.databases = new DatabaseDefinition[]{
                 databaseDefinition(NAME, USER, JDBC_URL, singletonList(PROBE_NAME_1)),
@@ -59,8 +66,10 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
         return config;
     }
 
+
     private static final int HTTP_PORT = 7000;
     private static final long CACHE_DURATION = 60;
+    private static final int PROBE_CONNECTION_WAIT_IN_SECONDS = 10;
 
     private static final String NAME = "test";
     private static final String NAME_2 = "test2";

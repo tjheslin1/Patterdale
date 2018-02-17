@@ -17,30 +17,66 @@
  */
 package io.github.tjheslin1.patterdale.metrics;
 
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
 import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
+import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.failedProbe;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 
 public class MetricsUseCase {
 
     private final List<OracleSQLProbe> probes;
+    private final RuntimeParameters runtimeParameters;
 
-    public MetricsUseCase(List<OracleSQLProbe> probes) {
+    public MetricsUseCase(List<OracleSQLProbe> probes, RuntimeParameters runtimeParameters) {
         this.probes = probes;
+        this.runtimeParameters = runtimeParameters;
     }
 
     public List<ProbeResult> scrapeMetrics() {
-        return probes.stream()
-                .flatMap(this::executeProbes)
+        ExecutorService executor = Executors.newFixedThreadPool(probes.size());
+
+        List<Future<List<ProbeResult>>> eventualProbeResults = probes.stream()
+                .map(probe -> executor.submit(() -> executeProbe(probe)))
+                .collect(toList());
+
+        try {
+            executor.awaitTermination(runtimeParameters.probeConnectionWaitInSeconds(), SECONDS);
+            return collectProbeResults(eventualProbeResults);
+        } catch (InterruptedException e) {
+            return failedProbeResults().collect(toList());
+        }
+    }
+
+    private List<ProbeResult> executeProbe(OracleSQLProbe oracleSQLProbe) {
+        return oracleSQLProbe.probes();
+    }
+
+    private List<ProbeResult> collectProbeResults(List<Future<List<ProbeResult>>> eventualProbeResults) {
+        return eventualProbeResults.stream()
+                .flatMap(probe -> eventualResult(1, probe))
                 .collect(toList());
     }
 
-    private Stream<ProbeResult> executeProbes(OracleSQLProbe oracleSQLProbe) {
-        return oracleSQLProbe.probe().stream();
+    private Stream<ProbeResult> eventualResult(int timeout, Future<List<ProbeResult>> eventualResult) {
+        try {
+            return eventualResult.get(timeout, SECONDS).stream();
+        } catch (Exception e) {
+            return Stream.empty();
+        }
+    }
+
+    private Stream<ProbeResult> failedProbeResults() {
+        return probes.stream()
+                .map(probe -> failedProbe(probe.probeDefinition()));
     }
 }
 

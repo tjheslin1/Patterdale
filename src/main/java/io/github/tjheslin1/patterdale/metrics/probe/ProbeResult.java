@@ -24,7 +24,7 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 
 /**
- * Represents the result of a SQL probe.
+ * Represents the result of a SQL probes.
  */
 public class ProbeResult extends ValueType {
 
@@ -40,5 +40,9 @@ public class ProbeResult extends ValueType {
         this.value = value;
         this.probe = probe;
         this.dynamicLabelValues = dynamicLabelValues;
+    }
+
+    public static ProbeResult failedProbe(Probe probe) {
+        return new ProbeResult(-1, probe);
     }
 }

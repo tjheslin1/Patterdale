@@ -1,14 +1,15 @@
 httpPort: 7001
 cacheDuration: 60
+probeConnectionWaitInSeconds: 10
 databases:
   - name: bobsDatabase
     user: user
-    jdbcUrl: jdbc:h2:mem:test
+    jdbcUrl: jdbc:h2:mem:test;MODE=Oracle
     probes:
       - healthCheck
   - name: alicesDatabase
     user: user
-    jdbcUrl: jdbc:h2:mem:test
+    jdbcUrl: jdbc:h2:mem:test;MODE=Oracle
     probes:
       - healthCheck
 
