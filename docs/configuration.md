@@ -1,6 +1,6 @@
 The example `docker run` command from the README includes two volume mounts:
 
-`docker run -d -p 7000:7000 -v /your/jdbc/ojdbc8.jar:/app/ojdbc8.jar -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:1.1.1`
+`docker run -d -p 7000:7000 -v /your/jdbc/ojdbc8.jar:/app/ojdbc8.jar -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:1.1.2`
 
 ## System properties
 
