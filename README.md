@@ -2,6 +2,8 @@
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/tjheslin1/patterdale.svg?maxAge=604800)](https://hub.docker.com/r/tjheslin1/patterdale/)
 
+[See here for example `patterdale.yml` configuration file](https://gist.github.com/tjheslin1/5d74d5ad6c4b0dda8662c381590ddbbb#file-patterdale-yml)
+
 [See here for complete documentation](https://tjheslin1.github.io/Patterdale/).
 
 Prometheus Oracle database exporter. Runs provided queries.
