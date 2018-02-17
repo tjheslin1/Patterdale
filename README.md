@@ -15,10 +15,8 @@ If a `logback.xml` file is included in the directory passed into the `/config` c
 Note the volume mount: `/your/jdbc/odjbc7.jar:/app/odjbc7.jar` in the example.
 This driver can be downloaded manually from the
 [Oracle JDBC Downloads page](http://www.oracle.com/technetwork/database/features/jdbc/jdbc-drivers-12c-download-1958347.html)
-or, **preferably**, you can provide the following properties in your `gradle.properties` file when building locally using gradle which will fetch the driver from the maven repository.
+or, **preferably**, you can provide `mavenOracleUsername` and `mavenOraclePassword` in your `gradle.properties` file when building locally which will fetch the driver from the maven repository.
 This requires you register an Oracle single sign-on account.
-
-`mavenOracleUsername` and `mavenOraclePassword`.
 
 ## Troubleshooting
 
