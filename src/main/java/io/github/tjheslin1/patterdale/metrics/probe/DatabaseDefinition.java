@@ -20,6 +20,7 @@ package io.github.tjheslin1.patterdale.metrics.probe;
 import io.github.tjheslin1.patterdale.ValueType;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The in-memory representation of databases list in 'patterdale.yml', passed in on app start-up.
@@ -29,6 +30,7 @@ public class DatabaseDefinition extends ValueType {
     public String user;
     public String jdbcUrl;
     public String[] probes;
+    public Map<String, String> metricLabels;
 
     // test use only
     public static DatabaseDefinition databaseDefinition(String name, String user, String jdbcUrl, List<String> probes) {
@@ -37,6 +39,14 @@ public class DatabaseDefinition extends ValueType {
         databaseDefinition.user = user;
         databaseDefinition.jdbcUrl = jdbcUrl;
         databaseDefinition.probes = probes.toArray(new String[probes.size()]);
+
+        return databaseDefinition;
+    }
+
+    // test use only
+    public static DatabaseDefinition databaseDefinition(String name, String user, String jdbcUrl, List<String> probes, Map<String, String> metricLabels) {
+        final DatabaseDefinition databaseDefinition = databaseDefinition(name, user, jdbcUrl, probes);
+        databaseDefinition.metricLabels = metricLabels;
 
         return databaseDefinition;
     }

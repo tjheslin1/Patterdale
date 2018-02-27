@@ -36,8 +36,8 @@ public class TypeToProbeMapper {
         this.logger = logger;
     }
 
-    public OracleSQLProbe createProbe(String databaseName, Future<DBConnectionPool> dbConnectionPool, Probe probe, RuntimeParameters runtimeParameters) {
-        Probe dbLabelledProbe = probe.dbLabelled(databaseName);
+    public OracleSQLProbe createProbe(DatabaseDefinition databaseDefinition, Future<DBConnectionPool> dbConnectionPool, Probe probe, RuntimeParameters runtimeParameters) {
+        Probe dbLabelledProbe = probe.dbLabelled(databaseDefinition);
         switch (dbLabelledProbe.type) {
             case EXISTS: {
                 return new ExistsOracleSQLProbe(dbLabelledProbe, dbConnectionPool, runtimeParameters, logger);
