@@ -38,6 +38,7 @@ The app will wait for this time for each scrape, once it has passed once it will
 
 `databases` is a list of the databases the application will connect to.
 Each database definition references probes defined in the `probes` list below, to be executed against that database.
+The optional `metricLabels` field defines a list of metric label and value key-pairs that will be added to every probe for that database.
 
 Note: The metric label of `database=${databaseName}` will be automatically appended to all _metricLabels_.
 
@@ -59,6 +60,8 @@ databases:
     jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
     probes:
       - healthCheck
+    metricLabels:
+      label: value
   - name: alicesDatabase
     user: system
     jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe

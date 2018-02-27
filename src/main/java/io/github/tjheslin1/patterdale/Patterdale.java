@@ -138,7 +138,7 @@ public class Patterdale {
 
     private Stream<OracleSQLProbe> createProbes(DatabaseDefinition databaseDefinition) {
         return Arrays.stream(databaseDefinition.probes)
-                .map(probeName -> typeToProbeMapper.createProbe(databaseDefinition.name, connectionPools.get(databaseDefinition.name), probesByName.get(probeName), runtimeParameters));
+                .map(probeName -> typeToProbeMapper.createProbe(databaseDefinition, connectionPools.get(databaseDefinition.name), probesByName.get(probeName), runtimeParameters));
     }
 
 }

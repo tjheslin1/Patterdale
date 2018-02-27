@@ -7,6 +7,8 @@ databases:
     jdbcUrl: jdbc:h2:mem:test;MODE=Oracle
     probes:
       - healthCheck
+    metricLabels:
+      label: value
   - name: alicesDatabase
     user: user
     jdbcUrl: jdbc:h2:mem:test;MODE=Oracle
