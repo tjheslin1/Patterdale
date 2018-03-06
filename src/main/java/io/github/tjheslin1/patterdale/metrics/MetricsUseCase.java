@@ -23,8 +23,8 @@ import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.ProbeResult.failedProbe;
@@ -35,29 +35,28 @@ public class MetricsUseCase {
 
     private final List<OracleSQLProbe> probes;
     private final RuntimeParameters runtimeParameters;
+    private final Supplier<ExecutorService> executorServiceSupplier;
 
-    public MetricsUseCase(List<OracleSQLProbe> probes, RuntimeParameters runtimeParameters) {
+    public MetricsUseCase(List<OracleSQLProbe> probes, RuntimeParameters runtimeParameters, Supplier<ExecutorService> executorServiceSupplier) {
         this.probes = probes;
         this.runtimeParameters = runtimeParameters;
+        this.executorServiceSupplier = executorServiceSupplier;
     }
 
     public List<ProbeResult> scrapeMetrics() {
-        ExecutorService executor = Executors.newFixedThreadPool(probes.size());
+        ExecutorService executor = executorServiceSupplier.get();
 
         List<Future<List<ProbeResult>>> eventualProbeResults = probes.stream()
-                .map(probe -> executor.submit(() -> executeProbe(probe)))
+                .map(probe -> executor.submit(new ScrapeProbe(probe)))
                 .collect(toList());
 
         try {
+            executor.shutdown();
             executor.awaitTermination(runtimeParameters.probeConnectionWaitInSeconds(), SECONDS);
             return collectProbeResults(eventualProbeResults);
         } catch (InterruptedException e) {
             return failedProbeResults().collect(toList());
         }
-    }
-
-    private List<ProbeResult> executeProbe(OracleSQLProbe oracleSQLProbe) {
-        return oracleSQLProbe.probes();
     }
 
     private List<ProbeResult> collectProbeResults(List<Future<List<ProbeResult>>> eventualProbeResults) {
@@ -79,4 +78,3 @@ public class MetricsUseCase {
                 .map(probe -> failedProbe(probe.probeDefinition()));
     }
 }
-

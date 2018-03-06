@@ -100,7 +100,17 @@ public class Patterdale {
 
         webServer = new JettyWebServerBuilder(logger)
                 .withServer(serverWithStatisticsCollection(registry, runtimeParameters.httpPort()))
-                .registerMetricsEndpoint("/metrics", new MetricsUseCase(probes, runtimeParameters), runtimeParameters, registry, cacheDuration)
+                .registerMetricsEndpoint(
+                        "/metrics",
+                        new MetricsUseCase(
+                                probes,
+                                runtimeParameters,
+                                () -> Executors.newFixedThreadPool(probes.size())
+                        ),
+                        runtimeParameters,
+                        registry,
+                        cacheDuration
+                )
                 .build();
 
         try {
