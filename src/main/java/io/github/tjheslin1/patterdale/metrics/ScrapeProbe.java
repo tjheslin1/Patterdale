@@ -17,14 +17,14 @@
  */
 package io.github.tjheslin1.patterdale.metrics;
 
+import io.github.tjheslin1.patterdale.ValueType;
 import io.github.tjheslin1.patterdale.metrics.probe.OracleSQLProbe;
 import io.github.tjheslin1.patterdale.metrics.probe.ProbeResult;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 
-public class ScrapeProbe implements Callable<List<ProbeResult>> {
+public class ScrapeProbe extends ValueType implements Callable<List<ProbeResult>> {
     private final OracleSQLProbe probe;
 
     public ScrapeProbe(OracleSQLProbe probe) {
@@ -34,18 +34,5 @@ public class ScrapeProbe implements Callable<List<ProbeResult>> {
     @Override
     public List<ProbeResult> call() {
         return probe.probes();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ScrapeProbe that = (ScrapeProbe) o;
-        return Objects.equals(probe, that.probe);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(probe);
     }
 }
