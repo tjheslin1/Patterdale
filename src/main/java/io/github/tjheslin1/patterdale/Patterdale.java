@@ -103,6 +103,7 @@ public class Patterdale {
                 .registerMetricsEndpoint(
                         "/metrics",
                         new MetricsUseCase(
+                                logger,
                                 probes,
                                 runtimeParameters,
                                 () -> Executors.newFixedThreadPool(probes.size())

@@ -27,8 +27,6 @@ import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.RetryPolicy;
 import org.slf4j.Logger;
 
-import java.sql.SQLException;
-
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -58,13 +56,12 @@ public class HikariDataSourceProvider {
                 .get(() -> dataSource(runtimeParams, databaseDefinition, passwords, logger));
     }
 
-    private static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger)
-            throws SQLException {
+    private static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
         try {
             String password = passwords.byDatabaseName(databaseDefinition.name).value;
             return new HikariDataSource(jdbcConfig(runtimeParameters, databaseDefinition, password));
         } catch (Exception e) {
-            logger.error("Error occurred initialising Oracle and Hikari data sources.");
+            logger.error("Error occurred initialising Oracle and Hikari data sources.", e);
             throw e;    // caught by the RetryPolicy
         }
     }
