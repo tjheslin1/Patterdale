@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import static testutil.TestUtil.responseBody;
 import static testutil.TestUtil.startPatterdale;
 
-public class ResiliencyTest implements WithAssertions {
+public class StartupResiliencyTest implements WithAssertions {
 
     @Test(timeout = 30000)
     public void startUpCompletesEvenIfDatabaseIsDown() throws Exception {

@@ -98,4 +98,5 @@ public class MetricsUseCase {
             this.future = future;
         }
 
-}}
+    }
+}

@@ -9,5 +9,3 @@ build/
 
 release_test.txt
 ojdbc*.jar
-
-test.mv.db

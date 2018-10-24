@@ -25,19 +25,6 @@ public class DatabaseDownTest implements WithAssertions {
     private static Patterdale patterdale;
     private static Server h2;
 
-    @BeforeClass
-    public static void setUp() throws SQLException {
-        h2 = Server.createTcpServer("-tcpPort", String.valueOf(H2_PORT)).start();
-        patterdale = startPatterdale("src/test/resources/patterdale-proxy-h2.yml", "src/test/resources/passwords-h2.yml");
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        if (patterdale != null) {
-            patterdale.stop();
-        }
-    }
-
     @Test
     public void scrapesOracleDatabaseMetricsOnRequest() throws Exception {
         assertDatabaseMetric("1.0");
@@ -66,5 +53,20 @@ public class DatabaseDownTest implements WithAssertions {
         // the order of the jvm and jetty metrics changes
         assertThat(responseBody).matches(Pattern.compile(".*jvm.*\\{.*}.*", Pattern.DOTALL));
         assertThat(responseBody).matches(Pattern.compile(".*jetty.*\\{.*}.*", Pattern.DOTALL));
+    }
+
+    @BeforeClass
+    public static void setUp() throws SQLException {
+        h2 = Server.createTcpServer("-tcpPort", String.valueOf(H2_PORT)).start();
+        patterdale = startPatterdale("src/test/resources/patterdale-proxy-h2.yml", "src/test/resources/passwords-h2.yml");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        if (patterdale != null) {
+            patterdale.stop();
+        }
+
+        h2.shutdown();
     }
 }
