@@ -49,7 +49,7 @@ dependencies {
     compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.5.v20170502'
     compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.5.v20170502'
 
-    compile 'net.jodah:failsafe:1.0.4'
+    compile 'net.jodah:failsafe:1.1.0'
 
     compile group: 'io.prometheus', name: 'simpleclient', version: '0.1.0'
     compile group: 'io.prometheus', name: 'simpleclient_hotspot', version: '0.1.0'

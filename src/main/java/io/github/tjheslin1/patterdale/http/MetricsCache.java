@@ -27,8 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import static java.lang.String.format;
-
 public class MetricsCache implements Supplier<List<ProbeResult>>, Runnable {
 
     private final AtomicReference<List<ProbeResult>> results = new AtomicReference<>();
@@ -39,10 +37,6 @@ public class MetricsCache implements Supplier<List<ProbeResult>>, Runnable {
     }
 
     public static MetricsCache metricsCache(MetricsUseCase metricsUseCase, long cacheDuration) {
-        if (cacheDuration <= 0) {
-            throw new IllegalArgumentException(format("Cache duration must be positive but was '%d'!", cacheDuration));
-        }
-
         MetricsCache metricsCache = new MetricsCache(metricsUseCase);
         metricsCache.run();
 

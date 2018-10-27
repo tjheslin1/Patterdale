@@ -21,13 +21,6 @@ public class MetricsCacheTest implements WithAssertions {
     private final MetricsUseCase metricsUseCase = mock(MetricsUseCase.class);
 
     @Test
-    public void cacheDurationMustBePositive() {
-        assertThatThrownBy(() -> metricsCache(mock(MetricsUseCase.class), 0))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Cache duration must be positive but was '0'!");
-    }
-
-    @Test
     public void initialValueIsAlreadyPopulated() {
         List<ProbeResult> probeResults = singletonList(mock(ProbeResult.class));
         when(metricsUseCase.scrapeMetrics()).thenReturn(probeResults);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
@@ -11,6 +12,8 @@
     <logger name="application" level="debug" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
+
+    <logger name="org.eclipse.jetty" level="OFF"/>
 
     <root level="error">
         <appender-ref ref="STDOUT"/>

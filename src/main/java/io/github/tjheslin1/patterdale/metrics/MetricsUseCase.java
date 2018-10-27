@@ -63,7 +63,7 @@ public class MetricsUseCase {
         try {
             return collectProbeResults(eventualProbeResults);
         } catch (Exception e) {
-            logger.error("Uncaught exception while scraping metrics", e);
+            logger.error("Exception occurred while scraping metrics", e);
             return failedProbeResults().collect(toList());
         }
     }
@@ -79,7 +79,7 @@ public class MetricsUseCase {
             // the results are already there because of the await termination but we still need a timeout here for some reason
             return eventualResult.future.get(1, SECONDS).stream();
         } catch (Exception e) {
-            logger.error("Uncaught exception while scraping metrics for " + eventualResult.probe.probeDefinition(), e);
+            logger.error("Exception occurred while scraping metrics for " + eventualResult.probe.probeDefinition(), e);
             return Stream.of(failedProbe(eventualResult.probe.probeDefinition()));
         }
     }

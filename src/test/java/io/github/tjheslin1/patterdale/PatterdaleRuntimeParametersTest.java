@@ -36,7 +36,7 @@ public class PatterdaleRuntimeParametersTest implements WithAssertions {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void httpPortMustBeSet() throws Exception {
+    public void httpPortMustBeSet() {
         patterdaleRuntimeParameters(exampleConfig(0));
     }
 

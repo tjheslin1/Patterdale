@@ -23,7 +23,8 @@ import static java.util.stream.Collectors.toMap;
 public class TestUtil {
 
     public static Patterdale startPatterdale(String configFile, String passwordsFile) {
-        Logger logger = LoggerFactory.getLogger("application");
+        System.setProperty("logback.configurationFile", "src/test/resources/logback-test.xml");
+        Logger logger = LoggerFactory.getLogger("test-application");
 
         PatterdaleConfig patterdaleConfig = new ConfigUnmarshaller(logger)
                 .parseConfig(new File(configFile));
