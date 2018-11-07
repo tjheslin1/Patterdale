@@ -54,7 +54,9 @@ public class Probe extends ValueType {
         final StringBuilder builder = new StringBuilder("database=\"").append(databaseDefinition.name).append("\"");
 
         if(databaseDefinition.metricLabels != null) {
-            builder.append(',').append(databaseDefinition.metricLabels.entrySet().stream().map(e -> format("%s=\"%s\"", e.getKey(), e.getValue())).collect(Collectors.joining(",")));
+            builder.append(',').append(databaseDefinition.metricLabels.entrySet()
+            .stream().map(e -> format("%s=\"%s\"", e.getKey(), e.getValue()))
+            .collect(Collectors.joining(",")));
         }
 
         if (metricLabels != null && !metricLabels.isEmpty()) {
