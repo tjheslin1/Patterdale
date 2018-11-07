@@ -26,7 +26,7 @@ public class ProbeTest implements WithAssertions {
         labels.put("label2", "value2");
 
         final Probe got = probe.dbLabelled(databaseDefinition("db", "user", "url", emptyList(), labels));
-
+    
         assertThat(got.metricLabels).isEqualTo("database=\"db\",label1=\"value1\",label2=\"value2\",probeLabel=\"probeValue\"");
     }
 

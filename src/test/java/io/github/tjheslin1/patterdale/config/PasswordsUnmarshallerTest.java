@@ -25,7 +25,7 @@ public class PasswordsUnmarshallerTest implements WithAssertions, WithMockito {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void unmarshallsPasswordsFileIntoPasswords() throws Exception {
+    public void unmarshallsPasswordsFileIntoPasswords() {
         File passwordsFile = loadTestPasswordsFile();
 
         Passwords passwords = passwordsUnmarshaller.parsePasswords(passwordsFile);

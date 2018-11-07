@@ -9,7 +9,7 @@ buildscript {
 }
 
 group 'io.github.tjheslin1'
-version '1.2.2'
+version '1.2.3'
 
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'

@@ -27,7 +27,8 @@ public class StartupResiliencyTest implements WithAssertions {
 
         String responseBody = responseBody(response);
         assertThat(responseBody).matches(Pattern.compile(
-                "database_up\\{database=\"bobsDatabase\",label=\"value\",query=\"SELECT 1 FROM DUAL\"} -1.0\n" +
+                "database_up\\{database=\"bobsDatabase\",exampleDefaultLabel=\"exampleDefaultValue\",query=\"SELECT 1 FROM DUAL\"} -1.0\n" +
+                        "no_labels\\{database=\"bobsDatabase\",exampleDefaultLabel=\"exampleDefaultValue\"} -1.0\n" +
                         "database_up\\{database=\"alicesDatabase\",query=\"SELECT 1 FROM DUAL\"} -1.0\n" +
                         "slowest_queries\\{.*} -1.0\n" +
                         ".*"

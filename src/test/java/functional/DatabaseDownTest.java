@@ -76,7 +76,6 @@ public class DatabaseDownTest implements WithAssertions {
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
         String responseBody = responseBody(response);
-        System.out.println("**** RESP = " + responseBody.substring(0, 180));
 
         assertThat(responseBody).matches(Pattern.compile(
                 "database_up\\{database=\"bobsDatabase\",label=\"value\",query=\"SELECT 1 FROM DUAL\"} " + databaseUp + "\n" +

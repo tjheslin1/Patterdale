@@ -20,7 +20,7 @@ public class PatterdaleTest implements WithAssertions {
     private static Patterdale patterdale;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         patterdale = startPatterdale("src/test/resources/patterdale-h2.yml", "src/test/resources/passwords-h2.yml");
     }
 

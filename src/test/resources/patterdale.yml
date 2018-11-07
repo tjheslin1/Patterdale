@@ -7,8 +7,9 @@ databases:
     jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
     probes:
       - healthCheck
+      - noLabels
     metricLabels:
-      label: value
+      exampleDefaultLabel: exampleDefaultValue
   - name: alicesDatabase
     user: system
     jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe

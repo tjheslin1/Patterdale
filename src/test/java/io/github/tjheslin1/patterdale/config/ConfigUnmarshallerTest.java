@@ -32,7 +32,7 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void unmarshallConfigFileToPatterdaleConfig() throws Exception {
+    public void unmarshallConfigFileToPatterdaleConfig() {
         PatterdaleConfig patterdaleConfig = configUnmarshaller.parseConfig(loadTestConfigFile());
 
         assertThat(patterdaleConfig.httpPort).isEqualTo(expectedConfig().httpPort);
@@ -67,7 +67,7 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         expectedConfig.httpPort = 7001;
         expectedConfig.cacheDuration = 60;
         expectedConfig.databases = new DatabaseDefinition[]{
-                databaseDefinition(NAME, USER, JDBC_URL, singletonList("healthCheck"), singletonMap("label", "value")),
+                databaseDefinition(NAME, USER, JDBC_URL, asList("healthCheck", "noLabels"), singletonMap("exampleDefaultLabel", "exampleDefaultValue")),
                 databaseDefinition(NAME_2, USER, JDBC_URL_2, asList("healthCheck", "slowestQueries"))
         };
 

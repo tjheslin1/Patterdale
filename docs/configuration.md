@@ -1,6 +1,6 @@
 The example `docker run` command from the README includes two volume mounts:
 
-`docker run -d -p 7000:7000 -v /your/jdbc/ojdbc8.jar:/app/ojdbc8.jar -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:1.2.2`
+`docker run -d -p 7000:7000 -v /your/jdbc/ojdbc8.jar:/app/ojdbc8.jar -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:1.2.3`
 
 ## System properties
 
@@ -60,8 +60,9 @@ databases:
     jdbcUrl: jdbc:oracle:thin:@localhost:1522:xe
     probes:
       - healthCheck
+      - noLabels
     metricLabels:
-      label: value
+      exampleDefaultLabel: exampleDefaultValue
   - name: alicesDatabase
     user: system
     jdbcUrl: jdbc:oracle:thin:@localhost:1523:xe
