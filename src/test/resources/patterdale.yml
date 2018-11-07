@@ -49,3 +49,7 @@ probes:
         AND trunc(TO_DATE(s.last_load_time, 'YYYY-MM-DD/HH24:MI:SS')) >= trunc(SYSDATE - 1)
         ORDER BY elapsed_time DESC)
         WHERE ROWNUM <= 5;
+  - name: noLabels
+    type: exists
+    query: SELECT 1 FROM DUAL
+    metricName: no_labels
