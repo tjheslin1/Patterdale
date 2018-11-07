@@ -29,4 +29,13 @@ public class ProbeTest implements WithAssertions {
 
         assertThat(got.metricLabels).isEqualTo("database=\"db\",label1=\"value1\",label2=\"value2\",probeLabel=\"probeValue\"");
     }
+
+    @Test
+    public void dbLabelledWithNoMetricLabels() {
+        final Probe probe = Probe.probe("name", "SQL; ", "", "", null);
+        final Map<String, String> labels = new HashMap<>();
+        labels.put("label1", "value1");
+        final Probe got = probe.dbLabelled(databaseDefinition("db", "user", "url", emptyList(), labels));
+        assertThat(got.metricLabels).isEqualTo("database=\"db\",label1=\"value1\"");
+    }
 }

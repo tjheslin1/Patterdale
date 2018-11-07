@@ -79,7 +79,7 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
         expectedConfig.connectionPool = connectionPoolProperties;
 
         expectedConfig.probes = new Probe[]{
-                PROBE_1, PROBE_2
+                PROBE_1, PROBE_2, PROBE_3
         };
 
         return expectedConfig;
@@ -94,6 +94,7 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
     private static final String LIST = "list";
     private static final String METRIC_NAME = "database_up";
     private static final String METRIC_NAME_2 = "slowest_queries";
+    private static final String METRIC_NAME_3 = "no_labels";
     private static final String METRIC_LABELS = "query=\"SELECT 1 FROM DUAL\"";
     private static final String METRIC_LABELS_2 = "sqlText=\"%s\",sqlId=\"%s\",username=\"%s\",childNumber=\"%s\",diskReads=\"%s\",executions=\"%s\",firstLoadTime=\"%s\",lastLoadTime=\"%s\"";
     private static final String QUERY_SQL_1 = "SELECT 1 FROM DUAL";
@@ -113,6 +114,7 @@ public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {
             "WHERE   s.parsing_user_id = d.user_id\n" +
             "AND trunc(TO_DATE(s.last_load_time, 'YYYY-MM-DD/HH24:MI:SS')) >= trunc(SYSDATE - 1)\n" +
             "ORDER BY elapsed_time DESC)\n" +
-            "WHERE ROWNUM <= 5;";
+            "WHERE ROWNUM <= 5;\n";
     private static final Probe PROBE_2 = probe("slowestQueries", QUERY_SQL_2, LIST, METRIC_NAME_2, METRIC_LABELS_2);
+    private static final Probe PROBE_3 = probe("noLabels", QUERY_SQL_1, EXISTS, METRIC_NAME_3, null);
 }
