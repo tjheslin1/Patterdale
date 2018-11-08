@@ -60,3 +60,7 @@ slowest_queries{database="myDB2",slowQuery="SELECT name FROM TINY_TABLE"} 0.4
 ```
 
 This conforms to the [Prometheus](https://github.com/prometheus/prometheus) standard.
+
+## Examples
+
+Some curated examples can be found [here](example-probes.md).

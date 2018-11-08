@@ -28,4 +28,6 @@ The currently provided _probe_ types are:
 - exists (see [ExistsOracleSQLProbe.java](https://github.com/tjheslin1/Patterdale/blob/master/src/main/java/io/github/tjheslin1/patterdale/metrics/probe/ExistsOracleSQLProbe.java))
 - list (see [ListOracleSQLProbe.java](https://github.com/tjheslin1/Patterdale/blob/master/src/main/java/io/github/tjheslin1/patterdale/metrics/probe/ListOracleSQLProbe.java))
 
-For more information on the usages of these _probes_ and adding more probes, see [Probes](Probes).
+For more information on the usages of these _probes_ and adding more probes, see [Probes](Probes). 
+
+Some curated examples can be found [here](example-probes.md).
