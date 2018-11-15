@@ -18,7 +18,6 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 
 public class ConventionAnalysisTest implements WithAssertions {
 
@@ -27,7 +26,7 @@ public class ConventionAnalysisTest implements WithAssertions {
     @Test
     public void todosMustReferenceAGitIssue() throws Exception {
         List<Violation> violations = new TodosStructureAnalyser(
-                WestieRegexes.TODO_REGEX + "ISSUE-" + WestieRegexes.EXTRACT_NUMBER_REGEX)
+                WestieRegexes.TODO_REGEX + "ISSUE-" + WestieRegexes.EXTRACT_NUMBER_REGEX + ".*")
                 .checkAllTodosFollowExpectedStructure(WORKING_DIR);
 
         assertThat(violations).isEmpty();
@@ -35,7 +34,7 @@ public class ConventionAnalysisTest implements WithAssertions {
 
     @Test
     public void todosMustReferenceAGitIssueInOpenStateOnly() throws Exception {
-        GitIssues gitIssues = new GitIssues("tjheslin1", "Westie");
+        GitIssues gitIssues = new GitIssues("tjheslin1", "Patterdale");
         List<Violation> violations = new GitIssueAnalyser(gitIssues, "ISSUE-" + WestieRegexes.EXTRACT_NUMBER_REGEX)
                 .todosAreInOpenState(WORKING_DIR);
 

@@ -32,14 +32,15 @@ import java.util.concurrent.TimeoutException;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * {@link OracleSQLProbe} implementation which expects the provided SQL to return one or more rows, with at least 2 columns.
- * The first column is expected to be a Double value which will be assigned as the metric value.
+ * The first column is expected to be a Double to be assigned as the metric value.
  * The second column and onwards represent the metric label values which will be filtered using `java.lang.String#format`
  *  into the `metricLabels` provided in this probes' config.
+ *
+ *  If the probe fails or times out, an empty list of {@link ProbeResult} will be returned.
  */
 public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
@@ -63,7 +64,8 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
     }
 
     /**
-     * @return a List of {@link ProbeResult}. Each {@link ProbeResult} represents a row returned from the provided SQL.
+     * @return a List of {@link ProbeResult}. Each {@link ProbeResult} represents a
+     * row returned from the provided SQL or empty if an error occurred.
      */
     @Override
     public List<ProbeResult> probes() {
@@ -90,11 +92,10 @@ public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
             return probeResults;
         } catch (TimeoutException timeoutEx) {
             logger.warn(format("Timed out waiting for connection for probes '%s' after '%d' seconds", probe.name, timeout));
-            return singletonList(new ProbeResult(-1, probe));
+            return emptyList();
         } catch (Exception e) {
-            String message = format("Error occurred executing query: '%s'", probe.query());
-            logger.error(message, e);
-            return singletonList(new ProbeResult(-1, probe));
+            logger.error(format("Error occurred executing query: '%s'", probe.query()), e);
+            return emptyList();
         }
     }
 }

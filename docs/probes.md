@@ -37,9 +37,8 @@ if the query was successful
 
 if the query was unsuccessful
 
-`database_up{database="myDB2",query="SELECT 1 FROM DUAL"} -1.0`
-
-if the query wasn't executed succesfully against the database
+If the query was not executed succesfully or timed out against the database, a descriptive log 
+is produced and no metric is presented.
 
 This conforms to the [Prometheus](https://github.com/prometheus/prometheus) standard.
 

@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 import static java.util.Arrays.asList;
@@ -60,18 +61,6 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
     }
 
     @Test
-    public void probeFailsAndReturnsASingleProbeResult() throws Exception {
-        when(preparedStatement.executeQuery()).thenThrow(IOException.class);
-        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(dbConnection.connection()).thenReturn(connection);
-        when(dbConnectionPool.pool()).thenReturn(dbConnection);
-
-        List<ProbeResult> probeResults = listOracleSQLProbe.probes();
-
-        assertThat(probeResults).isEqualTo(singletonList(new ProbeResult(-1, PROBE)));
-    }
-
-    @Test
     public void probeAssumesFirstColumnIsProbeValueAndRemainingColumnsAreDynamicLabels() throws Exception {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSet.next()).thenReturn(true, false);
@@ -91,5 +80,25 @@ public class ListOracleSQLProbeTest implements WithAssertions, WithMockito {
         assertThat(probeResults).containsExactly(
                 new ProbeResult(4.5, PROBE, asList("example SQL", "dynamicLabel3"))
         );
+    }
+
+    @Test
+    public void probeQueryTimesOutReturningEmptyProbeResultList() throws Exception {
+        when(preparedStatement.executeQuery()).thenThrow(TimeoutException.class);
+        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
+        when(dbConnection.connection()).thenReturn(connection);
+        when(dbConnectionPool.pool()).thenReturn(dbConnection);
+
+        assertThat(listOracleSQLProbe.probes()).isEmpty();
+    }
+
+    @Test
+    public void probeFailsAndReturnsEmptyProbeResultList() throws Exception {
+        when(preparedStatement.executeQuery()).thenThrow(IOException.class);
+        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
+        when(dbConnection.connection()).thenReturn(connection);
+        when(dbConnectionPool.pool()).thenReturn(dbConnection);
+
+        assertThat(listOracleSQLProbe.probes()).isEmpty();
     }
 }

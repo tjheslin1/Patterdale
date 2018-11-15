@@ -32,8 +32,6 @@ public class DatabaseDownTest implements WithAssertions {
 
         h2.stop();
 
-        Thread.sleep(3000);
-
         eventuallyAssertDatabaseUpMetric("-1.0", Duration.ofSeconds(1), 5);
     }
 

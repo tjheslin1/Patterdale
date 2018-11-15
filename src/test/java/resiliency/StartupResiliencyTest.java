@@ -26,11 +26,13 @@ public class StartupResiliencyTest implements WithAssertions {
         assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
 
         String responseBody = responseBody(response);
-        assertThat(responseBody).matches(Pattern.compile(
-                "database_up\\{database=\"bobsDatabase\",exampleDefaultLabel=\"exampleDefaultValue\",query=\"SELECT 1 FROM DUAL\"} -1.0\n" +
-                        "no_labels\\{database=\"bobsDatabase\",exampleDefaultLabel=\"exampleDefaultValue\"} -1.0\n" +
-                        "database_up\\{database=\"alicesDatabase\",query=\"SELECT 1 FROM DUAL\"} -1.0\n" +
-                        "slowest_queries\\{.*} -1.0\n" +
+
+        patterdale.stop();
+
+        assertThat(responseBody).doesNotMatch(Pattern.compile(
+                "database_up\\{database=\"bobsDatabase\",exampleDefaultLabel=\"exampleDefaultValue\",query=\"SELECT 1 FROM DUAL\"}.*\n" +
+                        "no_labels\\{database=\"bobsDatabase\",exampleDefaultLabel=\"exampleDefaultValue\"}.*\n" +
+                        "database_up\\{database=\"alicesDatabase\",query=\"SELECT 1 FROM DUAL\"}.*\n" +
                         ".*"
                 , Pattern.DOTALL)
         );
@@ -38,7 +40,5 @@ public class StartupResiliencyTest implements WithAssertions {
         // the order of the jvm and jetty metrics changes
         assertThat(responseBody).matches(Pattern.compile(".*jvm.*\\{.*}.*", Pattern.DOTALL));
         assertThat(responseBody).matches(Pattern.compile(".*jetty.*\\{.*}.*", Pattern.DOTALL));
-
-        patterdale.stop();
     }
 }

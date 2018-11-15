@@ -8,10 +8,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import testutil.WithMockito;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -50,12 +49,18 @@ public class ExistsOracleSQLProbeTest implements WithAssertions, WithMockito {
     }
 
     @Test
-    public void probeReturnsFailure() throws Exception {
+    public void probeReturnsEmptyListIfExceptionIsThrown() {
         when(dbConnectionPool.pool()).thenThrow(Exception.class);
 
-        ProbeResult probeResult = existsOracleSQLProbe.probes().get(0);
+        assertThat(existsOracleSQLProbe.probes()).isEmpty();
+    }
 
-        assertThat(probeResult.value).isEqualTo(-1);
-        assertThat(probeResult.dynamicLabelValues).isEmpty();
+    @Test
+    public void probeReturnsEmptyListIfTimeoutOccurs() throws Exception {
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt(1)).thenReturn(1);
+        when(preparedStatement.executeQuery()).thenThrow(TimeoutException.class);
+
+        assertThat(existsOracleSQLProbe.probes()).isEmpty();
     }
 }

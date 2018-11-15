@@ -30,6 +30,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -37,7 +38,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * {@link OracleSQLProbe} implementation which expects the provided SQL to return one row.
  * The probes checks the value of the first column and expects it to contain the integer '1'.
  * <p>
- * Anything other than a '1' is the first column, or no results returned at all, is treated as a failure.
+ * Anything other than a '1' in the first column, or no results returned at all is treated as a failure and
+ * an empty list of {@link ProbeResult} is returned.
  */
 public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
 
@@ -59,8 +61,9 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
     }
 
     /**
-     * @return a single {@link ProbeResult} with a metric value of 1.0 for a successful probes,
-     * a value of 0.0 for a failed probes or a value of -1.0 if the probes was unable to query the database.
+     * @return a single {@link ProbeResult} with a metric value of 1.0 for a successful probe,
+     * a value of 0.0 for a failed probes or an empty list0 if the probe was unable to query the
+     * database or an Exception occurred.
      */
     @Override
     public List<ProbeResult> probes() {
@@ -82,11 +85,10 @@ public class ExistsOracleSQLProbe extends ValueType implements OracleSQLProbe {
             return singletonList(new ProbeResult(1, probe));
         } catch (TimeoutException timeoutEx) {
             logger.warn(format("Timed out waiting for connection for probes '%s' after '%d' seconds", probe.name, timeout));
-            return singletonList(new ProbeResult(-1, probe));
+            return emptyList();
         } catch (Exception e) {
-            String message = format("Error occurred executing query: '%s'", probe.query());
-            logger.error(message, e);
-            return singletonList(new ProbeResult(-1, probe));
+            logger.error(format("Error occurred executing query: '%s'", probe.query()), e);
+            return emptyList();
         }
     }
 }
