@@ -30,9 +30,10 @@ public class StartupResiliencyTest implements WithAssertions {
         patterdale.stop();
 
         assertThat(responseBody).doesNotMatch(Pattern.compile(
-                "database_up\\{database=\"bobsDatabase\",exampleDefaultLabel=\"exampleDefaultValue\",query=\"SELECT 1 FROM DUAL\"}.*\n" +
-                        "no_labels\\{database=\"bobsDatabase\",exampleDefaultLabel=\"exampleDefaultValue\"}.*\n" +
-                        "database_up\\{database=\"alicesDatabase\",query=\"SELECT 1 FROM DUAL\"}.*\n" +
+                "database_up\\{database=\"bobsDatabase.*\n" +
+                        "no_labels\\{database=\"bobsDatabase.*\n" +
+                        "database_up\\{database=\"alicesDatabase.*\n" +
+                        "slowest_queries.*\n" +
                         ".*"
                 , Pattern.DOTALL)
         );
