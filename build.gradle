@@ -9,7 +9,7 @@ buildscript {
 }
 
 group 'io.github.tjheslin1'
-version '1.2.3'
+version '1.2.4'
 
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -39,7 +39,7 @@ dependencies {
         exclude module: 'xmlparserv2'
     }
 
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.4'
 
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.8'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.0'
