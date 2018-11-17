@@ -6,6 +6,7 @@ Patterdale is a standalone application for monitoring Oracle databases. It expor
 
 - [Configuration](configuration.md)
 - [Probes](probes.md)
+- [Example Probes](example-probes.md)
 - [Endpoints](endpoints.md)
 - [Local testing](Local-testing.md)
 
