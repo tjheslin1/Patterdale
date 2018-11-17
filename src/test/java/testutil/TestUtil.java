@@ -3,6 +3,7 @@ package testutil;
 import io.github.tjheslin1.patterdale.Patterdale;
 import io.github.tjheslin1.patterdale.config.*;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
+import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
 import org.apache.http.HttpResponse;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.Future;
@@ -47,5 +49,54 @@ public class TestUtil {
         try (Scanner scanner = new Scanner(response.getEntity().getContent(), StandardCharsets.UTF_8.toString()).useDelimiter("\\A")) {
             return scanner.hasNext() ? scanner.next() : "";
         }
+    }
+
+    public static RuntimeParameters testRuntimeParams() {
+        return new RuntimeParameters() {
+            @Override
+            public int httpPort() {
+                return 0;
+            }
+
+            @Override
+            public long cacheDuration() {
+                return 0;
+            }
+
+            @Override
+            public int probeConnectionWaitInSeconds() {
+                return 0;
+            }
+
+            @Override
+            public List<DatabaseDefinition> databases() {
+                return null;
+            }
+
+            @Override
+            public List<Probe> probes() {
+                return null;
+            }
+
+            @Override
+            public int connectionPoolMaxSize() {
+                return 0;
+            }
+
+            @Override
+            public int connectionPoolMinIdle() {
+                return 0;
+            }
+
+            @Override
+            public int maxConnectionRetries() {
+                return 0;
+            }
+
+            @Override
+            public long connectionRetryDelayInSeconds() {
+                return 0;
+            }
+        };
     }
 }

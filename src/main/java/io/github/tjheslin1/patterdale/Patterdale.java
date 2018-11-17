@@ -51,14 +51,14 @@ import static java.util.stream.Collectors.toMap;
 
 public class Patterdale {
 
-    private final PatterdaleRuntimeParameters runtimeParameters;
+    private final RuntimeParameters runtimeParameters;
     private final Map<String, Future<DBConnectionPool>> connectionPools;
     private final TypeToProbeMapper typeToProbeMapper;
     private final Map<String, Probe> probesByName;
     private final Logger logger;
     private WebServer webServer;
 
-    public Patterdale(PatterdaleRuntimeParameters runtimeParameters, Map<String, Future<DBConnectionPool>> connectionPools, TypeToProbeMapper typeToProbeMapper, Map<String, Probe> probesByName, Logger logger) {
+    public Patterdale(RuntimeParameters runtimeParameters, Map<String, Future<DBConnectionPool>> connectionPools, TypeToProbeMapper typeToProbeMapper, Map<String, Probe> probesByName, Logger logger) {
         this.runtimeParameters = runtimeParameters;
         this.connectionPools = connectionPools;
         this.typeToProbeMapper = typeToProbeMapper;
@@ -149,7 +149,15 @@ public class Patterdale {
 
     private Stream<OracleSQLProbe> createProbes(DatabaseDefinition databaseDefinition) {
         return Arrays.stream(databaseDefinition.probes)
-                .map(probeName -> typeToProbeMapper.createProbe(databaseDefinition, connectionPools.get(databaseDefinition.name), probesByName.get(probeName), runtimeParameters));
+                .map(probeName -> typeToProbeMapper.createProbe(databaseDefinition, connectionPools.get(databaseDefinition.name), lookupProbe(probeName), runtimeParameters));
     }
 
+    public Probe lookupProbe(String probeName) throws IllegalArgumentException {
+        Probe probe = probesByName.get(probeName);
+        if (probe == null) {
+            throw new IllegalArgumentException(format("Probe '%s' not defined", probeName));
+        }
+
+        return probe;
+    }
 }

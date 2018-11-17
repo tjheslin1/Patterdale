@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import static testutil.TestUtil.responseBody;
 import static testutil.TestUtil.startPatterdale;
 
-public class PatterdaleTest implements WithAssertions {
+public class PatterdaleFunctionalTest implements WithAssertions {
 
     private static Patterdale patterdale;
 
