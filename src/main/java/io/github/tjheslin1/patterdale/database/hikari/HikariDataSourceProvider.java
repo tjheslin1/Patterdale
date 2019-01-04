@@ -1,7 +1,7 @@
 /*
- * Copyright 2018 Thomas Heslin <tjheslin1@gmail.com>.
+ * Copyright 2019 Thomas Heslin <tjheslin1@kolabnow.com>.
  *
- * This file is part of Patterdale-jvm.
+ * This file is part of Patterdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,12 @@ public class HikariDataSourceProvider {
         jdbcConfig.setPoolName("patterdale-pool-" + databaseDefinition.name);
         jdbcConfig.setMaximumPoolSize(runtimeParameters.connectionPoolMaxSize());
         jdbcConfig.setMinimumIdle(runtimeParameters.connectionPoolMinIdle());
-        jdbcConfig.setJdbcUrl(databaseDefinition.jdbcUrl);
         jdbcConfig.setInitializationFailTimeout(SECONDS.toMillis(runtimeParameters.probeConnectionWaitInSeconds()));
+
+        jdbcConfig.addDataSourceProperty("cachePrepStmts", true);
+        jdbcConfig.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
+        jdbcConfig.addDataSourceProperty("useServerPrepStmts", true);
+
         return jdbcConfig;
     }
 
