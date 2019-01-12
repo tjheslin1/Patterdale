@@ -56,7 +56,7 @@ public class PatterdaleRuntimeParameters extends ValueType implements RuntimePar
     }
 
     public static PatterdaleRuntimeParameters patterdaleRuntimeParameters(PatterdaleConfig config) {
-        if(config.httpPort <= 0)
+        if (config.httpPort <= 0)
             throw new IllegalArgumentException("`httpPort` must be set to a positive integer value");
 
         return new PatterdaleRuntimeParameters(

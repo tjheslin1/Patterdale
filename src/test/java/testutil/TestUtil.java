@@ -3,6 +3,7 @@ package testutil;
 import io.github.tjheslin1.patterdale.Patterdale;
 import io.github.tjheslin1.patterdale.config.*;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
+import io.github.tjheslin1.patterdale.database.HikariDataSourceProvider;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
 import io.github.tjheslin1.patterdale.metrics.probe.Probe;
 import io.github.tjheslin1.patterdale.metrics.probe.TypeToProbeMapper;
@@ -24,7 +25,9 @@ import static java.util.stream.Collectors.toMap;
 
 public class TestUtil {
 
-    public static Patterdale startPatterdale(String configFile, String passwordsFile) {
+    public static Patterdale startPatterdale(HikariDataSourceProvider dataSourceProvider,
+                                             String configFile,
+                                             String passwordsFile) {
         System.setProperty("logback.configurationFile", "src/test/resources/logback-test.xml");
         Logger logger = LoggerFactory.getLogger("test-application");
 
@@ -34,13 +37,15 @@ public class TestUtil {
         Passwords passwords = new PasswordsUnmarshaller(logger)
                 .parsePasswords(new File(passwordsFile));
 
-        PatterdaleRuntimeParameters runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
-        Map<String, Future<DBConnectionPool>> futureConnections = initialDatabaseConnections(logger, passwords, runtimeParameters);
+        RuntimeParameters runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
+        Map<String, Future<DBConnectionPool>> futureConnections = initialDatabaseConnections(dataSourceProvider, logger,
+                passwords, runtimeParameters);
 
         Map<String, Probe> probesByName = runtimeParameters.probes().stream().collect(toMap(probe -> probe.name, probe -> probe));
         TypeToProbeMapper typeToProbeMapper = new TypeToProbeMapper(logger);
 
-        Patterdale patterdale = new Patterdale(runtimeParameters, futureConnections, typeToProbeMapper, probesByName, logger);
+        Patterdale patterdale = new Patterdale(dataSourceProvider, runtimeParameters, futureConnections,
+                typeToProbeMapper, probesByName, logger);
         patterdale.start();
         return patterdale;
     }

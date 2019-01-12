@@ -1,6 +1,7 @@
 package functional;
 
 import io.github.tjheslin1.patterdale.Patterdale;
+import io.github.tjheslin1.patterdale.database.hikari.H2DataSourceProvider;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -21,7 +22,7 @@ public class PatterdaleFunctionalTest implements WithAssertions {
 
     @BeforeClass
     public static void setUp() {
-        patterdale = startPatterdale("src/test/resources/patterdale-h2.yml", "src/test/resources/passwords-h2.yml");
+        patterdale = startPatterdale(new H2DataSourceProvider(), "src/test/resources/patterdale-h2.yml", "src/test/resources/passwords-h2.yml");
     }
 
     @AfterClass

@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import testutil.WithMockito;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;

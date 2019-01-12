@@ -38,9 +38,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * {@link OracleSQLProbe} implementation which expects the provided SQL to return one or more rows, with at least 2 columns.
  * The first column is expected to be a Double to be assigned as the metric value.
  * The second column and onwards represent the metric label values which will be filtered using `java.lang.String#format`
- *  into the `metricLabels` provided in this probes' config.
- *
- *  If the probe fails or times out, an empty list of {@link ProbeResult} will be returned.
+ * into the `metricLabels` provided in this probes' config.
+ * <p>
+ * If the probe fails or times out, an empty list of {@link ProbeResult} will be returned.
  */
 public class ListOracleSQLProbe extends ValueType implements OracleSQLProbe {
 

@@ -19,7 +19,6 @@ import static io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition.da
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 
 public class ConfigUnmarshallerTest implements WithAssertions, WithMockito {

@@ -1,9 +1,9 @@
 package io.github.tjheslin1.patterdale.database.hikari;
 
-import testutil.WithMockito;
 import io.github.tjheslin1.patterdale.database.DBConnection;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Test;
+import testutil.WithMockito;
 
 public class HikariDBConnectionPoolTest implements WithAssertions, WithMockito {
 

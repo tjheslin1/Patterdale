@@ -89,7 +89,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.2.1'
 }
 
-import com.bmuschko.gradle.docker.tasks.image.*
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 task buildMyAppImage(type: DockerBuildImage) {
     inputDir = file('.')

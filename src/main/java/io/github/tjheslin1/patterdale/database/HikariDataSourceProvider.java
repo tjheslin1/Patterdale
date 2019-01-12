@@ -15,21 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.tjheslin1.patterdale.database.hikari;
+package io.github.tjheslin1.patterdale.database;
 
-import io.github.tjheslin1.patterdale.database.DBConnection;
-import io.github.tjheslin1.patterdale.database.DBConnectionPool;
+import com.zaxxer.hikari.HikariDataSource;
+import io.github.tjheslin1.patterdale.config.Passwords;
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
+import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
+import org.slf4j.Logger;
 
-public class HikariDBConnectionPool implements DBConnectionPool {
+public interface HikariDataSourceProvider {
 
-    private final HikariDBConnection hikariDBConnection;
-
-    public HikariDBConnectionPool(HikariDBConnection hikariDBConnection) {
-        this.hikariDBConnection = hikariDBConnection;
-    }
-
-    @Override
-    public DBConnection pool() {
-        return hikariDBConnection;
-    }
+    HikariDataSource dataSource(RuntimeParameters runtimeParams,
+                                DatabaseDefinition databaseDefinition,
+                                Passwords passwords,
+                                Logger logger);
 }
