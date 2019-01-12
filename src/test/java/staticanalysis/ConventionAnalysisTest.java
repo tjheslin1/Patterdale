@@ -102,9 +102,9 @@ public class ConventionAnalysisTest implements WithAssertions {
     }
 
     private static final String LICENSE = format("/*\n" +
-            " * Copyright %d Thomas Heslin <tjheslin1@gmail.com>.\n" +
+            " * Copyright %d Thomas Heslin <tjheslin1@kolabnow.com>.\n" +
             " *\n" +
-            " * This file is part of Patterdale-jvm.\n" +
+            " * This file is part of Patterdale.\n" +
             " *\n" +
             " * Licensed under the Apache License, Version 2.0 (the \"License\");\n" +
             " * you may not use this file except in compliance with the License.\n" +

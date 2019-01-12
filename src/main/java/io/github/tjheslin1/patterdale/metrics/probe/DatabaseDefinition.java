@@ -1,7 +1,7 @@
 /*
- * Copyright 2018 Thomas Heslin <tjheslin1@gmail.com>.
+ * Copyright 2019 Thomas Heslin <tjheslin1@kolabnow.com>.
  *
- * This file is part of Patterdale-jvm.
+ * This file is part of Patterdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

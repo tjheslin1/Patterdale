@@ -30,7 +30,8 @@ Application configuration as well as database connection and probe information i
 `httpPort` is the port the application will run on.
 
 `cacheDuration` is the lifetime, in seconds, of the cache of SQL probe results.
-After which the next call to /metrics will trigger a full scrape of all database probes and store in the cache again. This is to prevent overloading the databases with requests.
+In the background the queries will run periodically according to the `cacheDuration`. Requests to the _/metrics_ 
+endpoint will return the current cache, his is to prevent overloading the databases with requests.
 
 `probeConnectionWaitInSeconds` is the time, in seconds, to wait during a probe scrape for the initial database connection pools to be initialised.
 If this times out, no metrics for that probe are returned. 
