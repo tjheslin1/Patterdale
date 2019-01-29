@@ -154,12 +154,10 @@ public class Patterdale {
     private static HikariDataSourceProvider dataSourceProvider(List<DatabaseDefinition> databases) {
         if (databases.isEmpty())
             throw new IllegalArgumentException("No database definitions were provided, see `configuration.md`.");
-        else {
-            if (databases.get(0).jdbcUrl.startsWith("jdbc:h2"))
-                return new H2DataSourceProvider();
-            else
-                return new OracleDataSourceProvider();
-        }
+        else if (databases.get(0).jdbcUrl.startsWith("jdbc:h2"))
+            return new H2DataSourceProvider();
+        else
+            return new OracleDataSourceProvider();
     }
 
     private static HikariDBConnectionPool connectionPool(HikariDataSourceProvider dataSourceProvider, Logger logger,
