@@ -19,8 +19,11 @@ package io.github.tjheslin1.patterdale;
 
 import io.github.tjheslin1.patterdale.config.*;
 import io.github.tjheslin1.patterdale.database.DBConnectionPool;
+import io.github.tjheslin1.patterdale.database.HikariDataSourceProvider;
+import io.github.tjheslin1.patterdale.database.hikari.H2DataSourceProvider;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnection;
 import io.github.tjheslin1.patterdale.database.hikari.HikariDBConnectionPool;
+import io.github.tjheslin1.patterdale.database.hikari.OracleDataSourceProvider;
 import io.github.tjheslin1.patterdale.http.WebServer;
 import io.github.tjheslin1.patterdale.http.jetty.JettyWebServerBuilder;
 import io.github.tjheslin1.patterdale.metrics.MetricsUseCase;
@@ -43,7 +46,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters.patterdaleRuntimeParameters;
-import static io.github.tjheslin1.patterdale.database.hikari.HikariDataSourceProvider.retriableDataSource;
 import static io.github.tjheslin1.patterdale.infrastructure.RegisterExporters.serverWithStatisticsCollection;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -51,6 +53,7 @@ import static java.util.stream.Collectors.toMap;
 
 public class Patterdale {
 
+    private final HikariDataSourceProvider dataSourceProvider;
     private final RuntimeParameters runtimeParameters;
     private final Map<String, Future<DBConnectionPool>> connectionPools;
     private final TypeToProbeMapper typeToProbeMapper;
@@ -58,7 +61,8 @@ public class Patterdale {
     private final Logger logger;
     private WebServer webServer;
 
-    public Patterdale(RuntimeParameters runtimeParameters, Map<String, Future<DBConnectionPool>> connectionPools, TypeToProbeMapper typeToProbeMapper, Map<String, Probe> probesByName, Logger logger) {
+    public Patterdale(HikariDataSourceProvider dataSourceProvider, RuntimeParameters runtimeParameters, Map<String, Future<DBConnectionPool>> connectionPools, TypeToProbeMapper typeToProbeMapper, Map<String, Probe> probesByName, Logger logger) {
+        this.dataSourceProvider = dataSourceProvider;
         this.runtimeParameters = runtimeParameters;
         this.connectionPools = connectionPools;
         this.typeToProbeMapper = typeToProbeMapper;
@@ -75,15 +79,17 @@ public class Patterdale {
         Passwords passwords = new PasswordsUnmarshaller(logger)
                 .parsePasswords(new File(System.getProperty("passwords.file")));
 
-        PatterdaleRuntimeParameters runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
+        RuntimeParameters runtimeParameters = patterdaleRuntimeParameters(patterdaleConfig);
 
-        Map<String, Future<DBConnectionPool>> futureConnections = initialDatabaseConnections(logger, passwords, runtimeParameters);
+        HikariDataSourceProvider dataSourceProvider = dataSourceProvider(runtimeParameters.databases());
+
+        Map<String, Future<DBConnectionPool>> futureConnections = initialDatabaseConnections(dataSourceProvider, logger, passwords, runtimeParameters);
 
         Map<String, Probe> probesByName = runtimeParameters.probes().stream()
                 .collect(toMap(probe -> probe.name, probe -> probe));
 
         logger.debug("starting Patterdale!");
-        new Patterdale(runtimeParameters, futureConnections, new TypeToProbeMapper(logger), probesByName, logger)
+        new Patterdale(dataSourceProvider, runtimeParameters, futureConnections, new TypeToProbeMapper(logger), probesByName, logger)
                 .start();
     }
 
@@ -135,16 +141,31 @@ public class Patterdale {
         logger.info("Shutting down.");
     }
 
-    public static Map<String, Future<DBConnectionPool>> initialDatabaseConnections(Logger logger, Passwords passwords, PatterdaleRuntimeParameters runtimeParameters) {
+    public static Map<String, Future<DBConnectionPool>> initialDatabaseConnections(HikariDataSourceProvider dataSourceProvider,
+                                                                                   Logger logger,
+                                                                                   Passwords passwords,
+                                                                                   RuntimeParameters runtimeParameters) {
         ExecutorService executor = Executors.newFixedThreadPool(runtimeParameters.databases().size());
         return runtimeParameters.databases().stream()
                 .collect(Collectors.toMap(databaseDefinition -> databaseDefinition.name,
-                        databaseDefinition -> executor.submit(() -> connectionPool(logger, passwords, runtimeParameters, databaseDefinition))));
+                        databaseDefinition -> executor.submit(() -> connectionPool(dataSourceProvider, logger, passwords, runtimeParameters, databaseDefinition))));
     }
 
-    private static HikariDBConnectionPool connectionPool(Logger logger, Passwords passwords, PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition) {
+    private static HikariDataSourceProvider dataSourceProvider(List<DatabaseDefinition> databases) {
+        if (databases.isEmpty())
+            throw new IllegalArgumentException("No database definitions were provided, see `configuration.md`.");
+        else if (databases.get(0).jdbcUrl.startsWith("jdbc:h2"))
+            return new H2DataSourceProvider();
+        else
+            return new OracleDataSourceProvider();
+    }
+
+    private static HikariDBConnectionPool connectionPool(HikariDataSourceProvider dataSourceProvider, Logger logger,
+                                                         Passwords passwords,
+                                                         RuntimeParameters runtimeParameters,
+                                                         DatabaseDefinition databaseDefinition) {
         return new HikariDBConnectionPool(new HikariDBConnection(
-                retriableDataSource(runtimeParameters, databaseDefinition, passwords, logger)));
+                dataSourceProvider.dataSource(runtimeParameters, databaseDefinition, passwords, logger)));
     }
 
     private Stream<OracleSQLProbe> createProbes(DatabaseDefinition databaseDefinition) {

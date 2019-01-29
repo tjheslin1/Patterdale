@@ -19,21 +19,21 @@ package io.github.tjheslin1.patterdale.database.hikari;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.pool.HikariPool;
 import io.github.tjheslin1.patterdale.config.Passwords;
-import io.github.tjheslin1.patterdale.config.PatterdaleRuntimeParameters;
+import io.github.tjheslin1.patterdale.config.RuntimeParameters;
+import io.github.tjheslin1.patterdale.database.HikariDataSourceProvider;
+import io.github.tjheslin1.patterdale.database.RetriableDataSource;
 import io.github.tjheslin1.patterdale.metrics.probe.DatabaseDefinition;
-import net.jodah.failsafe.Failsafe;
-import net.jodah.failsafe.RetryPolicy;
 import org.slf4j.Logger;
 
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-public class HikariDataSourceProvider {
+public class H2DataSourceProvider implements HikariDataSourceProvider {
+
     /**
      * Attempts to create a {@link HikariDataSource} by making an initial connection to the database.
-     * Retries a number of times, with a delay between each retry, according to the provided {@link PatterdaleRuntimeParameters}.
+     * Retries a number of times, with a delay between each retry, according to the provided {@link RuntimeParameters}.
      * <p>
      * Failed attempts are logged as well as when the number of retries has exceeded.
      *
@@ -43,30 +43,25 @@ public class HikariDataSourceProvider {
      * @param logger             to log.
      * @return A data source for a successful connection to the database.
      */
-    public static HikariDataSource retriableDataSource(PatterdaleRuntimeParameters runtimeParams, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
-        RetryPolicy retryPolicy = new RetryPolicy()
-                .retryOn(HikariPool.PoolInitializationException.class)
-                .withDelay(runtimeParams.connectionRetryDelayInSeconds(), SECONDS)
-                .withMaxRetries(runtimeParams.maxConnectionRetries());
-
-        return Failsafe.with(retryPolicy)
-                .onRetry((result, failure, context) -> logRetry(runtimeParams, databaseDefinition, logger))
-                .onFailedAttempt((result, failure, context) -> logFailedAttempt(databaseDefinition, logger))
-                .onRetriesExceeded(throwable -> logRetriesExceeded(databaseDefinition, logger))
-                .get(() -> dataSource(runtimeParams, databaseDefinition, passwords, logger));
+    public HikariDataSource dataSource(RuntimeParameters runtimeParams, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
+        return RetriableDataSource.retriableDataSource(
+                () -> ds(runtimeParams, databaseDefinition, passwords, logger),
+                runtimeParams,
+                databaseDefinition,
+                logger);
     }
 
-    private static HikariDataSource dataSource(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
+    private HikariDataSource ds(RuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, Passwords passwords, Logger logger) {
         try {
             String password = passwords.byDatabaseName(databaseDefinition.name).value;
             return new HikariDataSource(jdbcConfig(runtimeParameters, databaseDefinition, password));
         } catch (Exception e) {
-            logger.error("Error occurred initialising Oracle and Hikari data sources.", e);
+            logger.error("Error occurred initialising H2 and Hikari data sources.", e);
             throw e;    // caught by the RetryPolicy
         }
     }
 
-    private static HikariConfig jdbcConfig(PatterdaleRuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, String password) {
+    private static HikariConfig jdbcConfig(RuntimeParameters runtimeParameters, DatabaseDefinition databaseDefinition, String password) {
         HikariConfig jdbcConfig = new HikariConfig();
         jdbcConfig.setJdbcUrl(databaseDefinition.jdbcUrl);
         jdbcConfig.setUsername(databaseDefinition.user);
@@ -81,26 +76,5 @@ public class HikariDataSourceProvider {
         jdbcConfig.addDataSourceProperty("useServerPrepStmts", true);
 
         return jdbcConfig;
-    }
-
-    private static void logRetriesExceeded(DatabaseDefinition databaseDefinition, Logger logger) {
-        logger.error(format("Exceeded retry attempts to database %s at %s.",
-                databaseDefinition.name,
-                databaseDefinition.jdbcUrl));
-    }
-
-    private static void logFailedAttempt(DatabaseDefinition databaseDefinition, Logger logger) {
-        logger.warn(format("Failed attempt connecting to database %s at %s." +
-                        databaseDefinition.name,
-                databaseDefinition.jdbcUrl));
-    }
-
-    private static void logRetry(PatterdaleRuntimeParameters runtimeParams, DatabaseDefinition databaseDefinition, Logger logger) {
-        logger.info(format("Attempting database connection to: %s at %s.%n" +
-                        "Configured to retry %d times with a delay between retries of %d seconds.",
-                databaseDefinition.name,
-                databaseDefinition.jdbcUrl,
-                runtimeParams.maxConnectionRetries(),
-                runtimeParams.connectionRetryDelayInSeconds()));
     }
 }

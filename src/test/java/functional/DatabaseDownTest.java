@@ -1,6 +1,7 @@
 package functional;
 
 import io.github.tjheslin1.patterdale.Patterdale;
+import io.github.tjheslin1.patterdale.database.hikari.H2DataSourceProvider;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -38,7 +39,7 @@ public class DatabaseDownTest implements WithAssertions {
     @BeforeClass
     public static void setUp() throws SQLException {
         h2 = Server.createTcpServer("-tcpPort", String.valueOf(H2_PORT)).start();
-        patterdale = startPatterdale("src/test/resources/patterdale-proxy-h2.yml", "src/test/resources/passwords-h2.yml");
+        patterdale = startPatterdale(new H2DataSourceProvider(), "src/test/resources/patterdale-proxy-h2.yml", "src/test/resources/passwords-h2.yml");
     }
 
     @AfterClass

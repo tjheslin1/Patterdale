@@ -3,7 +3,6 @@ package io.github.tjheslin1.patterdale.metrics.probe;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static io.github.tjheslin1.patterdale.metrics.probe.Probe.probe;

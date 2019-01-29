@@ -1,9 +1,9 @@
 package io.github.tjheslin1.patterdale.http;
 
-import testutil.WithMockito;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Before;
 import org.junit.Test;
+import testutil.WithMockito;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;

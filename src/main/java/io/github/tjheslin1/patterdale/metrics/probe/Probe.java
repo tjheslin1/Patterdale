@@ -21,7 +21,7 @@ import io.github.tjheslin1.patterdale.ValueType;
 
 import java.util.stream.Collectors;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 /**
  * The in-memory representation of probes list in 'patterdale.yml', passed in on app start-up.
@@ -53,10 +53,10 @@ public class Probe extends ValueType {
     private String getMetricLabels(DatabaseDefinition databaseDefinition) {
         final StringBuilder builder = new StringBuilder("database=\"").append(databaseDefinition.name).append("\"");
 
-        if(databaseDefinition.metricLabels != null) {
+        if (databaseDefinition.metricLabels != null) {
             builder.append(',').append(databaseDefinition.metricLabels.entrySet()
-            .stream().map(e -> format("%s=\"%s\"", e.getKey(), e.getValue()))
-            .collect(Collectors.joining(",")));
+                    .stream().map(e -> format("%s=\"%s\"", e.getKey(), e.getValue()))
+                    .collect(Collectors.joining(",")));
         }
 
         if (metricLabels != null && !metricLabels.isEmpty()) {

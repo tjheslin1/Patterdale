@@ -8,7 +8,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import testutil.WithMockito;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 

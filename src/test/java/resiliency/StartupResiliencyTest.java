@@ -1,6 +1,7 @@
 package resiliency;
 
 import io.github.tjheslin1.patterdale.Patterdale;
+import io.github.tjheslin1.patterdale.database.hikari.OracleDataSourceProvider;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -18,7 +19,7 @@ public class StartupResiliencyTest implements WithAssertions {
     @Test(timeout = 30000)
     public void startUpCompletesEvenIfDatabaseIsDown() throws Exception {
         // cannot use @Before and @After as startup of app needs to be included in timeout
-        Patterdale patterdale = startPatterdale("src/test/resources/patterdale.yml", "src/test/resources/passwords.yml");
+        Patterdale patterdale = startPatterdale(new OracleDataSourceProvider(), "src/test/resources/patterdale.yml", "src/test/resources/passwords.yml");
 
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpResponse response = httpClient.execute(new HttpGet("http://localhost:7001/metrics"));
