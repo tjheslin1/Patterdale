@@ -1,6 +1,6 @@
 The example `docker run` command from the README includes two volume mounts:
 
-`docker run -d -p 7000:7000 -v /your/jdbc/ojdbc8.jar:/app/ojdbc8.jar -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:1.3.0`
+`docker run -d -p 7000:7000 -v /your/jdbc/ojdbc8.jar:/app/ojdbc8.jar -v /your/config/directory:/config -v /your/secrets/directory:/passwords tjheslin1/patterdale:1.3.1`
 
 ## System properties
 
@@ -31,7 +31,7 @@ Application configuration as well as database connection and probe information i
 
 `cacheDuration` is the lifetime, in seconds, of the cache of SQL probe results.
 In the background the queries will run periodically according to the `cacheDuration`. Requests to the _/metrics_ 
-endpoint will return the current cache, his is to prevent overloading the databases with requests.
+endpoint will return the current cache, this is to prevent overloading the databases with requests.
 
 `probeConnectionWaitInSeconds` is the time, in seconds, to wait during a probe scrape for the initial database connection pools to be initialised.
 If this times out, no metrics for that probe are returned. 
