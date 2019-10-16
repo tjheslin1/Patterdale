@@ -40,9 +40,9 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         metricsServlet.doGet(request, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).println("database_up{key=\"value\"} 1.0");
-        verify(printerWriter).println("database_other{key=\"something\"} 1.0");
-        verify(printerWriter).println("database_list{key=\"somethingElse\",result=\"example SQL\"} 4.5");
+        verify(printerWriter).print("database_up{key=\"value\"} 1.0\n");
+        verify(printerWriter).print("database_other{key=\"something\"} 1.0\n");
+        verify(printerWriter).print("database_list{key=\"somethingElse\",result=\"example SQL\"} 4.5\n");
     }
 
     @Test
@@ -53,8 +53,8 @@ public class MetricsServletTest implements WithAssertions, WithMockito {
         metricsServlet.doGet(request, response);
 
         verify(metricsUseCase).scrapeMetrics();
-        verify(printerWriter).println("database_up{key=\"value\"} 1.0");
-        verify(printerWriter).println("database_other{key=\"something\"} 0.0");
+        verify(printerWriter).print("database_up{key=\"value\"} 1.0\n");
+        verify(printerWriter).print("database_other{key=\"something\"} 0.0\n");
     }
 
     @Test

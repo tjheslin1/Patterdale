@@ -56,7 +56,7 @@ public class MetricsServlet extends HttpServlet {
         formatProbeResults(probeResults)
                 .forEach(formattedProbeResult -> {
                     try {
-                        resp.getWriter().println(formattedProbeResult);
+                        resp.getWriter().print(formattedProbeResult + "\n");
                     } catch (IOException e) {
                         logger.error("IO error occurred writing to /metrics page.", e);
                     }
