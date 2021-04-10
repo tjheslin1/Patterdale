@@ -1,4 +1,4 @@
-# Patterdale [![Build Status](https://travis-ci.org/tjheslin1/Patterdale.svg?branch=master)](https://travis-ci.org/tjheslin1/Patterdale)
+# Patterdale
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/tjheslin1/patterdale.svg?maxAge=604800)](https://hub.docker.com/r/tjheslin1/patterdale/)
 
