@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 Thomas Heslin <tjheslin1@kolabnow.com>.
+ * Copyright 2017 - 2021 Thomas Heslin <tjheslin1@kolabnow.com>.
  *
  * This file is part of Patterdale.
  *
